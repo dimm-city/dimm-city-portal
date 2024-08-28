@@ -32,6 +32,16 @@ To join an existing session, follow these steps:
 1. Enter your name, the session ID, and the password for the session.
 1. Click `Connect` to join an existing session.
 
+## Current Status
+
+This project is just starting and is under active development. We have a few major goals we are working towards currently.
+
+- Basic features to run a TTRPG session.
+- NPM packages for both the Portal Client and the Portal Server.
+- Simple or automated deployment options.
+
+Once these goals are met we will release a stable v1 release. For now, expect a lot of code changes, bugs, and missing features. Check the [TODO](TODO.md) to see a running list of features we are working on.
+
 ## Contributing
 
 We welcome contributions from the open-source community to help improve and expand this project. If you'd like to contribute, please follow these steps:
