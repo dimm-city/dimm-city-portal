@@ -1,5 +1,5 @@
 <script>
-	import PopoverButton from './PopoverButton.svelte';
+	import PopoverButton from './PopoverButton.svelte.js';
 
 	export let player;
 
@@ -15,18 +15,6 @@
 		{
 			label: '1d20',
 			value: '1d20'
-		},
-		{
-			label: '2d20',
-			value: '2d20'
-		},
-		{
-			label: 'Lucid',
-			value: 'lucid'
-		},
-		{
-			label: 'Surreal',
-			value: 'surreal'
 		}
 	];
 	export let rollDice;
@@ -48,8 +36,8 @@
 			on:click={leaveSession}
 			title="Leave Session"
 		>
-			<i class="bi bi-box-arrow-right" />
-		</button>
+			<i class="bi bi-box-arrow-right"></i> </button
+		>
 		<div class="player-indicator">
 			<button
 				data-augmented-ui="all-hex border"
@@ -57,9 +45,10 @@
 				on:click={handleShowPlayerList}
 				title="Players"
 			>
-				<i class="bi bi-people" />
-				<span class="player-count">{players.length}</span>
-			</button>
+				<i class="bi bi-people">
+					<span class="player-count">{players.length}</span>
+				</i></button
+			>
 		</div>
 		<button
 			data-augmented-ui="all-hex border"
@@ -67,7 +56,7 @@
 			on:click={() => (showPlayerSettings = true)}
 			title="Player Settings"
 		>
-			<i class="bi bi-gear" />
+			<i class="bi bi-gear"> </i>
 		</button>
 	</div>
 	<div class="dice-button">

@@ -1,8 +1,8 @@
 <script>
-	import Portal from '$lib/Portal/Portal.svelte';
+	import Portal from '$lib/components/Portal.svelte';
 	import { page } from '$app/stores';
 	import Notifications from 'svelte-notifications';
-	import Alert from '$lib/Portal/Alert.svelte';
+	import Alert from '$lib/components/Alert.svelte';
 
 	/** @type {DC.PortalPlayer} */
 	let player = {
@@ -25,6 +25,24 @@
 		},
 		host: false
 	};
+	const  diceOptions = [
+		{
+			label: '1d20',
+			value: '1d20'
+		},
+		{
+			label: '2d20',
+			value: '2d20'
+		},
+		{
+			label: 'Lucid',
+			value: 'lucid'
+		},
+		{
+			label: 'Surreal',
+			value: 'surreal'
+		}
+	];
 	/**
 	 * @type {string}
 	 */
@@ -38,6 +56,7 @@
 	<Portal
 		bind:sessionName
 		{player}
+		{diceOptions}
 		sessionMode={$page.url.searchParams?.get('mode')}
 		bind:sessionId
 	/>

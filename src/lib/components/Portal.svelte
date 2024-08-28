@@ -1,21 +1,20 @@
 <script>
-	import Dialog from './Dialog.svelte';
-	import DiceThemePicker from './DiceThemePicker.svelte';
+	import Dialog from './Dialog.svelte.js';
+	import DiceThemePicker from './DiceThemePicker.svelte.js';
 	import { io } from 'socket.io-client';
-	import DiceRoller from './DiceRoller.svelte';
-	import SessionManager from './SessionManager.svelte';
-	import Toolbar from './Toolbar.svelte';
-	import Notifications, { getNotificationsContext } from 'svelte-notifications';
-	import Token from './Token.svelte';
-	import Alert from './Alert.svelte';
+	import DiceRoller from './DiceRoller.svelte.js';
+	import SessionManager from './SessionManager.svelte.js';
+	import Toolbar from './Toolbar.svelte.js';
+	import { getNotificationsContext } from 'svelte-notifications';
+	import Token from './Token.svelte.js';
 	const { addNotification } = getNotificationsContext();
 
 	export let config = {
-		apiBaseUrl: 'http://localhost:3000',
+		apiBaseUrl: 'http://localhost:5173',
 	};
 	//'http://localhost:1337'
-	const socket = io(config.apiBaseUrl.replace('/api', ''), {
-		path: '/portal'
+	const socket = io(config.apiBaseUrl, {
+		path: '/portal-connection'
 	});
 
 	/**
@@ -35,6 +34,8 @@
 	 * @type {DC.PortalPlayer}
 	 */
 	export let player;
+
+	export let diceOptions;
 
 	/**
 	 * @type {DC.PortalToken[]}
@@ -354,6 +355,7 @@
 		<Toolbar
 			{players}
 			{player}
+			{diceOptions}
 			bind:diceNotation
 			bind:showPlayerList
 			bind:showPlayerSettings
