@@ -36,8 +36,8 @@
 			on:click={leaveSession}
 			title="Leave Session"
 		>
-			<i class="bi bi-box-arrow-right"></i> </button
-		>
+			<i class="bi bi-box-arrow-right"></i>
+		</button>
 		<div class="player-indicator">
 			<button
 				data-augmented-ui="all-hex border"
@@ -176,22 +176,6 @@
 		align-self: center;
 		padding: 0.5rem;
 		font-size: 1.1rem;
-		background-color: #000;
-		border-color: var(--fourth-accent);
-		border-radius: 10px;
-		color: var(--text-light);
-	}
-	.edit-buttons button {
-		background: none;
-		border: none;
-		color: #fff; /* White color for icons */
-		cursor: pointer;
-		padding: 5px;
-		font-size: 20px;
-	}
-
-	.edit-buttons button:hover {
-		color: #007bff; /* Highlight color on hover */
 	}
 	.aug-button {
 		cursor: pointer;

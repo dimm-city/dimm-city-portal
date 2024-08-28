@@ -1,16 +1,4 @@
-// const socketIo = require('socket.io');
-// const httpServer = require('http').createServer();
 const sessions = [];
-
-// const io = socketIo(httpServer, {
-// 	path: '/portal-connection',
-// 	cors: {
-// 		origin: '*',
-// 		methods: ['GET', 'POST']
-// 	},
-// 	maxHttpBufferSize: 10e6, // 10MB, adjust according to your needs
-// 	pingTimeout: 120000 // 120 seconds, adjust according to your needs
-// });
 
 function rollDiceExpression(expression) {
 	if (!expression) return;
@@ -21,22 +9,6 @@ function rollDiceExpression(expression) {
 		result.push(Math.ceil(Math.random() * diceType));
 	}
 	return `${expression}@${result.join(',')}`;
-}
-
-function removePlayer(socketId, sessionId) {
-	const session = sessions[sessionId];
-
-	if (session) {
-		session.players = session?.players.filter((p) => p.id !== socketId);
-		session.tokens = session?.tokens.filter((t) => t.id !== socketId);
-		sessions[sessionId] = session;
-
-		io.to(sessionId).emit('playerLeft', {
-			sessionId,
-			players: session?.players,
-			tokens: session?.tokens
-		});
-	}
 }
 
 function isHost(sessionId, socketId) {
@@ -136,7 +108,7 @@ export function createPortalServer(io) {
 			// Generate the dice roll result
 			const result = rollDiceExpression(diceExpression);
 
-			session.diceRoles = [...session?.diceRoles, { playerId: socket.id, diceTheme, result }];
+			session.diceRoles = [...session.diceRoles, { playerId: socket.id, diceTheme, result }];
 
 			sessions[sessionId] = session;
 
@@ -270,7 +242,19 @@ export function createPortalServer(io) {
 
 		socket.on('leaveSession', (data) => {
 			const { sessionId } = data;
-			removePlayer(socket.id, sessionId);
+			const session = sessions[sessionId];
+
+			if (session) {
+				session.players = session?.players.filter((p) => p.id !== socket.id);
+				session.tokens = session?.tokens.filter((t) => t.id !== socket.id);
+				sessions[sessionId] = session;
+
+				io.to(sessionId).emit('playerLeft', {
+					sessionId,
+					players: session?.players,
+					tokens: session?.tokens
+				});
+			}
 		});
 		socket.on('endSession', (data) => {
 			if (!isHost(data?.sessionId, socket.id)) return;
@@ -287,10 +271,7 @@ export function createPortalServer(io) {
 		});
 
 		socket.on('disconnect', () => {
-			console.log('Client disconnected');
-			for (const sessionId in sessions) {
-				removePlayer(socket.id, sessionId);
-			}
+			console.log('Client disconnected');			
 		});
 	});
 }

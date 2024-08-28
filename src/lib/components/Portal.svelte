@@ -240,7 +240,7 @@
 		});
 	});
 
-	let backgroundUrl = '/assets/imgs/landing-bg-seo.png'; // '/assets/imgs/dc-banner-yellow.png';
+	let backgroundUrl = '/assets/default-bg.png'; 
 	let isFileBackground = false;
 	let isVideoBackground = false;
 	let showSceneSettings = false;

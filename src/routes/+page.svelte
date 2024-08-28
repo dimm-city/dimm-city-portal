@@ -49,9 +49,9 @@
 	export let sessionName;
 	let sessionId = $page.url.searchParams?.get('session') ?? null;
 </script>
-
+{#if sessionId == null}
 <h1>Welcome to the Dimm City Portal</h1>
-
+{/if}
 <Notifications item={Alert} zIndex={999999}>
 	<Portal
 		bind:sessionName
