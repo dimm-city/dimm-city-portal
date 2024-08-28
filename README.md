@@ -3,6 +3,8 @@
 [![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
+[![All Contributors](https://img.shields.io/github/all-contributors/dimm-city/dimm-city-portal?color=ee8449&style=flat-square)](#contributors)
+
 Welcome to the repository of our open-source project, **Dimm City Portal**. This platform is designed for enthusiasts and players of tabletop roleplaying games (TTRPGs), allowing them to create, manage, and play their TTRPG experiences directly in their web browser without the need for complicated setup, or yet another subscription.
 
 ## Features
@@ -60,7 +62,8 @@ We welcome contributions from the open-source community to help improve and expa
 
 <p xmlns:cc="http://creativecommons.org/ns#" xmlns:dct="http://purl.org/dc/terms/"><a property="dct:title" rel="cc:attributionURL" href="https://github.com/dimm-city/dimm-city-portal">Dimm City Portal</a> by <a rel="cc:attributionURL dct:creator" property="cc:attributionName" href="https://github.com/dimm-city/">Dimm City RPG</a> is licensed under <a href="https://creativecommons.org/licenses/by-sa/4.0/?ref=chooser-v1" target="_blank" rel="license noopener noreferrer" style="display:inline-block;">CC BY-SA 4.0<img style="height:22px!important;margin-left:3px;vertical-align:text-bottom;" src="https://mirrors.creativecommons.org/presskit/icons/cc.svg?ref=chooser-v1" alt=""><img style="height:22px!important;margin-left:3px;vertical-align:text-bottom;" src="https://mirrors.creativecommons.org/presskit/icons/by.svg?ref=chooser-v1" alt=""><img style="height:22px!important;margin-left:3px;vertical-align:text-bottom;" src="https://mirrors.creativecommons.org/presskit/icons/sa.svg?ref=chooser-v1" alt=""></a></p>
 
-This means you are free to use, share, and adapt this work as long as you attribute the original authors. See the [LICENSE](LICENSE) file for details. 
+This means you are free to use, share, and adapt this work as long as you attribute the original authors. See the [LICENSE](LICENSE) file for details.
+
 ## Contributors ✨
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
@@ -75,10 +78,10 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     </tr>
   </tbody>
 </table>
-
 <!-- markdownlint-restore -->
 <!-- prettier-ignore-end -->
 
 <!-- ALL-CONTRIBUTORS-LIST:END -->
 
 This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!
+
