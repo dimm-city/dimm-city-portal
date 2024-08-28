@@ -1,7 +1,7 @@
 # Dimm City Portal VTT
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-2-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 Welcome to the repository of our open-source project, **Dimm City Portal**. This platform is designed for enthusiasts and players of tabletop roleplaying games (TTRPGs), allowing them to create, manage, and play their TTRPG experiences directly in their web browser without the need for complicated setup, or yet another subscription.
@@ -74,9 +74,11 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
   <tbody>
     <tr>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/itlackey"><img src="https://avatars.githubusercontent.com/u/6414031?v=4?s=100" width="100px;" alt="IT Lackey"/><br /><sub><b>IT Lackey</b></sub></a><br /><a href="https://github.com/dimm-city/dimm-city-portal/commits?author=itlackey" title="Code">💻</a> <a href="https://github.com/dimm-city/dimm-city-portal/commits?author=itlackey" title="Documentation">📖</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/Scotto1980"><img src="https://avatars.githubusercontent.com/u/99844122?v=4?s=100" width="100px;" alt="Scotto1980"/><br /><sub><b>Scotto1980</b></sub></a><br /><a href="#design-Scotto1980" title="Design">🎨</a></td>
     </tr>
   </tbody>
 </table>
+
 <!-- markdownlint-restore -->
 <!-- prettier-ignore-end -->
 
