@@ -1,0 +1,27 @@
+{
+  "files": [
+    "README.md"
+  ],
+  "imageSize": 100,
+  "commit": false,
+  "commitType": "docs",
+  "commitConvention": "angular",
+  "contributors": [
+    {
+      "login": "itlackey",
+      "name": "IT Lackey",
+      "avatar_url": "https://avatars.githubusercontent.com/u/6414031?v=4",
+      "profile": "https://github.com/itlackey",
+      "contributions": [
+        "code",
+        "doc"
+      ]
+    }
+  ],
+  "contributorsPerLine": 7,
+  "skipCi": true,
+  "repoType": "github",
+  "repoHost": "https://github.com",
+  "projectName": "dimm-city-portal",
+  "projectOwner": "dimm-city"
+}
