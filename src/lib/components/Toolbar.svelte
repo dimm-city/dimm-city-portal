@@ -1,5 +1,5 @@
 <script>
-	import PopoverButton from './PopoverButton.svelte.js';
+	import PopoverButton from './PopoverButton.svelte';
 
 	export let player;
 

@@ -1,12 +1,12 @@
 <script>
-	import Dialog from './Dialog.svelte.js';
-	import DiceThemePicker from './DiceThemePicker.svelte.js';
+	import Dialog from './Dialog.svelte';
+	import DiceThemePicker from './DiceThemePicker.svelte';
 	import { io } from 'socket.io-client';
-	import DiceRoller from './DiceRoller.svelte.js';
-	import SessionManager from './SessionManager.svelte.js';
-	import Toolbar from './Toolbar.svelte.js';
+	import DiceRoller from './DiceRoller.svelte';
+	import SessionManager from './SessionManager.svelte';
+	import Toolbar from './Toolbar.svelte';
 	import { getNotificationsContext } from 'svelte-notifications';
-	import Token from './Token.svelte.js';
+	import Token from './Token.svelte';
 	const { addNotification } = getNotificationsContext();
 
 	export let config = {

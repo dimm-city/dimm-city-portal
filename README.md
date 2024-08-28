@@ -1,58 +1,49 @@
-# create-svelte
+# Dimm City Portal VTT
 
-Everything you need to build a Svelte library, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/main/packages/create-svelte).
+Welcome to the repository of our open-source project, **Dimm City Portal**. This platform is designed for enthusiasts and players of tabletop roleplaying games (TTRPGs), allowing them to create, manage, and play their TTRPG experiences directly in their web browser without the need for complicated setup, or yet another subscription.
 
-Read more about creating a library [in the docs](https://kit.svelte.dev/docs/packaging).
+## Features
 
-## Creating a project
+- **Web-Based:** Play your favorite TTRPGs right in your web browser without the need for additional software or installations.
+- **Multiplayer Support:** Invite friends to join your TTRPG session with multiplayer support, allowing multiple users to engage in a collaborative gaming experience.
+- **Simple to Use:** A simple and intuitive interface that makes it easy for users to focus on the fun and not the tech.
 
-If you're seeing this, you've probably already done this step. Congrats!
+## Getting Started
 
-```bash
-# create a new project in the current directory
-npm create svelte@latest
+To get started with Dimm City Portal, follow these steps:
 
-# create a new project in my-app
-npm create svelte@latest my-app
-```
+1. Clone this repository to your local machine using `git clone https://github.com/dimm-city/dimm-city-portal.git`.
+2. Navigate to the project directory using `cd dimm-city-portal`.
+3. Install dependencies with `npm install` or `yarn install`.
+4. Start the development server with `npm run dev`.
+5. Open your web browser and visit `http://localhost:5173` to access the application.
 
-## Developing
+## Usage
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+To create a new session, follow these steps:
 
-```bash
-npm run dev
+1. Enter your name, a name and a password for the session.
+1. Click `Create` to create a new session.
+1. Copy the generated session ID and share it and the password with your friends.
 
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
-```
+To join an existing session, follow these steps:
 
-Everything inside `src/lib` is part of your library, everything inside `src/routes` can be used as a showcase or preview app.
+1. Click the `connect mode` link.
+1. Enter your name, the session ID, and the password for the session.
+1. Click `Connect` to join an existing session.
 
-## Building
+## Contributing
 
-To build your library:
+We welcome contributions from the open-source community to help improve and expand this project. If you'd like to contribute, please follow these steps:
 
-```bash
-npm run package
-```
+1. Fork this repository using the "Fork" button at the top of the page.
+2. Create a new branch for your feature or bug fix using `git checkout -b feature/your-feature-name` or `git checkout -b bugfix/issue-number`.
+3. Make your changes and commit them with clear, descriptive messages.
+4. Push your changes to your forked repository using `git push origin feature/your-feature-name`.
+5. Create a pull request (PR) from your branch to the main repository's `main` branch.
+6. Wait for the project maintainers to review and merge your PR.
 
-To create a production version of your showcase app:
+## License
 
-```bash
-npm run build
-```
+This project is licensed under the Creative Commons Attribution 4.0 International License - see the [LICENSE](LICENSE) file for details. This means you are free to use, share, and adapt this work as long as you attribute the original authors.
 
-You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.
-
-## Publishing
-
-Go into the `package.json` and give your package the desired name through the `"name"` option. Also consider adding a `"license"` field and point it to a `LICENSE` file which you can create from a template (one popular option is the [MIT license](https://opensource.org/license/mit/)).
-
-To publish your library to [npm](https://www.npmjs.com):
-
-```bash
-npm publish
-```
