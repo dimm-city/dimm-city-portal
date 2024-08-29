@@ -1,5 +1,6 @@
 <script>
 	export let aug = '';
+	export let title = '';
 	export let show = false; // boolean
 	export const open = () => {
 		dialog.show();
@@ -17,7 +18,6 @@
 
 	$: if (dialog && show) dialog.showModal();
 	else if (dialog) dialog.close();
-	
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events a11y-no-noninteractive-element-interactions -->
@@ -26,7 +26,9 @@
 	<div on:click|stopPropagation class="dialog-container">
 		<div class="dialog-grid">
 			<div class="dialog-header">
-				<slot name="header" />
+				<slot name="header">
+					<h4>{title}</h4>
+				</slot>
 			</div>
 			<div class="dialog-body">
 				<slot />
@@ -38,7 +40,7 @@
 			</div>
 		</div>
 		<!-- svelte-ignore a11y-autofocus -->
-		<button class="text-button" autofocus on:click={close}><i class="bi bi-x" /></button>
+		<button autofocus class="close-button" on:click={close}><i class="bi bi-x" /></button>
 	</div>
 </dialog>
 
@@ -52,13 +54,14 @@
 		border: none;
 		padding: 0;
 		position: absolute;
-		background-color: var(--dark);
-		outline-color: var(--fourth-accent);
+		background-color: var(--color-bg-secondary);
+		outline-color: var(--color-accent-one);
 		outline-style: solid;
 		outline-width: 1px;
-		color: var(--light);
+		color: var(--color-text);
 		min-width: 30ch;
 		min-height: 30ch;
+		margin: auto;
 	}
 	dialog > div {
 		padding: 1em;
@@ -79,18 +82,29 @@
 		overflow-x: hidden;
 		margin-top: 1rem;
 		padding-inline: 0.5rem;
-		
 	}
-	.dialog-footer{
+	.dialog-footer {
 		margin-top: 1rem;
 	}
-	button.text-button {
-		color: var(--third-accent);
+	.dialog-footer > button {
+		width: 100%;
+		font-family: var(--font-header);
+	}
+	button.close-button {
+		color: var(--color-accent-one);
 		font-size: 1.5rem;
 		display: block;
 		position: absolute;
 		right: 0;
 		top: 0;
+		padding: 0;
+		margin: 0;
+		background-color: transparent;
+	}
+
+	button.close-button:focus-visible,
+	button.close-button:hover {
+		color: var(--color-accent-two);
 	}
 
 	dialog {
@@ -147,28 +161,6 @@
 			opacity: 0;
 			transform: scale(0);
 			position: absolute;
-		}
-	}
-
-	@keyframes backdrop-fade-in {
-		from {
-			background-color: rgb(0 0 0 / 0);
-		}
-
-		to {
-			background-color: rgb(170, 9, 9);
-		}
-	}
-
-	@keyframes backdrop-fade-out {
-		from {
-			display: block;
-			background-color: black;
-		}
-
-		to {
-			display: block;
-			background-color: rgb(0 0 0 / 0);
 		}
 	}
 </style>

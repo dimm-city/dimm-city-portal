@@ -173,10 +173,19 @@
 		gap: 0.5rem;
 	}
 	select {
+	
 		height: min-content;
 		align-self: center;
 		padding: 0.5rem;
 		font-size: 1.1rem;
+		background-color: var(--color-bg-main);
+		color: var(--color-accent-one);
+		border: none;
+		outline: none;
+
+		border-radius: var(--border-radius);
+		font-family: var(--font-main);
+		cursor: pointer;
 	}
 	.icon-button {
 		cursor: pointer;
@@ -197,7 +206,7 @@
 	.icon-button:hover,
 	.icon-button:focus {
 		color: var(--color-accent-one);
-		--aug-border-bg: var(--pink);
+		--aug-border-bg: var(--color-accent-three);
 	}
 
 	@media (max-width: 500px) {

@@ -27,10 +27,11 @@
 
 {#if text}
 	<div
-		class="{getClass()} animate__animated animate__slideInRight"
+		class="{getClass()} "
 		role="status"
 		aria-live="polite"
 		{id}
+		in:fly|global={{ x: '300px', easing: sineOut, duration: 200 }}
 		out:fly|global={{ x: '300px', easing: sineOut, duration: 200 }}
 		data-augmented-ui="  tl-clip-x tr-clip br-clip bl-clip both"
 	>
@@ -55,26 +56,24 @@
 		margin-block: 0;
 	}
 	.default-notification-style {
-		--aug-border-all: 1px;
+		--aug-border-all: 2px;
 		--aug-bl: 0.35rem;
 		--aug-br: 0.35rem;
 		--aug-tl: 0.35rem;
 		--aug-tr: 0.35rem;
-		--aug-inlay-all: 1px;
-		--aug-border-bg: var(--fourth-accent);
+		--aug-inlay-all: 2px;
+		--aug-border-bg: var(--color-accent-one);
+		--aug-inlay-bg: var(--color-bg-secondary);
 		position: relative;
 		display: flex;
 		align-items: stretch;
 		justify-content: space-between;
-		margin: 12px;
-		background: #fff;
-		color: #000;
-		/* border-radius: 6px; */
 		box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+		margin-top: 1rem;
 		min-height: 0;
 		min-width: 200px;
 		overflow: hidden;
-		opacity: 0.8;
+		opacity: 0.9;
 	}
 
 	.default-notification-style-content {
@@ -92,47 +91,44 @@
 		padding-inline: 0.25rem;
 		margin: 0;
 		border: none;
-		/* border-left: 1px solid #eee; */
 		outline: none;
 		background: none;
 		cursor: pointer;
 		font-size: 20px;
-		color: #000;
+		color: var(--color-dark);
 		box-sizing: border-box;
 		align-self: start;
 	}
 
 	.default-notification-style-button:hover {
-		background: rgba(0, 0, 0, 0.01);
+		background: var(--color-dark);
 	}
 
 	.default-notification-error {
-		background: var(--third-accent);
-		color: #fff;
+		background: var(--color-accent-three);
+		color: var(--color-text);
 	}
 
 	.default-notification-error .default-notification-style-button {
-		/* border-left: 1px solid rgba(255, 255, 255, 0.4); */
-		color: #fff;
+		color: var(--color-text);
 	}
 
 	.default-notification-warning {
-		background: var(--fourth-accent);
-		color: #000;
+		background: var(--color-accent-two);
+		color: var(--color-dark);
 	}
 
 	.default-notification-warning .default-notification-style-button {
-		border-left: 1px solid rgba(0, 0, 0, 0.2);
-		color: #000;
+		border-left: 1px solid var(--color-dark-overlay);
+		color: var(--color-dark);
 	}
 
 	.default-notification-success {
-		background: var(--primary-accent);
-		color: #fff;
+		background: var(--color-dark-overlay);
+		color: var(--color-text);
 	}
 
 	.default-notification-success .default-notification-style-button {
-		/* border-left: 1px solid rgba(255, 255, 255, 0.4); */
-		color: #fff;
+		color: var(--color-text);
 	}
 </style>

@@ -6,6 +6,8 @@
 
 Welcome to the repository of our open-source project, **Dimm City Portal**. This platform is designed for enthusiasts and players of tabletop roleplaying games (TTRPGs), allowing them to create, manage, and play their TTRPG experiences directly in their web browser without the need for complicated setup, or yet another subscription.
 
+![Portal Creation Screenshot](docs/dc-portal-screenshot.png)
+
 ## Features
 
 - **Web-Based:** Play your favorite TTRPGs right in your web browser without the need for additional software or installations.

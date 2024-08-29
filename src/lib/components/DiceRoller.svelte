@@ -9,7 +9,7 @@
 
 	let defaultDiceConfig = {
 		assetPath: '/dice/',
-		sounds: false,
+		sounds: true,
 		volume: 100,
 		sound_dieMaterial: 'plastic',
 		theme_customColorset: {
@@ -21,7 +21,7 @@
 			material: 'glass'
 		},
 		theme_colorset: 'pink',
-		baseScale: window.innerWidth > 500 ? 75 : 60,
+		baseScale: window.innerWidth > 500 ? 100 : 75,
 		strength: 1
 	};
 

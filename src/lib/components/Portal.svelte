@@ -9,10 +9,7 @@
 	import Token from './Token.svelte';
 	const { addNotification } = getNotificationsContext();
 
-	export let config = {
-		apiBaseUrl: 'http://localhost:5173',
-	};
-
+	const defaultAlertDisplayTime = 2000;
 
 	export let portalHubUrl;
 
@@ -42,11 +39,11 @@
 	export let extraTokens = [];
 
 	let inSession = false;
-	
+
 	//'http://localhost:1337'
 	const socketHost = new URL(portalHubUrl).origin;
 	const socketPath = new URL(portalHubUrl).pathname;
-	console.log("Portal Hub", socketHost, socketPath);
+	console.log('Portal Hub', socketHost, socketPath);
 	const socket = io(socketHost, {
 		path: socketPath
 	});
@@ -111,7 +108,7 @@
 				addNotification({
 					id: `${new Date().getTime()}-${Math.floor(Math.random() * 9999)}`,
 					position: 'top-right',
-					removeAfter: 3000,
+					removeAfter: defaultAlertDisplayTime,
 					allowRemove: true,
 					heading: 'Copied to clipboard!',
 					type: 'success',
@@ -122,7 +119,7 @@
 				addNotification({
 					id: `${new Date().getTime()}-${Math.floor(Math.random() * 9999)}`,
 					position: 'top-right',
-					removeAfter: 3000,
+					removeAfter: defaultAlertDisplayTime,
 					allowRemove: true,
 					heading: 'Failed to copy to clipboard!',
 					type: 'success',
@@ -183,7 +180,7 @@
 		addNotification({
 			id: `${new Date().getTime()}-${Math.floor(Math.random() * 9999)}`,
 			position: 'top-right',
-			removeAfter: 3000,
+			removeAfter: defaultAlertDisplayTime,
 			allowRemove: true,
 			heading: 'Dice Rolled',
 			type: 'success',
@@ -240,7 +237,7 @@
 		addNotification({
 			id: `${new Date().getTime()}-${Math.floor(Math.random() * 9999)}`,
 			position: 'top-right',
-			removeAfter: 3000,
+			removeAfter: defaultAlertDisplayTime,
 			allowRemove: true,
 			heading: 'Error',
 			type: 'error',
@@ -248,7 +245,7 @@
 		});
 	});
 
-	let backgroundUrl = '/assets/default-bg.png'; 
+	let backgroundUrl = '/assets/dc-banner-yellow.png';
 	let isFileBackground = false;
 	let isVideoBackground = false;
 	let showSceneSettings = false;
@@ -294,6 +291,7 @@
 		isVideoBackground = data.backgroundUrl.startsWith('data:video/');
 	});
 </script>
+
 <div class="portal-container">
 	{#if !inSession}
 		<SessionManager
@@ -306,32 +304,27 @@
 			on:joinSession={handleJoinSession}
 		/>
 	{:else if inSession}
-		<Dialog bind:show={showPlayerSettings}>
+		<Dialog bind:show={showPlayerSettings} title="Settings">			
 			<div>
-				<h4>Player Settings</h4>
 				<DiceThemePicker bind:theme={player.diceThemeConfig} />
 			</div>
 		</Dialog>
-		<Dialog bind:show={showPlayerList}>
+		<Dialog bind:show={showPlayerList} title="Players">
 			<div>
-				<h4>Players in Session</h4>
 				<ul>
 					{#each players as p}
-						<li>
+						<li data-player-id={p.id}>
 							{p.name}
-							{#if p.host} (Host) {/if}
-							<br />
-							<small>{p.id}</small>
+							{#if p.host}
+								(Host)
+							{/if}							
 						</li>
 					{/each}
 				</ul>
 			</div>
 		</Dialog>
-		<Dialog bind:show={showSceneSettings}>
-			<div slot="header">
-				<h4>Scene Settings</h4>
-			</div>
-			<div>
+		<Dialog bind:show={showSceneSettings} title="Scene Settings">			
+			<div class="scene-settings-container">
 				<p>Select a new background image.</p>
 				<input
 					bind:this={backgroundFileInput}
@@ -355,9 +348,11 @@
 							backgroundFileInput.value = '';
 						}}
 					>
-						<i class="bi bi-x-circle" />
+						<i class="bi bi-x-circle"></i>
 					</button>
-					<button title="Save" on:click={changeBackground}><i class="bi bi-check-circle" /></button>
+					<button title="Save" on:click={changeBackground}
+						><i class="bi bi-check-circle"></i></button
+					>
 				</div>
 			</div>
 		</Dialog>
@@ -395,10 +390,11 @@
 		</div>
 	{/if}
 </div>
+
 <style>
 	div[slot='header'] h4 {
 		margin: 0;
-		color: var(--secondary-accent);
+		color: var(--color-accent-one);
 	}
 	.edit-buttons {
 		display: flex;
@@ -408,6 +404,11 @@
 	}
 	.portal-container {
 		--dc-dialog-backdrop-color: transparent;
+	}
+	.scene-settings-container {
+		display: flex;
+		flex-direction: column;
+		row-gap: 1rem;
 	}
 	.background-container {
 		position: fixed;

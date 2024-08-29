@@ -300,7 +300,7 @@
 
 	.icon-buttons button:hover,
 	.edit-buttons button:hover {
-		color: var(--fourth-accent); /* Highlight color on hover */
+		color: var(--color-accent-one); /* Highlight color on hover */
 	}
 
 	input[type='text'] {
