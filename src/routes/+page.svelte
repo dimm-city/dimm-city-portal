@@ -3,6 +3,7 @@
 	import { page } from '$app/stores';
 	import Notifications from 'svelte-notifications';
 	import Alert from '$lib/components/Alert.svelte';
+	import '$lib/style.css';
 
 	/** @type {DC.PortalPlayer} */
 	let player = {
@@ -25,7 +26,7 @@
 		},
 		host: false
 	};
-	const  diceOptions = [
+	const diceOptions = [
 		{
 			label: '1d20',
 			value: '1d20'
@@ -43,21 +44,47 @@
 			value: 'surreal'
 		}
 	];
+	let portalHubUrl = 'http://localhost:5173/portal-hub';
 	/**
 	 * @type {string}
 	 */
 	export let sessionName;
 	let sessionId = $page.url.searchParams?.get('session') ?? null;
 </script>
+<svelte:head>
+	<title>Dimm City Portal</title>
+</svelte:head>
 {#if sessionId == null}
-<h1>Welcome to the Dimm City Portal</h1>
+	<h1><small>Welcome to the</small>Dimm City Portal</h1>
 {/if}
 <Notifications item={Alert} zIndex={999999}>
+	<section>
 	<Portal
+		{portalHubUrl}
 		bind:sessionName
 		{player}
 		{diceOptions}
 		sessionMode={$page.url.searchParams?.get('mode')}
 		bind:sessionId
 	/>
+
+	</section>
 </Notifications>
+<style>
+	small
+	{
+		display: block;
+		font-size: 0.75rem;
+	}
+	h1 {
+		text-align: center;
+		margin-block: 1rem;
+	}
+	section {
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		align-items: center;
+		height: calc(100vh - 5rem);
+	}
+</style>

@@ -7,10 +7,10 @@ import { createPortalServer } from './src/lib/server/PortalServer.js';
 const webSocketServer = {
 	name: 'webSocketServer',
 	configureServer(server) {
-		if (!server.httpServer) return;
+		if (!server.httpServer || process.env.NODE_ENV == 'production') return;
 
 		const io = new Server(server.httpServer, {
-			path: '/portal-connection',
+			path: '/portal-hub',
 			cors: {
 				origin: '*',
 				methods: ['GET', 'POST']

@@ -17,6 +17,8 @@
 	 */
 	export let sessionName;
 
+	export let portalHubUrl;
+
 	let password = '';
 	const dispatch = createEventDispatcher();
 
@@ -148,37 +150,37 @@
 		</div>
 		<hr />
 		<form>
-			<label for="portal-name">
-				Player Name
+			<label for="sessionId"> Portal Hub URL </label>
+
+			<input
+				type="text"
+				bind:value={portalHubUrl}
+				placeholder="https://beta.dimm.city/portal"
+				required
+			/>
+			{#if mode === 'create' || mode == null}
+				<label for="portal-name"> Portal Name </label>
 				<input
-					name="player-name"
+					name="portal-name"
 					type="text"
-					bind:value={player.name}
-					placeholder="Enter your name"
+					bind:value={sessionName}
+					placeholder="Enter a name for the portal"
 					required
 				/>
-			</label>
-			{#if mode === 'create' || mode == null}
-				<label for="portal-name">
-					Portal Name
-					<input
-						name="portal-name"
-						type="text"
-						bind:value={sessionName}
-						placeholder="Enter a name for the portal"
-						required
-					/>
-				</label>
 			{:else}
-				<label for="sessionId">
-					Portal ID
-					<input type="text" bind:value={sessionId} placeholder="Enter Session ID" required />
-				</label>
+				<label for="sessionId"> Portal ID </label>
+				<input type="text" bind:value={sessionId} placeholder="Enter Portal ID" required />
 			{/if}
-			<label for="password">
-				Password
-				<input type="password" bind:value={password} placeholder="Enter Password" required />
-			</label>
+			<label for="portal-name"> Player Name </label>
+			<input
+				name="player-name"
+				type="text"
+				bind:value={player.name}
+				placeholder="Enter your name"
+				required
+			/>
+			<label for="password"> Password </label>
+			<input type="password" bind:value={password} placeholder="Enter Password" required />
 		</form>
 
 		<hr />
@@ -197,6 +199,10 @@
 	label {
 		width: 100%;
 	}
+	input {
+		width: 100%;
+		margin-bottom: 1rem;
+	}
 	.session-form-container {
 		display: grid;
 		height: 100%;
@@ -209,7 +215,7 @@
 		align-items: center;
 		justify-content: space-between;
 		margin: auto;
-		gap: 1rem;
+		gap: 2rem;
 		padding: 1rem;
 		width: 50ch;
 	}
@@ -230,7 +236,6 @@
 		flex-direction: column;
 		align-items: center;
 		justify-content: space-between;
-		row-gap: 1rem;
 	}
 	button {
 		color: var(--fourth-accent);

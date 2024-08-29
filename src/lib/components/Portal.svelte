@@ -12,10 +12,9 @@
 	export let config = {
 		apiBaseUrl: 'http://localhost:5173',
 	};
-	//'http://localhost:1337'
-	const socket = io(config.apiBaseUrl, {
-		path: '/portal-connection'
-	});
+
+
+	export let portalHubUrl;
 
 	/**
 	 * @type {null|string}
@@ -43,6 +42,14 @@
 	export let extraTokens = [];
 
 	let inSession = false;
+	
+	//'http://localhost:1337'
+	const socketHost = new URL(portalHubUrl).origin;
+	const socketPath = new URL(portalHubUrl).pathname;
+	console.log("Portal Hub", socketHost, socketPath);
+	const socket = io(socketHost, {
+		path: socketPath
+	});
 
 	/**
 	 * @type {DiceRoller}
@@ -292,6 +299,7 @@
 			bind:player
 			bind:mode={sessionMode}
 			bind:sessionId
+			bind:portalHubUrl
 			{sessionName}
 			on:createSession={handleCreateSession}
 			on:joinSession={handleJoinSession}
