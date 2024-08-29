@@ -131,24 +131,14 @@
 
 <div class="session-form-container">
 	<div class="session-form" data-augmented-ui="tl-clip tr-clip bl-clip br-clip both">
-		<div>
+		<!-- <div>
 			{#if mode === 'create' || mode == null}
 				<h3>Portal Creation</h3>
-				<small>
-					Switch to <a href="#" class="switch-mode" on:click={() => (mode = 'join')}>
-						connect mode
-					</a>
-				</small>
 			{:else if mode === 'join'}
 				<h3>Portal Connection</h3>
-				<small>
-					Switch to <a href="#" class="switch-mode" on:click={() => (mode = 'create')}>
-						create mode
-					</a>
-				</small>
 			{/if}
 		</div>
-		<hr />
+		<hr /> -->
 		<form>
 			<label for="sessionId"> Portal Hub URL </label>
 
@@ -187,9 +177,19 @@
 		<div>
 			{#if mode === 'create' || mode == null}
 				<button on:click={createSession}>Create</button>
+				<small>
+					Switch to <a href="#connect" class="switch-mode" on:click={() => (mode = 'join')}>
+						connect mode
+					</a>
+				</small>
 			{/if}
 			{#if mode === 'join'}
 				<button on:click={joinSession}>Connect</button>
+				<small>
+					Switch to <a href="#create" class="switch-mode" on:click={() => (mode = 'create')}>
+						create mode
+					</a>
+				</small>
 			{/if}
 		</div>
 	</div>
@@ -206,23 +206,20 @@
 	.session-form-container {
 		display: grid;
 		height: 100%;
+		width: 40dvw;
 	}
 	.session-form {
-		--aug-border-bg: var(--third-accent);
-		--aug-border-all: 2px;
+		width: 100%;
 		display: flex;
 		flex-direction: column;
 		align-items: center;
 		justify-content: space-between;
 		margin: auto;
-		gap: 2rem;
-		padding: 1rem;
-		width: 50ch;
+		gap: 0.5rem;
+		padding: 2rem;
+		
 	}
-	@media (max-width: 768px) {
-		h3 {
-			font-size: 1rem;
-		}
+	@media (max-width: 768px) {		
 		.session-form {
 			width: 80dvw;
 		}
@@ -238,7 +235,10 @@
 		justify-content: space-between;
 	}
 	button {
-		color: var(--fourth-accent);
+		font-family: var(--font-header);
+		color: var(--color-accent-one);
+		background-color: var(--color-accent-two);
 		width: 100%;
+		margin-block: 0.5rem;
 	}
 </style>

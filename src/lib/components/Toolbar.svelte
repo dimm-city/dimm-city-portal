@@ -32,7 +32,7 @@
 	<div class="horizontal-bar">
 		<button
 			data-augmented-ui="all-hex border"
-			class="aug-button"
+			class="icon-button"
 			on:click={leaveSession}
 			title="Leave Session"
 		>
@@ -41,7 +41,7 @@
 		<div class="player-indicator">
 			<button
 				data-augmented-ui="all-hex border"
-				class="aug-button"
+				class="icon-button"
 				on:click={handleShowPlayerList}
 				title="Players"
 			>
@@ -52,7 +52,7 @@
 		</div>
 		<button
 			data-augmented-ui="all-hex border"
-			class="aug-button"
+			class="icon-button"
 			on:click={() => (showPlayerSettings = true)}
 			title="Player Settings"
 		>
@@ -67,14 +67,14 @@
 		</select>
 		<button
 			data-augmented-ui="all-hex border"
-			class="aug-button"
+			class="icon-button"
 			on:click={rollDice}
 			title="Roll {diceNotation}"
 		>
 			<svg
 				fill="currentColor"
-				width="20px"
-				height="20px"
+				width="25px"
+				height="25px"
 				viewBox="-16 0 512 512"
 				xmlns="http://www.w3.org/2000/svg"
 			>
@@ -89,7 +89,7 @@
 	<div class="host-menu">
 		<button
 			data-augmented-ui="all-hex border"
-			class="aug-button"
+			class="icon-button"
 			on:click={endSession}
 			title="End Session"
 		>
@@ -97,7 +97,7 @@
 		</button>
 		<button
 			data-augmented-ui="all-hex border"
-			class="aug-button"
+			class="icon-button"
 			on:click={copySessionUrl}
 			title="Copy Session URL"
 		>
@@ -105,7 +105,7 @@
 		</button>
 		<button
 			data-augmented-ui="all-hex border"
-			class="aug-button"
+			class="icon-button"
 			title="Edit Scene"
 			on:click={() => (showSceneSettings = true)}
 		>
@@ -113,7 +113,7 @@
 		</button>
 		<button
 			data-augmented-ui="all-hex border"
-			class="aug-button"
+			class="icon-button"
 			on:click={addToken}
 			title="Add Token"
 		>
@@ -149,6 +149,7 @@
 	.host-menu {
 		position: fixed;
 		bottom: 25px;
+		left: 25px;
 		display: flex;
 		gap: 0.5rem;
 		flex-direction: column;
@@ -177,28 +178,30 @@
 		padding: 0.5rem;
 		font-size: 1.1rem;
 	}
-	.aug-button {
+	.icon-button {
 		cursor: pointer;
 		aspect-ratio: 1/1;
 		--aug-border-all: 1px;
-		--aug-border-bg: var(--yellow);
+		--aug-border-bg: var(--color-accent-one);
 		--aug-all-width: max(45px, 2vw);
-		--aug-inlay-bg: var(--pink);
-		transition: transform var(--easing);
+		--aug-inlay-bg: var(--color-bg-secondary);
+		transition: background-color, color;
+		transition-duration: 300ms;
+		transition-timing-function: ease-in-out;
 		opacity: 1;
+		padding-inline: 0.5rem;
 	}
-	.aug-button:hover,
-	.aug-button:focus {
-		color: white;
+	.icon-button i {
+		font-size: 1.5rem;
+	}
+	.icon-button:hover,
+	.icon-button:focus {
+		color: var(--color-accent-one);
 		--aug-border-bg: var(--pink);
-	}
-	.aug-button:hover i,
-	.aug-button:focus i {
-		font-size: 1.25rem;
 	}
 
 	@media (max-width: 500px) {
-		.aug-button {
+		.icon-button {
 			padding: 0.85rem;
 			width: min-content;
 		}

@@ -96,6 +96,7 @@
 	function leaveSession() {
 		socket.emit('leaveSession', { sessionId, player });
 		inSession = false;
+		sessionId = null;
 		players = [];
 	}
 

@@ -51,30 +51,30 @@
 	export let sessionName;
 	let sessionId = $page.url.searchParams?.get('session') ?? null;
 </script>
+
 <svelte:head>
 	<title>Dimm City Portal</title>
 </svelte:head>
-{#if sessionId == null}
-	<h1><small>Welcome to the</small>Dimm City Portal</h1>
-{/if}
 <Notifications item={Alert} zIndex={999999}>
 	<section>
-	<Portal
-		{portalHubUrl}
-		bind:sessionName
-		{player}
-		{diceOptions}
-		sessionMode={$page.url.searchParams?.get('mode')}
-		bind:sessionId
-	/>
-
+		{#if sessionId == null}
+			<h1><small>Welcome to the</small>Dimm City Portal</h1>
+		{/if}
+		<Portal
+			{portalHubUrl}
+			bind:sessionName
+			{player}
+			{diceOptions}
+			sessionMode={$page.url.searchParams?.get('mode')}
+			bind:sessionId
+		/>
 	</section>
 </Notifications>
+
 <style>
-	small
-	{
+	small {
 		display: block;
-		font-size: 0.75rem;
+		font-size: 0.5rem;
 	}
 	h1 {
 		text-align: center;
@@ -85,6 +85,5 @@
 		flex-direction: column;
 		justify-content: center;
 		align-items: center;
-		height: calc(100vh - 5rem);
 	}
 </style>
