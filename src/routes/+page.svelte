@@ -54,6 +54,10 @@
 
 <svelte:head>
 	<title>Dimm City Portal</title>
+
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+	<!-- <link rel="stylesheet" type="text/css" href="https://unpkg.com/augmented-ui@2/augmented-ui.min.css"> -->
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 </svelte:head>
 <Notifications item={Alert} zIndex={999999}>
 	<section>
@@ -78,7 +82,7 @@
 	}
 	h1 {
 		text-align: center;
-		margin-block: 1rem;
+		margin-block: 1.5rem;
 	}
 	section {
 		display: flex;

@@ -26,17 +26,20 @@
     --color-dark-overlay: rgba(17, 17, 17, 0.5);
     --color-dark: rgba(0, 0, 0, 0.95);
 
-    --color-accent-one: #e6ff00;    
-    --color-accent-two: #c643ff;    
+    --color-accent-one: #e6ff00;
+    --color-accent-two: #c643ff;
     --color-accent-three: #ff15cb;
     --color-accent-four: #00d4ff;
-        
+
 
     /* Borders and Shadows */
     --border-width: 1px;
-    --border-radius: 0.25rem;
+    --border-radius: 0rem;
     --shadow-default: 0 4px 6px var(--color-dark-overlay);
+    --shadow-accent: 0 0 20px var(--color-accent-four);
+    --shadow-accent-small: 0 0 10px var(--color-accent-four);
 
+    --outline-width: 2px;
 }
 
 [data-augmented-ui] {
@@ -135,12 +138,16 @@ button {
     background-color: var(--color-accent-two);
     padding: 0.5rem 1rem;
     border-radius: var(--border-radius);
-    transition: background-color 0.3s ease, transform 0.2s ease;
+    transition: background-color, box-shadow;
+    transition-duration: 500ms;
+    transition-timing-function: ease-in-out;
 }
 
 button:hover {
     background-color: var(--color-accent-three);
     color: var(--color-accent-one);
+    box-shadow: var(--shadow-accent-small);
+    transition-duration: 300ms;
 }
 
 input,

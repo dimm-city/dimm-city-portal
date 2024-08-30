@@ -108,7 +108,7 @@
 				addNotification({
 					id: `${new Date().getTime()}-${Math.floor(Math.random() * 9999)}`,
 					position: 'top-right',
-					removeAfter: defaultAlertDisplayTime,
+					removeAfter: defaultAlertDisplayTime *10,
 					allowRemove: true,
 					heading: 'Copied to clipboard!',
 					type: 'success',

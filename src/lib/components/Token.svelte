@@ -247,6 +247,7 @@
 		position: absolute;
 		background-color: whitesmoke;
 		--aug-border-all: 1px;
+		border-radius: 50%;
 	}
 	.token.enable {
 		cursor: pointer;

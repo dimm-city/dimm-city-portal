@@ -123,14 +123,6 @@
 {/if}
 
 <style>
-	.player-indicator {
-		display: flex;
-		align-items: center;
-		gap: 0.5rem;
-		font-size: 16px;
-		white-space: nowrap; /* Prevents text wrapping */
-	}
-
 	.horizontal-bar {
 		display: flex;
 		flex-direction: row;
@@ -140,10 +132,19 @@
 		width: 100%;
 	}
 
+	.player-indicator {
+		position: relative;
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		font-size: 16px;
+		white-space: nowrap; /* Prevents text wrapping */
+	}
+
 	.player-count {
 		position: absolute;
-		margin-left: 5px;
-		font-size: 7px;
+		right: 5px;
+		font-size: 0.95rem;
 	}
 
 	.host-menu {
@@ -173,7 +174,6 @@
 		gap: 0.5rem;
 	}
 	select {
-	
 		height: min-content;
 		align-self: center;
 		padding: 0.5rem;
@@ -190,15 +190,21 @@
 	.icon-button {
 		cursor: pointer;
 		aspect-ratio: 1/1;
+		height: 50px;
+		width: 50px;
 		--aug-border-all: 1px;
 		--aug-border-bg: var(--color-accent-one);
 		--aug-all-width: max(45px, 2vw);
 		--aug-inlay-bg: var(--color-bg-secondary);
-		transition: background-color, color;
-		transition-duration: 300ms;
+		transition: background-color, color, box-shadow;
+		transition-duration: 600ms;
 		transition-timing-function: ease-in-out;
 		opacity: 1;
 		padding-inline: 0.5rem;
+		border-radius: 50%;
+		display: flex;
+		justify-content: center;
+		align-items: center;
 	}
 	.icon-button i {
 		font-size: 1.5rem;
@@ -207,6 +213,8 @@
 	.icon-button:focus {
 		color: var(--color-accent-one);
 		--aug-border-bg: var(--color-accent-three);
+
+		transition-duration: 300ms;
 	}
 
 	@media (max-width: 500px) {

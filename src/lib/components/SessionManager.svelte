@@ -196,6 +196,9 @@
 </div>
 
 <style>
+	[data-augmented-ui] {
+		--aug-border-bg: var(--color-accent-one);
+	}
 	label {
 		width: 100%;
 	}
@@ -207,7 +210,11 @@
 		display: grid;
 		height: 100%;
 		width: 40dvw;
+		outline: var(--color-accent-one) solid var(--outline-width);
+
+		box-shadow:var(--shadow-accent);
 	}
+	
 	.session-form {
 		width: 100%;
 		display: flex;
@@ -217,9 +224,8 @@
 		margin: auto;
 		gap: 0.5rem;
 		padding: 2rem;
-		
 	}
-	@media (max-width: 768px) {		
+	@media (max-width: 768px) {
 		.session-form {
 			width: 80dvw;
 		}

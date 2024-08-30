@@ -27,13 +27,13 @@
 
 {#if text}
 	<div
-		class="{getClass()} "
+		class="default-notification-style {getClass()}"
 		role="status"
 		aria-live="polite"
 		{id}
-		in:fly|global={{ x: '300px', easing: sineOut, duration: 200 }}
-		out:fly|global={{ x: '300px', easing: sineOut, duration: 200 }}
-		data-augmented-ui="  tl-clip-x tr-clip br-clip bl-clip both"
+		in:fly|global={{ x: '380px', easing: sineOut, duration: 200 }}
+		out:fly|global={{ x: '380px', easing: sineOut, duration: 200 }}
+		data-augmented-ui="tl-clip-x tr-clip br-clip bl-clip both"
 	>
 		<div class={getClass('content')}>
 			<slot>
@@ -68,12 +68,15 @@
 		display: flex;
 		align-items: stretch;
 		justify-content: space-between;
-		box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+		box-shadow:var(--shadow-default);
 		margin-top: 1rem;
 		min-height: 0;
 		min-width: 200px;
 		overflow: hidden;
 		opacity: 0.9;
+		outline: var(--color-accent-one) var(--outline-width) solid;
+
+		background-color: var(--color-bg-secondary) !important;
 	}
 
 	.default-notification-style-content {
@@ -82,6 +85,7 @@
 		box-sizing: border-box;
 		word-wrap: break-word;
 		border: 0;
+		background-color: var(--color-bg-secondary);
 	}
 
 	.default-notification-style-button {
