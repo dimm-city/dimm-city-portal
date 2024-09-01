@@ -17,6 +17,7 @@
 	 */
 	export let sessionName;
 
+	export let allowPortalHubUrlChange = false;
 	export let portalHubUrl;
 
 	let password = '';
@@ -140,14 +141,16 @@
 		</div>
 		<hr /> -->
 		<form>
-			<label for="sessionId"> Portal Hub URL </label>
-
+			{#if allowPortalHubUrlChange}
+			<label for="portal-hub-url"> Portal Hub URL </label>	
 			<input
 				type="text"
+				name="portal-hub-url"
 				bind:value={portalHubUrl}
 				placeholder="https://beta.dimm.city/portal"
 				required
 			/>
+			{/if}
 			{#if mode === 'create' || mode == null}
 				<label for="portal-name"> Portal Name </label>
 				<input
@@ -184,7 +187,7 @@
 				</small>
 			{/if}
 			{#if mode === 'join'}
-				<button on:click={joinSession}>Connect</button>
+				<button class="header" on:click={joinSession}>Connect</button>
 				<small>
 					Switch to <a href="#create" class="switch-mode" on:click={() => (mode = 'create')}>
 						create mode
@@ -210,7 +213,6 @@
 		display: grid;
 		height: 100%;
 		outline: var(--color-accent-one) solid var(--outline-width);
-
 		box-shadow:var(--shadow-accent);
 	}
 	

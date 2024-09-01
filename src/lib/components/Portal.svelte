@@ -13,6 +13,7 @@
 
 	export let portalHubUrl;
 
+	export let connected = false;
 	/**
 	 * @type {null|string}
 	 */
@@ -38,7 +39,7 @@
 	 */
 	export let extraTokens = [];
 
-	let inSession = false;
+	export let inSession = false;
 
 	//'http://localhost:1337'
 	const socketHost = new URL(portalHubUrl).origin;
@@ -392,10 +393,6 @@
 </div>
 
 <style>
-	div[slot='header'] h4 {
-		margin: 0;
-		color: var(--color-accent-one);
-	}
 	.edit-buttons {
 		display: flex;
 		justify-content: space-between;
@@ -404,6 +401,7 @@
 	}
 	.portal-container {
 		--dc-dialog-backdrop-color: transparent;
+		width: 60ch;
 	}
 	.scene-settings-container {
 		display: flex;

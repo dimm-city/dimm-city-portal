@@ -49,7 +49,8 @@
 	 * @type {string}
 	 */
 	export let sessionName;
-	let sessionId = $page.url.searchParams?.get('session') ?? null;
+	let sessionId = $page.url.searchParams?.get('session') ?? null;	
+	let inSession;
 </script>
 
 <svelte:head>
@@ -67,16 +68,17 @@
 </svelte:head>
 <Notifications item={Alert} zIndex={999999}>
 	<section>
-		{#if sessionId == null}
+		{#if inSession == false}
 			<h1><small>Welcome to the</small>Dimm City Portal</h1>
 		{/if}
 		<Portal
 			{portalHubUrl}
 			bind:sessionName
+			bind:inSession
+			bind:sessionId
+			sessionMode={$page.url.searchParams?.get('mode')}
 			{player}
 			{diceOptions}
-			sessionMode={$page.url.searchParams?.get('mode')}
-			bind:sessionId
 		/>
 	</section>
 </Notifications>
