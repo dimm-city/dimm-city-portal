@@ -19,7 +19,10 @@ const webSocketServer = {
 			pingTimeout: 120000 // 120 seconds, adjust according to your needs
 		});
 
-		createPortalServer(io);
+		const portalServer = createPortalServer(io);
+		console.log('Started Portal Server v' + portalServer.version);
+		
+
 	}
 };
 

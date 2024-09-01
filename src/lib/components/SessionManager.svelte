@@ -17,7 +17,7 @@
 	 */
 	export let sessionName;
 
-	export let allowPortalHubUrlChange = false;
+	export let allowHubSwitching = false;
 	export let portalHubUrl;
 
 	let password = '';
@@ -141,7 +141,7 @@
 		</div>
 		<hr /> -->
 		<form>
-			{#if allowPortalHubUrlChange}
+			{#if allowHubSwitching}
 			<label for="portal-hub-url"> Portal Hub URL </label>	
 			<input
 				type="text"

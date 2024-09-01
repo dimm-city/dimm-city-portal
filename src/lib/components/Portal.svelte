@@ -11,9 +11,10 @@
 
 	const defaultAlertDisplayTime = 2000;
 
-	export let portalHubUrl;
+	/** @type {import("./types.js").PortalConfig} */
+	export let config = {		
+	}
 
-	export let connected = false;
 	/**
 	 * @type {null|string}
 	 */
@@ -27,12 +28,8 @@
 	 */
 	export let sessionMode;
 
-	/**
-	 * @type {DC.PortalPlayer}
-	 */
+	/** @type {import("./types.js").Player} */
 	export let player;
-
-	export let diceOptions;
 
 	/**
 	 * @type {DC.PortalToken[]}
@@ -42,8 +39,8 @@
 	export let inSession = false;
 
 	//'http://localhost:1337'
-	const socketHost = new URL(portalHubUrl).origin;
-	const socketPath = new URL(portalHubUrl).pathname;
+	const socketHost = new URL(config.hubUrl).origin;
+	const socketPath = new URL(config.hubUrl).pathname;
 	console.log('Portal Hub', socketHost, socketPath);
 	const socket = io(socketHost, {
 		path: socketPath
@@ -299,7 +296,8 @@
 			bind:player
 			bind:mode={sessionMode}
 			bind:sessionId
-			bind:portalHubUrl
+			bind:portalHubUrl={config.hubUrl}
+			allowHubSwitching={config.allowHubSwitching}
 			{sessionName}
 			on:createSession={handleCreateSession}
 			on:joinSession={handleJoinSession}
@@ -360,7 +358,7 @@
 		<Toolbar
 			{players}
 			{player}
-			{diceOptions}
+			diceOptions={config.diceOptions}
 			bind:diceNotation
 			bind:showPlayerList
 			bind:showPlayerSettings

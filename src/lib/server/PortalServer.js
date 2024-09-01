@@ -273,4 +273,9 @@ export function createPortalServer(io) {
 			});
 		});
 	});
+
+	return {
+		version: '0.0.1',
+		io
+	}
 }
