@@ -4,7 +4,7 @@
 	import Notifications from 'svelte-notifications';
 	import Alert from '$lib/components/Alert.svelte';
 	import '$lib/style.css';
-
+	import { env } from '$env/dynamic/public';
 	/** @type {DC.PortalPlayer} */
 	let player = {
 		name: '',
@@ -44,7 +44,7 @@
 			value: 'surreal'
 		}
 	];
-	let portalHubUrl = 'http://localhost:5173/portal-hub';
+	let portalHubUrl = env.PUBLIC_PORTAL_HUB_URL ?? 'http://localhost:5173/portal-hub';
 	/**
 	 * @type {string}
 	 */
@@ -55,9 +55,15 @@
 <svelte:head>
 	<title>Dimm City Portal</title>
 
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+	<link
+		rel="stylesheet"
+		href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
+	/>
 	<!-- <link rel="stylesheet" type="text/css" href="https://unpkg.com/augmented-ui@2/augmented-ui.min.css"> -->
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+	<link
+		rel="stylesheet"
+		href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+	/>
 </svelte:head>
 <Notifications item={Alert} zIndex={999999}>
 	<section>

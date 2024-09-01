@@ -68,6 +68,41 @@ export function createPortalServer(io) {
 			}
 		});
 
+		socket.on('leaveSession', (data) => {
+			const { sessionId } = data;
+			const session = sessions[sessionId];
+
+			if (session) {
+				session.players = session?.players.filter((p) => p.id !== socket.id);
+				session.tokens = session?.tokens.filter((t) => t.id !== socket.id);
+				sessions[sessionId] = session;
+
+				io.to(sessionId).emit('playerLeft', {
+					sessionId,
+					players: session?.players,
+					tokens: session?.tokens
+				});
+			}
+		});
+
+		socket.on('endSession', (data) => {
+			if (!isHost(data?.sessionId, socket.id)) return;
+
+			const { sessionId } = data;
+			console.log('ending session', sessionId);
+
+			socket.emit('sessionEnded', { sessionId });
+			// Broadcast the roll result along with the player's theme
+			io.to(sessionId).emit('sessionEnded', {
+				sessionId
+			});
+			delete sessions[sessionId];
+		});
+
+		socket.on('disconnect', () => {
+			console.log('Client disconnected');
+		});
+
 		socket.on('changeBackground', (data) => {
 			if (!isHost(data?.sessionId, socket.id)) return;
 
@@ -97,7 +132,6 @@ export function createPortalServer(io) {
 				socket.emit('error', { message: 'Session not found' });
 			}
 		});
-
 		socket.on('requestDiceRoll', (data) => {
 			const { sessionId, diceExpression, playerName, diceTheme } = data;
 
@@ -203,7 +237,6 @@ export function createPortalServer(io) {
 				token
 			});
 		});
-
 		socket.on('tokenMoving', (data) => {
 			const { sessionId, tokenId, x, y } = data;
 
@@ -238,40 +271,6 @@ export function createPortalServer(io) {
 				x,
 				y
 			});
-		});
-
-		socket.on('leaveSession', (data) => {
-			const { sessionId } = data;
-			const session = sessions[sessionId];
-
-			if (session) {
-				session.players = session?.players.filter((p) => p.id !== socket.id);
-				session.tokens = session?.tokens.filter((t) => t.id !== socket.id);
-				sessions[sessionId] = session;
-
-				io.to(sessionId).emit('playerLeft', {
-					sessionId,
-					players: session?.players,
-					tokens: session?.tokens
-				});
-			}
-		});
-		socket.on('endSession', (data) => {
-			if (!isHost(data?.sessionId, socket.id)) return;
-
-			const { sessionId } = data;
-			console.log('ending session', sessionId);
-
-			socket.emit('sessionEnded', { sessionId });
-			// Broadcast the roll result along with the player's theme
-			io.to(sessionId).emit('sessionEnded', {
-				sessionId
-			});
-			delete sessions[sessionId];
-		});
-
-		socket.on('disconnect', () => {
-			console.log('Client disconnected');			
 		});
 	});
 }

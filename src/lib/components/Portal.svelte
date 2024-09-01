@@ -108,7 +108,7 @@
 				addNotification({
 					id: `${new Date().getTime()}-${Math.floor(Math.random() * 9999)}`,
 					position: 'top-right',
-					removeAfter: defaultAlertDisplayTime *10,
+					removeAfter: defaultAlertDisplayTime * 10,
 					allowRemove: true,
 					heading: 'Copied to clipboard!',
 					type: 'success',
@@ -304,7 +304,7 @@
 			on:joinSession={handleJoinSession}
 		/>
 	{:else if inSession}
-		<Dialog bind:show={showPlayerSettings} title="Settings">			
+		<Dialog bind:show={showPlayerSettings} title="Settings">
 			<div>
 				<DiceThemePicker bind:theme={player.diceThemeConfig} />
 			</div>
@@ -317,13 +317,13 @@
 							{p.name}
 							{#if p.host}
 								(Host)
-							{/if}							
+							{/if}
 						</li>
 					{/each}
 				</ul>
 			</div>
 		</Dialog>
-		<Dialog bind:show={showSceneSettings} title="Scene Settings">			
+		<Dialog bind:show={showSceneSettings} title="Scene Settings">
 			<div class="scene-settings-container">
 				<p>Select a new background image.</p>
 				<input
@@ -439,5 +439,10 @@
 		opacity: 1;
 		transition: all 200ms ease;
 		transition-delay: 0ms;
+	}
+	@media (max-width: 768px) {
+		.portal-container {
+			width: 80dvw;
+		}
 	}
 </style>
