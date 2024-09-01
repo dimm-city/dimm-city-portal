@@ -91,7 +91,6 @@
 		font-family: var(--font-header);
 	}
 	button.close-button {
-		color: var(--color-accent-one);
 		font-size: 1.5rem;
 		display: block;
 		position: absolute;
@@ -101,10 +100,9 @@
 		margin: 0;
 		background-color: transparent;
 	}
-
-	button.close-button:focus-visible,
 	button.close-button:hover {
-		color: var(--color-accent-two);
+		box-shadow: none;
+		text-shadow: var(--shadow-accent-text);
 	}
 
 	dialog {

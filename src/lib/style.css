@@ -26,11 +26,15 @@
     --color-dark-overlay: rgba(17, 17, 17, 0.5);
     --color-dark: rgba(0, 0, 0, 0.95);
 
+    /* Updated Cyberpunk Palette */
     --color-accent-one: #e6ff00;
-    --color-accent-two: #c643ff;
-    --color-accent-three: #ff15cb;
-    --color-accent-four: #00d4ff;
-
+    /* Electric Yellow as the primary accent */
+    --color-accent-two: #00d4ff;
+    /* Neon Orange */
+    --color-accent-three: #ff8300;
+    /* Neon Blue */
+    --color-accent-four: #c643ff;
+    /* Vivid Purple */
 
     /* Borders and Shadows */
     --border-width: 1px;
@@ -38,6 +42,7 @@
     --shadow-default: 0 4px 6px var(--color-dark-overlay);
     --shadow-accent: 0 0 20px var(--color-accent-four);
     --shadow-accent-small: 0 0 10px var(--color-accent-four);
+    --shadow-accent-text: 0 0 4px var(--color-accent-one);
 
     --outline-width: 2px;
 }
@@ -134,20 +139,27 @@ a:hover {
 
 button {
     font-family: var(--font-main);
-    color: var(--color-text);
-    background-color: var(--color-accent-two);
+    color: var(--color-accent-one);
+    background-color: var(--color-accent-four);
     padding: 0.5rem 1rem;
     border-radius: var(--border-radius);
-    transition: background-color, box-shadow;
+    transition: background-color, box-shadow, text-shadow;
     transition-duration: 500ms;
     transition-timing-function: ease-in-out;
 }
 
 button:hover {
-    background-color: var(--color-accent-three);
-    color: var(--color-accent-one);
     box-shadow: var(--shadow-accent-small);
+    text-shadow: var(--shadow-accent-text);
     transition-duration: 300ms;
+}
+
+button.header {
+    font-family: var(--font-header);
+    width: 100%;
+    margin-block: 0.5rem;
+    color: var(--color-accent-four);
+    background-color: var(--color-accent-one);
 }
 
 input,

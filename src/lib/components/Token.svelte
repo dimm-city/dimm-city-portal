@@ -245,15 +245,11 @@
 		align-items: center;
 		justify-content: center;
 		position: absolute;
-		background-color: whitesmoke;
 		--aug-border-all: 1px;
 		border-radius: 50%;
 	}
 	.token.enable {
 		cursor: pointer;
-	}
-	.token i {
-		color: rgb(253, 28, 242);
 	}
 	.token img {
 		margin: 1rem;
@@ -287,13 +283,14 @@
 	.edit-buttons {
 		display: flex;
 		justify-content: space-around;
+		box-shadow: none;
 	}
 
 	.icon-buttons button,
 	.edit-buttons button {
 		background: none;
 		border: none;
-		color: #fff; /* White color for icons */
+		color: var(--color-accent-one);
 		cursor: pointer;
 		padding: 5px;
 		font-size: 20px;
@@ -301,7 +298,9 @@
 
 	.icon-buttons button:hover,
 	.edit-buttons button:hover {
-		color: var(--color-accent-one); /* Highlight color on hover */
+		color: var(--color-accent-four); /* Highlight color on hover */
+
+		box-shadow: none;
 	}
 
 	input[type='text'] {

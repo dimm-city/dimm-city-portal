@@ -176,7 +176,7 @@
 		<hr />
 		<div>
 			{#if mode === 'create' || mode == null}
-				<button on:click={createSession}>Create</button>
+				<button class="header" on:click={createSession}>Create</button>
 				<small>
 					Switch to <a href="#connect" class="switch-mode" on:click={() => (mode = 'join')}>
 						connect mode
@@ -239,12 +239,5 @@
 		flex-direction: column;
 		align-items: center;
 		justify-content: space-between;
-	}
-	button {
-		font-family: var(--font-header);
-		color: var(--color-accent-one);
-		background-color: var(--color-accent-two);
-		width: 100%;
-		margin-block: 0.5rem;
 	}
 </style>
