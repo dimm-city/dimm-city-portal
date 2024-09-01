@@ -44,6 +44,7 @@
 		"publint": "^0.2.0",
 		"socket.io-client": "^4.7.5",
 		"svelte": "^5.0.0-next.1",
+		"svelte-adapter-azure-swa": "^0.20.1",
 		"svelte-check": "^3.6.0",
 		"svelte-notifications": "^0.9.98",
 		"typescript": "^5.0.0",
