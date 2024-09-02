@@ -7,6 +7,7 @@
 	import Toolbar from './Toolbar.svelte';
 	import { getNotificationsContext } from 'svelte-notifications';
 	import Token from './Token.svelte';
+	import './styles.css';
 	const { addNotification } = getNotificationsContext();
 
 	const defaultAlertDisplayTime = 2000;

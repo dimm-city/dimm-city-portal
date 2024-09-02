@@ -298,7 +298,7 @@
 
 	.icon-buttons button:hover,
 	.edit-buttons button:hover {
-		color: var(--color-accent-four); /* Highlight color on hover */
+		color: var(--color-accent-two); /* Highlight color on hover */
 
 		box-shadow: none;
 	}

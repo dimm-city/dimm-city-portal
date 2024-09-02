@@ -62,8 +62,8 @@
 		--aug-tl: 0.35rem;
 		--aug-tr: 0.35rem;
 		--aug-inlay-all: 2px;
-		--aug-border-bg: var(--color-accent-one);
-		--aug-inlay-bg: var(--color-bg-secondary);
+		--aug-border-bg: var(--color-alert-border);
+		--aug-inlay-bg: var(--color-alert-bg);
 		position: relative;
 		display: flex;
 		align-items: stretch;
@@ -74,9 +74,9 @@
 		min-width: 200px;
 		overflow: hidden;
 		opacity: 0.9;
-		outline: var(--color-accent-one) var(--outline-width) solid;
+		outline: var(--color-alert-border) var(--outline-width) solid;
 
-		background-color: var(--color-bg-secondary) !important;
+		background-color: var(--color-alert-bg) !important;
 	}
 
 	.default-notification-style-content {
@@ -85,7 +85,7 @@
 		box-sizing: border-box;
 		word-wrap: break-word;
 		border: 0;
-		background-color: var(--color-bg-secondary);
+		background-color: var(--color-alert-bg);
 	}
 
 	.default-notification-style-button {
@@ -99,40 +99,38 @@
 		background: none;
 		cursor: pointer;
 		font-size: 20px;
-		color: var(--color-dark);
 		box-sizing: border-box;
 		align-self: start;
 	}
 
 	.default-notification-style-button:hover {
-		background: var(--color-dark);
+		box-shadow: none;
 	}
 
 	.default-notification-error {
-		background: var(--color-accent-three);
-		color: var(--color-text);
+		background: var(--color-error-bg);
+		color: var(--color-error-text);
 	}
 
 	.default-notification-error .default-notification-style-button {
-		color: var(--color-text);
+		color: var(--color-error-text);
 	}
 
 	.default-notification-warning {
-		background: var(--color-accent-two);
-		color: var(--color-dark);
+		background: var(--color-warning-bg);
+		color: var(--color-warning-text);
 	}
 
 	.default-notification-warning .default-notification-style-button {
-		border-left: 1px solid var(--color-dark-overlay);
-		color: var(--color-dark);
+		color: var(--color-warning-text);
 	}
 
 	.default-notification-success {
-		background: var(--color-dark-overlay);
-		color: var(--color-text);
+		background: var(--color-alert-bg);
+		color: var(--color-alert-text);
 	}
 
 	.default-notification-success .default-notification-style-button {
-		color: var(--color-text);
+		color: var(--color-alert-text);
 	}
 </style>

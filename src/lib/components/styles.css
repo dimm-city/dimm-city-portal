@@ -20,31 +20,39 @@
     /* Colors */
     --color-bg-main: #08000f;
     --color-bg-secondary: #190030;
-    --color-text: rgba(255, 255, 255, 0.9);
-    --color-muted-text: rgb(196, 192, 192);
-    --color-muted-dark: rgb(75, 75, 75);
-    --color-dark-overlay: rgba(17, 17, 17, 0.5);
-    --color-dark: rgba(0, 0, 0, 0.95);
+    --color-text: #ffffffe6;
+    --color-muted-text: #c4c0c0;
+    --color-muted-dark: #4b4b4b;
+    --color-dark-overlay: #11111180;
+    --color-dark: #000000f2;
 
-    /* Updated Cyberpunk Palette */
+    /* Accent Color Palette */
     --color-accent-one: #e6ff00;
-    /* Electric Yellow as the primary accent */
-    --color-accent-two: #00d4ff;
-    /* Neon Orange */
-    --color-accent-three: #ff8300;
-    /* Neon Blue */
-    --color-accent-four: #c643ff;
-    /* Vivid Purple */
+    --color-accent-two: #c643ff;
 
     /* Borders and Shadows */
+    --outline-width: 2px;
     --border-width: 1px;
     --border-radius: 0rem;
     --shadow-default: 0 4px 6px var(--color-dark-overlay);
-    --shadow-accent: 0 0 20px var(--color-accent-four);
-    --shadow-accent-small: 0 0 10px var(--color-accent-four);
+    --shadow-accent: 0 0 20px var(--color-accent-two);
+    --shadow-accent-small: 0 0 10px var(--color-accent-two);
     --shadow-accent-text: 0 0 4px var(--color-accent-one);
 
-    --outline-width: 2px;
+    /* Alert Styles */
+    --color-alert-text: var(--color-text);
+    --color-alert-border: var(--color-accent-one);
+    --color-alert-bg: var(--color-bg-secondary);
+
+    --color-warning-bg: var(--color-accent-two);
+    --color-warning-text: var(--color-text);
+    --color-warning-border: var(--color-warning-text);
+
+    --color-error-bg: var(--color-accent-one);
+    --color-error-text: var(--color-text);
+    --color-error-border: var(--color-error-text);
+
+
 }
 
 [data-augmented-ui] {
@@ -129,7 +137,7 @@ h6 {
 }
 
 a {
-    color: var(--color-accent-four);
+    color: var(--color-accent-two);
     transition: color 0.3s ease;
 }
 
@@ -140,7 +148,7 @@ a:hover {
 button {
     font-family: var(--font-main);
     color: var(--color-accent-one);
-    background-color: var(--color-accent-four);
+    background-color: var(--color-accent-two);
     padding: 0.5rem 1rem;
     border-radius: var(--border-radius);
     transition: background-color, box-shadow, text-shadow;
@@ -158,7 +166,7 @@ button.header {
     font-family: var(--font-header);
     width: 100%;
     margin-block: 0.5rem;
-    color: var(--color-accent-four);
+    color: var(--color-accent-two);
     background-color: var(--color-accent-one);
 }
 
@@ -166,7 +174,7 @@ input,
 textarea {
     background-color: var(--color-dark);
     color: var(--color-text);
-    border: var(--border-width) solid var(--color-accent-four);
+    border: var(--border-width) solid var(--color-accent-two);
     padding: 0.5rem;
     border-radius: var(--border-radius);
 }

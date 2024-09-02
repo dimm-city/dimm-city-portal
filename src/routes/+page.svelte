@@ -3,14 +3,13 @@
 	import { page } from '$app/stores';
 	import Notifications from 'svelte-notifications';
 	import Alert from '$lib/components/Alert.svelte';
-	import '$lib/style.css';
-
+	
 	/**
 	 * Example of loading portal config from server. See ./page.js for more details
 	 */
 	export let data;
 
-	let sessionId = $page.url.searchParams?.get('session') ?? null;	
+	let sessionId = $page.url.searchParams?.get('session') ?? null;
 	let inSession;
 </script>
 
@@ -56,5 +55,20 @@
 		flex-direction: column;
 		justify-content: center;
 		align-items: center;
+	}
+
+	:global(body) {
+		/* Colors */
+		--color-bg-main: #08000f;
+		--color-bg-secondary: #190030;
+		--color-text: #ffffffe6;
+		--color-muted-text: #c4c0c0;
+		--color-muted-dark: #4b4b4b;
+		--color-dark-overlay: #11111180;
+		--color-dark: #000000f2;
+
+		/* Accent Color Palette */
+		--color-accent-one: #e6ff00;
+		--color-accent-two: #c643ff;
 	}
 </style>

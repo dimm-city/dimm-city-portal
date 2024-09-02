@@ -212,7 +212,7 @@
 	.icon-button:hover,
 	.icon-button:focus {
 		color: var(--color-accent-one);
-		--aug-border-bg: var(--color-accent-three);
+		--aug-border-bg: var(--color-accent-two);
 
 		transition-duration: 300ms;
 	}
