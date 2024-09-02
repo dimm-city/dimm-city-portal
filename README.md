@@ -8,21 +8,14 @@ Welcome to the repository of our open-source project, **Dimm City Portal**. This
 
 ![Portal Creation Screenshot](docs/dc-portal-screenshot.png)
 
+Check out the demo: [https://demo.dimm.city](https://demo.dimm.city)
+
 ## Features
 
 - **Web-Based:** Play your favorite TTRPGs right in your web browser without the need for additional software or installations.
 - **Multiplayer Support:** Invite friends to join your TTRPG session with multiplayer support, allowing multiple users to engage in a collaborative gaming experience.
 - **Simple to Use:** A simple and intuitive interface that makes it easy for users to focus on the fun and not the tech.
-
-## Getting Started
-
-To get started with Dimm City Portal, follow these steps:
-
-1. Clone this repository to your local machine using `git clone https://github.com/dimm-city/dimm-city-portal.git`.
-2. Navigate to the project directory using `cd dimm-city-portal`.
-3. Install dependencies with `npm install` or `yarn install`.
-4. Start the development server with `npm run dev`.
-5. Open your web browser and visit `http://localhost:5173` to access the application.
+- **Easy Configuration:** See the [Portal Configuration and Styling](docs/configuration.md) for more information on how to customize your portal's settings and appearance.
 
 ## Usage
 
@@ -47,6 +40,16 @@ This project is just starting and is under active development. We have a few maj
 - Simple or automated deployment options.
 
 Once these goals are met we will release a stable v1 release. For now, expect a lot of code changes, bugs, and missing features. Check the [TODO](TODO.md) to see a running list of features we are working on.
+
+## Run Your own Portal
+
+To get started with Dimm City Portal, follow these steps:
+
+1. Clone this repository to your local machine using `git clone https://github.com/dimm-city/dimm-city-portal.git`.
+2. Navigate to the project directory using `cd dimm-city-portal`.
+3. Install dependencies with `npm install` or `yarn install`.
+4. Start the development server with `npm run dev`.
+5. Open your web browser and visit `http://localhost:5173` to access the application.
 
 ## Contributing
 
