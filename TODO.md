@@ -1,4 +1,4 @@
- # TODOs
+# TODOs
 
 - Improve mobile button layout on iOS devices.
 - Implement token size tracking in server code.
@@ -11,3 +11,5 @@
 - Address styling and animations issues to ensure the portal has a polished and professional appearance.
 - Create example code for integrating PortalServer with popular platforms like Express to make it easier for others to integrate the server into their own applications.
 - Package both client and server components as npm packages for easy installation and use by other developers.
+- Add support to add marks to canvas.
+- Add fog of war effects.
