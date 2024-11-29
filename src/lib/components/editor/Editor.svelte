@@ -2,8 +2,8 @@
 	import 'js-draw/bundledStyles';
 	import './Editor.css';
 	import { onMount } from 'svelte';
-	import { fetchUpdates, player, inSession } from '../PortalStore';
-	import { configureEditor, configureToolbar } from './Editor';
+	import { fetchUpdates, player, inSession } from '../PortalStore.js';
+	import { configureEditor, configureToolbar } from './Editor.js';
 
 	let {backgroundImageUrl} = $props();
 	/**

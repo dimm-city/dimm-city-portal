@@ -12,7 +12,7 @@
 		showSessionDetails,
 		sessionPassword
 	} from './PortalStore';
-	import Editor from './sv-draw/Editor.svelte';
+	import Editor from './editor/Editor.svelte';
 
 	let { config } = $props();
 </script>
