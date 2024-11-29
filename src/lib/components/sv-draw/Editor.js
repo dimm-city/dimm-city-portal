@@ -31,6 +31,17 @@ import { get } from 'svelte/store';
 import { GridComponent } from './GridComponent';
 
 /**
+ * @type {import("js-draw").Editor}
+ */
+// @ts-ignore
+let _editor = get(editor);
+
+/**
+ * @type {import("js-draw").AbstractToolbar}
+ */
+let toolbar;
+
+/**
  * @type {GridComponent}
  */
 let grid;
@@ -81,10 +92,6 @@ async function addPlayerToken() {
 	}
 }
 
-/**
- * @type {import("js-draw").AbstractToolbar}
- */
-let toolbar;
 /**
  * @param {boolean} isHost
  */
@@ -236,15 +243,11 @@ export function configureToolbar(isHost) {
 		primaryPanZoomTool.setEnabled(true);
 	}
 }
-/**
- * @type {import("js-draw").Editor}
- */
-// @ts-ignore
-let _editor = get(editor);
+
 /**
  * @param {HTMLElement} editorElement
  */
-export async function configureEditor(editorElement) {
+export async function configureEditor(editorElement, backgroundImageUrl = '') {
 	if (!_editor) {
 		_editor = new Editor(editorElement, {
 			wheelEventsEnabled: 'only-if-focused',
@@ -298,12 +301,20 @@ export async function configureEditor(editorElement) {
 			postSerializedCommand(invertCommand(evt.command).serialize());
 		});
 
+		if (backgroundImageUrl) {
+			const image = new Image();
+			image.crossOrigin = 'anonymous'; // Allows CORS images without tainting the canvas
+			image.src = backgroundImageUrl;
+
+			const comp = await ImageComponent.fromImage(image, Mat33.identity);
+
+			_editor.dispatch(_editor.image.addElement(comp));
+		}
+		
 		grid = new GridComponent(_editor);
 		_editor.dispatch(_editor.image.addElement(grid));
-		//grid.bringGridToFront();
 
 		editor.set(_editor);
 		configureToolbar(get(player)?.host);
-
 	}
 }

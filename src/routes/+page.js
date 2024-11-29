@@ -50,6 +50,7 @@ export const load = async () => {
 	const portalConfig = {
 		hubUrl: env.PUBLIC_PORTAL_HUB_URL ?? 'http://localhost:5173/portal-hub',
 		allowHubSwitching: false, //If true, the user can switch between hubs in session manager component.
+		backgroundImageUrl: '',
 		diceOptions: [
 			{
 				label: '1d20',
@@ -67,7 +68,7 @@ export const load = async () => {
 				label: 'Surreal',
 				value: 'surreal'
 			}
-		],// TODO: Add ability to have additional custom types of rolls like lucid, surreal, etc.
+		], // TODO: Add ability to have additional custom types of rolls like lucid, surreal, etc.
 		diceThemes: [...player.diceThemes] //Note: This allows for custom dice themes to be added from the players profile.
 	};
 

@@ -45,7 +45,7 @@
 				</p>
 			</div>
 		</Dialog>
-		<Editor />
+		<Editor backgroundImageUrl={config.backgroundImageUrl} />
 	{/if}
 </div>
 
@@ -58,9 +58,9 @@
 		height: 100dvh;
 	}
 
-	@media (max-width: 768px) {
+	/* @media (max-width: 768px) {
 		.portal-container {
 			width: 80dvw;
 		}
-	}
+	} */
 </style>

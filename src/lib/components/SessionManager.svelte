@@ -166,11 +166,11 @@
 	}
 	.session-manager-container {
 		justify-items: center;
+		padding-inline: 1rem;
 	}
 	.session-form-container {
 		display: grid;
 		height: 100%;
-		width: 40dvw;
 		outline: var(--color-accent-one) solid var(--outline-width);
 
 		box-shadow: var(--shadow-accent);
@@ -186,11 +186,11 @@
 		gap: 0.5rem;
 		padding: 2rem;
 	}
-	@media (max-width: 768px) {
+	/* @media (max-width: 768px) {
 		.session-form {
 			width: 80dvw;
 		}
-	}
+	} */
 	.session-form > * {
 		margin: auto;
 		width: 100%;

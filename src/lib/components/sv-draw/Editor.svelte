@@ -5,6 +5,7 @@
 	import { fetchUpdates, player, inSession } from '../PortalStore';
 	import { configureEditor, configureToolbar } from './Editor';
 
+	let {backgroundImageUrl} = $props();
 	/**
 	 * @type {HTMLElement}
 	 */
@@ -15,7 +16,9 @@
 	});
 
 	onMount(() => {
-		configureEditor(editorElement);
+		console.log('Editor mounting...', backgroundImageUrl);
+		
+		configureEditor(editorElement, backgroundImageUrl);
 		fetchUpdates(0);
 	});
 </script>

@@ -12,6 +12,7 @@
 	player.set(data.player);
 	/** @type {import('@zerodevx/svelte-toast').SvelteToastOptions}*/
 	const options = {};
+	console.log('Page loaded', data);
 
 	import '$lib/components/styles.css';
 </script>
@@ -29,7 +30,7 @@
 		href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
 	/>
 </svelte:head>
-<section>
+<section class:in-session={$inSession}>
 	{#if $inSession == false}
 		<h1><small>Welcome to the</small>Dimm City Portal</h1>
 	{/if}
@@ -48,8 +49,17 @@
 		margin-block: 1.5rem;
 	}
 	section {
-		
 		min-height: 100dvh;
+	}
+	section.in-session::before{
+		position: absolute;
+		inset: 0;
+		content: '';
+		background-image: url('/assets/dc-banner-yellow.png');
+		background-repeat: no-repeat;
+		background-position: bottom;
+		background-size: 300px auto;
+		opacity: 0.2;
 	}
 
 	:global(body) {
