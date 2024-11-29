@@ -1,27 +1,28 @@
 <script>
 	import PopoverButton from './PopoverButton.svelte';
 
-	export let player;
 
-	/**
-	 * @type {string | any[]}
-	 */
-	export let players = [];
-	export let showPlayerList = false;
-	export let showPlayerSettings = false;
-	export let showSceneSettings = false;
-	export let diceNotation = '1d20';
-	export let diceOptions = [
+	
+	/** @type {{player: any, players?: string | any[], showPlayerList?: boolean, showPlayerSettings?: boolean, showSceneSettings?: boolean, diceNotation?: string, diceOptions?: any, rollDice: any, leaveSession: any, endSession: any, copySessionUrl: any, addToken: any}} */
+	let {
+		player,
+		players = [],
+		showPlayerList = $bindable(false),
+		showPlayerSettings = $bindable(false),
+		showSceneSettings = $bindable(false),
+		diceNotation = $bindable('1d20'),
+		diceOptions = [
 		{
 			label: '1d20',
 			value: '1d20'
 		}
-	];
-	export let rollDice;
-	export let leaveSession;
-	export let endSession;
-	export let copySessionUrl;
-	export let addToken;
+	],
+		rollDice,
+		leaveSession,
+		endSession,
+		copySessionUrl,
+		addToken
+	} = $props();
 
 	function handleShowPlayerList() {
 		showPlayerList = true;
@@ -33,7 +34,7 @@
 		<button
 			data-augmented-ui="all-hex border"
 			class="icon-button"
-			on:click={leaveSession}
+			onclick={leaveSession}
 			title="Leave Session"
 		>
 			<i class="bi bi-box-arrow-right"></i>
@@ -42,7 +43,7 @@
 			<button
 				data-augmented-ui="all-hex border"
 				class="icon-button"
-				on:click={handleShowPlayerList}
+				onclick={handleShowPlayerList}
 				title="Players"
 			>
 				<i class="bi bi-people">
@@ -53,7 +54,7 @@
 		<button
 			data-augmented-ui="all-hex border"
 			class="icon-button"
-			on:click={() => (showPlayerSettings = true)}
+			onclick={() => (showPlayerSettings = true)}
 			title="Player Settings"
 		>
 			<i class="bi bi-gear"> </i>
@@ -68,7 +69,7 @@
 		<button
 			data-augmented-ui="all-hex border"
 			class="icon-button"
-			on:click={rollDice}
+			onclick={rollDice}
 			title="Roll {diceNotation}"
 		>
 			<svg
@@ -90,7 +91,7 @@
 		<button
 			data-augmented-ui="all-hex border"
 			class="icon-button"
-			on:click={endSession}
+			onclick={endSession}
 			title="End Session"
 		>
 			<i class="bi bi-stop-circle" />
@@ -98,7 +99,7 @@
 		<button
 			data-augmented-ui="all-hex border"
 			class="icon-button"
-			on:click={copySessionUrl}
+			onclick={copySessionUrl}
 			title="Copy Session URL"
 		>
 			<i class="bi bi-person-plus" />
@@ -107,14 +108,14 @@
 			data-augmented-ui="all-hex border"
 			class="icon-button"
 			title="Edit Scene"
-			on:click={() => (showSceneSettings = true)}
+			onclick={() => (showSceneSettings = true)}
 		>
 			<i class="bi bi-image" />
 		</button>
 		<button
 			data-augmented-ui="all-hex border"
 			class="icon-button"
-			on:click={addToken}
+			onclick={addToken}
 			title="Add Token"
 		>
 			<i class="bi bi-joystick" />

@@ -1,5 +1,6 @@
 <script>
-	export let enable = true;
+	/** @type {{enable?: boolean, children?: import('svelte').Snippet, popover?: import('svelte').Snippet}} */
+	let { enable = true, children, popover } = $props();
 
 	/**
 	 * @type {HTMLButtonElement}
@@ -7,8 +8,8 @@
 	let tokenRef;
 
 	// Store for popover visibility and position
-	let showPopover = false;
-	let popoverPosition = { x: 0, y: 0 };
+	let showPopover = $state(false);
+	let popoverPosition = $state({ x: 0, y: 0 });
 
 	// Function to reposition the popover
 	const repositionPopover = () => {
@@ -57,13 +58,13 @@
 </script>
 
 <div
-	on:contextmenu={togglePopover}
-	on:click={togglePopover}
-	on:keyup={togglePopover}
+	oncontextmenu={togglePopover}
+	onclick={togglePopover}
+	onkeyup={togglePopover}
 	role="button"
 	tabindex="0"
 >
-	<slot />
+	{@render children?.()}
 </div>
 
 {#if showPopover}
@@ -72,7 +73,7 @@
 		class:show={showPopover}
 		style="top: {popoverPosition.y}px; left: {popoverPosition.x}px;"
 	>
-		<slot name="popover" />
+		{@render popover?.()}
 	</div>
 {/if}
 

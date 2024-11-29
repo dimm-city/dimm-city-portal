@@ -2,15 +2,15 @@
 	import { sineOut } from 'svelte/easing';
 	import { fade, fly, slide } from 'svelte/transition';
 
-	/**
-	 * @type {{ allowRemove?: any; id?: any; text?: any; type?: any; heading?: any; }}
-	 */
-	export let notification;
-	export let withoutStyles = false;
-	/**
-	 * @type {null}
-	 */
-	export let onRemove = null;
+	
+	
+	/** @type {{notification: { allowRemove?: any; id?: any; text?: any; type?: any; heading?: any; }, withoutStyles?: boolean, onRemove?: null, children?: import('svelte').Snippet}} */
+	let {
+		notification,
+		withoutStyles = false,
+		onRemove = null,
+		children
+	} = $props();
 
 	const { id, text, type, heading } = notification;
 
@@ -36,15 +36,15 @@
 		data-augmented-ui="tl-clip-x tr-clip br-clip bl-clip both"
 	>
 		<div class={getClass('content')}>
-			<slot>
+			{#if children}{@render children()}{:else}
 				<h4>{heading}</h4>
 				<p>
 					{text}
 				</p>
-			</slot>
+			{/if}
 		</div>
 		{#if notification.allowRemove == null || notification.allowRemove}
-			<button class={getClass('button')} on:click={onRemove} aria-label="delete notification">
+			<button class={getClass('button')} onclick={onRemove} aria-label="delete notification">
 				&times;
 			</button>
 		{/if}

@@ -1,28 +1,31 @@
 <script>
 	import { draggable } from '@neodrag/svelte';
 
-	export let sessionId;
 
-	export let socket;
 
-	/** @type {DC.PortalToken}*/
-	export let token;
-	export let enable = true;
+	
+	/** @type {{sessionId: any, socket: any, token: DC.PortalToken, enable?: boolean}} */
+	let {
+		sessionId,
+		socket,
+		token = $bindable(),
+		enable = true
+	} = $props();
 
-	let position = { x: token.x, y: token.y };
-	let size = '50px'; // Initial size for the token
-	let isEditing = false; // Controls whether the token is being edited
-	let newName = token.name; // Holds the new name for the token
-	let newIcon = token.src; // Holds the new icon/image source for the token
+	let position = $state({ x: token.x, y: token.y });
+	let size = $state('50px'); // Initial size for the token
+	let isEditing = $state(false); // Controls whether the token is being edited
+	let newName = $state(token.name); // Holds the new name for the token
+	let newIcon = $state(token.src); // Holds the new icon/image source for the token
 	/**
 	 * @type {HTMLButtonElement}
 	 */
-	let tokenRef;
+	let tokenRef = $state();
 	let currentSize = 50;
 
 	// Store for popover visibility and position
-	let showPopover = false;
-	let popoverPosition = { x: 0, y: 0 };
+	let showPopover = $state(false);
+	let popoverPosition = $state({ x: 0, y: 0 });
 
 	// Function to reposition the popover
 	const repositionPopover = () => {
@@ -192,7 +195,7 @@
 				handleTokenMove(); // Emit the updated position to the socket
 			}
 		}}
-		on:contextmenu={togglePopover}
+		oncontextmenu={togglePopover}
 		bind:this={tokenRef}
 		style="width: {size}; height: {size};"
 	>
@@ -216,22 +219,22 @@
       <h4>Edit Token</h4>
 				<input type="text" bind:value={newName} placeholder="Enter new name" />
 				<input type="text" bind:value={newIcon} placeholder="Enter icon class or image URL" />
-				<input type="file" accept="image/*" on:change={handleFileUpload} />
+				<input type="file" accept="image/*" onchange={handleFileUpload} />
 				<div class="edit-buttons">
-					<button title="Cancel" on:click={cancelEdits}><i class="bi bi-x-circle" /></button>
-					<button title="Save" on:click={saveEdits}><i class="bi bi-check-circle" /></button>
+					<button title="Cancel" onclick={cancelEdits}><i class="bi bi-x-circle" /></button>
+					<button title="Save" onclick={saveEdits}><i class="bi bi-check-circle" /></button>
 				</div>
 			{:else}
 				<div class="icon-buttons">
-					<button title="Increase Size" on:click={increaseSize}>
+					<button title="Increase Size" onclick={increaseSize}>
 						<i class="bi bi-plus-circle" />
 					</button>
-					<button title="Decrease Size" on:click={decreaseSize}>
+					<button title="Decrease Size" onclick={decreaseSize}>
 						<i class="bi bi-dash-circle" />
 					</button>
-					<button title="Edit" on:click={editToken}><i class="bi bi-pencil" /></button>
+					<button title="Edit" onclick={editToken}><i class="bi bi-pencil" /></button>
 					{#if !token.playerToken}
-						<button title="Remove" on:click={removeToken}><i class="bi bi-trash" /></button>
+						<button title="Remove" onclick={removeToken}><i class="bi bi-trash" /></button>
 					{/if}
 				</div>
 			{/if}

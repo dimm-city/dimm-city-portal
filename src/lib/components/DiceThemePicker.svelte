@@ -1,13 +1,14 @@
 <script>
-	/**@type {DiceTheme}*/
-	export let theme = {
+	
+	/** @type {{theme?: DiceTheme}} */
+	let { theme = $bindable({
 		 foreground: '#ffffff',
 		 background: '#ef1ebf',
 		 material: 'glass',
 		 name: "glass 01",
 		 texture: "glass",
 		 description: ""
-	 };
+	 }) } = $props();
 </script>
 
 <div>

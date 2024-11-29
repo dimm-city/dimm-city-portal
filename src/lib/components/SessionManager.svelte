@@ -3,24 +3,21 @@
 
 	import { getNotificationsContext } from 'svelte-notifications';
 	const { addNotification } = getNotificationsContext();
-	export let player = { name: 'founder 3', host: false }; // Replace with authenticated user data
-	/**
-	 * @type {string | null}
-	 */
-	export let mode;
-	/**
-	 * @type {string | null}
-	 */
-	export let sessionId;
-	/**
-	 * @type {string | null}
-	 */
-	export let sessionName;
+	
+	
+	
 
-	export let allowHubSwitching = false;
-	export let portalHubUrl;
+	/** @type {{player?: any, mode: string | null, sessionId: string | null, sessionName: string | null, allowHubSwitching?: boolean, portalHubUrl: any}} */
+	let {
+		player = $bindable({ name: 'founder 3', host: false }),
+		mode = $bindable(),
+		sessionId = $bindable(),
+		sessionName = $bindable(),
+		allowHubSwitching = false,
+		portalHubUrl = $bindable()
+	} = $props();
 
-	let password = '';
+	let password = $state('');
 	const dispatch = createEventDispatcher();
 
 	/**
@@ -179,17 +176,17 @@
 		<hr />
 		<div>
 			{#if mode === 'create' || mode == null}
-				<button class="header" on:click={createSession}>Create</button>
+				<button class="header" onclick={createSession}>Create</button>
 				<small>
-					Switch to <a href="#connect" class="switch-mode" on:click={() => (mode = 'join')}>
+					Switch to <a href="#connect" class="switch-mode" onclick={() => (mode = 'join')}>
 						connect mode
 					</a>
 				</small>
 			{/if}
 			{#if mode === 'join'}
-				<button class="header" on:click={joinSession}>Connect</button>
+				<button class="header" onclick={joinSession}>Connect</button>
 				<small>
-					Switch to <a href="#create" class="switch-mode" on:click={() => (mode = 'create')}>
+					Switch to <a href="#create" class="switch-mode" onclick={() => (mode = 'create')}>
 						create mode
 					</a>
 				</small>

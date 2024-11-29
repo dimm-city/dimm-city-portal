@@ -12,32 +12,28 @@
 
 	const defaultAlertDisplayTime = 2000;
 
-	/** @type {import("./types.js").PortalConfig} */
-	export let config = {		
-	}
+	
 
-	/**
-	 * @type {null|string}
-	 */
-	export let sessionName;
-	/**
-	 * @type {null|string}
-	 */
-	export let sessionId;
-	/**
-	 * @type {null|string}
-	 */
-	export let sessionMode;
+	
+	
+	
 
-	/** @type {import("./types.js").Player} */
-	export let player;
+	
 
-	/**
-	 * @type {DC.PortalToken[]}
-	 */
-	export let extraTokens = [];
+	
 
-	export let inSession = false;
+	/** @type {{config?: import("./types.js").PortalConfig, sessionName: null|string, sessionId: null|string, sessionMode: null|string, player: import("./types.js").Player, extraTokens?: DC.PortalToken[], inSession?: boolean, onclick?: (event: any) => void}} */
+	let {
+		config = $bindable({		
+	}),
+		sessionName = $bindable(),
+		sessionId = $bindable(),
+		sessionMode = $bindable(),
+		player = $bindable(),
+		extraTokens = $bindable([]),
+		inSession = $bindable(),
+		onclick
+	} = $props();
 
 	//'http://localhost:1337'
 	const socketHost = new URL(config.hubUrl).origin;
@@ -50,16 +46,16 @@
 	/**
 	 * @type {DiceRoller}
 	 */
-	let diceRoller;
-	let diceNotation = '1d20';
-	let isRolling = false;
+	let diceRoller = $state();
+	let diceNotation = $state('1d20');
+	let isRolling = $state(false);
 
-	let showPlayerSettings = false;
-	let showPlayerList = false;
+	let showPlayerSettings = $state(false);
+	let showPlayerList = $state(false);
 	/**
 	 * @type {any[]}
 	 */
-	let players = [];
+	let players = $state([]);
 
 	function addToken() {
 		console.log(extraTokens.filter((item) => item.y == 50));
@@ -244,16 +240,16 @@
 		});
 	});
 
-	let backgroundUrl = '/assets/dc-banner-yellow.png';
-	let isFileBackground = false;
-	let isVideoBackground = false;
-	let showSceneSettings = false;
+	let backgroundUrl = $state('/assets/dc-banner-yellow.png');
+	let isFileBackground = $state(false);
+	let isVideoBackground = $state(false);
+	let showSceneSettings = $state(false);
 	/**
 	 * @type {HTMLInputElement}
 	 */
-	let backgroundFileInput;
-	let newBackgroundDataUrl = '';
-	let newBackgroundUrl = '';
+	let backgroundFileInput = $state();
+	let newBackgroundDataUrl = $state('');
+	let newBackgroundUrl = $state('');
 	function handleFileChange(event) {
 		const file = event.target.files[0];
 		if (file && file.size <= 50 * 1024 * 1024) {
@@ -330,8 +326,8 @@
 					bind:this={backgroundFileInput}
 					type="file"
 					accept="image/*,video/*"
-					on:click|stopPropagation
-					on:change={handleFileChange}
+					{onclick}
+					onchange={handleFileChange}
 				/>
 				Or enter a URL to a image.
 				<input bind:value={newBackgroundUrl} type="text" placeholder="https://..." />
@@ -340,7 +336,7 @@
 				<div class="edit-buttons">
 					<button
 						title="Cancel"
-						on:click={() => {
+						onclick={() => {
 							newBackgroundDataUrl = '';
 							newBackgroundUrl = '';
 							showSceneSettings = false;
@@ -350,7 +346,7 @@
 					>
 						<i class="bi bi-x-circle"></i>
 					</button>
-					<button title="Save" on:click={changeBackground}
+					<button title="Save" onclick={changeBackground}
 						><i class="bi bi-check-circle"></i></button
 					>
 				</div>

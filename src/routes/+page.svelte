@@ -4,13 +4,12 @@
 	import Notifications from 'svelte-notifications';
 	import Alert from '$lib/components/Alert.svelte';
 	
-	/**
-	 * Example of loading portal config from server. See ./page.js for more details
-	 */
-	export let data;
+	
+	/** @type {{data: any}} */
+	let { data } = $props();
 
-	let sessionId = $page.url.searchParams?.get('session') ?? null;
-	let inSession;
+	let sessionId = $state($page.url.searchParams?.get('session') ?? null);
+	let inSession = $state(false);
 </script>
 
 <svelte:head>
