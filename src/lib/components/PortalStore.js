@@ -7,7 +7,7 @@ import { io } from 'socket.io-client';
 import { derived, get, writable } from 'svelte/store';
 
 export let backgroundUrl = '/assets/dc-banner-yellow.png';
-const hubUrl = env.PUBLIC_PORTAL_HUB_URL ?? 'http://localhost:5173/portal-hub';
+const hubUrl = env.PUBLIC_PORTAL_HUB_URL ?? 'http://localhost:5173';
 export let socket = io(hubUrl, {
 	path: '/portal-hub'
 });
@@ -75,6 +75,8 @@ export function getPlayerToken() {
  * @param {DC.PortalState} sessionData
  */
 export function handleCreateSession(sessionData) {
+	console.log('Emitting createSession', sessionData);
+	
 	lastUpdateIndex.set(0);
 	socket.emit('createSession', sessionData);
 }

@@ -2,12 +2,14 @@
 	import Portal from '$lib/components/Portal.svelte';
 	import { page } from '$app/stores';
 	import { SvelteToast } from '@zerodevx/svelte-toast';
+	import {  inSession, sessionMode } from "$lib/components/PortalStore";
+
 
 	/** @type {{data: any}} */
 	let { data } = $props();
 
-	let sessionId = $state($page.url.searchParams?.get('session') ?? null);
-	let inSession = $state(false);
+	data.portalConfig.portalId = $page.url.searchParams?.get('session') ?? null;
+	sessionMode.set($page.url.searchParams?.get('mode') ?? 'create');
 
 	/** @type {import('@zerodevx/svelte-toast').SvelteToastOptions}*/
 	const options = {};
@@ -29,15 +31,12 @@
 	/>
 </svelte:head>
 <section>
-	{#if inSession == false}
+	{#if $inSession == false}
 		<h1><small>Welcome to the</small>Dimm City Portal</h1>
 	{/if}
 	<Portal
 		config={data.portalConfig}
 		player={data.player}
-		bind:inSession
-		bind:sessionId
-		sessionMode={$page.url.searchParams?.get('mode')}
 	/>
 </section>
 

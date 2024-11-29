@@ -1,10 +1,11 @@
 <script>
 	import { player, sessionMode, handleCreateSession, handleJoinSession } from './PortalStore.js';
-	import { browser, building, dev, version } from '$app/environment';
+	import {  dev } from '$app/environment';
 
 	import { toast } from '@zerodevx/svelte-toast';
-	let portalId = $state(dev ? 'test-portal' : '');
-	let password = $state(dev ? 'test' : '');
+	let { portalId = dev ? 'test-portal' : '', password = dev ? 'test' : '' } = $props();
+	// let portalId = $state(dev ? 'test-portal' : '');
+	// let password = $state(dev ? 'test' : '');
 
 	/**
 	 * @type {any}
@@ -150,29 +151,36 @@
 </div>
 
 <style>
+	[data-augmented-ui] {
+		--aug-border-bg: var(--color-accent-one);
+	}
 	label {
 		width: 100%;
+	}
+	input {
+		width: 100%;
+		margin-bottom: 1rem;
 	}
 	.session-form-container {
 		display: grid;
 		height: 100%;
+		width: 40dvw;
+		outline: var(--color-accent-one) solid var(--outline-width);
+
+		box-shadow: var(--shadow-accent);
 	}
+
 	.session-form {
-		--aug-border-bg: var(--third-accent);
-		--aug-border-all: 2px;
+		width: 100%;
 		display: flex;
 		flex-direction: column;
 		align-items: center;
 		justify-content: space-between;
 		margin: auto;
-		gap: 1rem;
-		padding: 1rem;
-		width: 50ch;
+		gap: 0.5rem;
+		padding: 2rem;
 	}
 	@media (max-width: 768px) {
-		h3 {
-			font-size: 1rem;
-		}
 		.session-form {
 			width: 80dvw;
 		}
@@ -186,10 +194,5 @@
 		flex-direction: column;
 		align-items: center;
 		justify-content: space-between;
-		row-gap: 1rem;
-	}
-	button {
-		color: var(--fourth-accent);
-		width: 100%;
 	}
 </style>

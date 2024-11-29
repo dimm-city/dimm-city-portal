@@ -1,6 +1,6 @@
-<!-- @migration-task Error while migrating Svelte code: This migration would change the name of a slot making the component unusable -->
 <script>
-	export let aug = 'tl-clip tr-clip br-clip bl-clip both';
+	export let aug = '';
+	export let title = '';
 	export let show = false; // boolean
 	export const open = () => {
 		dialog.show();
@@ -26,7 +26,9 @@
 	<div on:click|stopPropagation class="dialog-container">
 		<div class="dialog-grid">
 			<div class="dialog-header">
-				<slot name="header" />
+				<slot name="header">
+					<h4>{title}</h4>
+				</slot>
 			</div>
 			<div class="dialog-body">
 				<slot />
@@ -37,60 +39,36 @@
 				</slot>
 			</div>
 		</div>
-		<slot name="close">
-			<!-- svelte-ignore a11y-autofocus -->
-			<button class="text-button" autofocus on:click={close}><i class="bi bi-x" /></button>
-		</slot>
+		<!-- svelte-ignore a11y-autofocus -->
+		<button autofocus class="close-button" on:click={close}><i class="bi bi-x" /></button>
 	</div>
 </dialog>
 
 <style>
 	:root {
-		--dc-dialog-animation-duration: 0.3s;
-		--dc-dialog-close-animation-duration: 0.3s;
-		/* --dc-dialog-backdrop-color: rgba(1, 96, 206, 0.212); */
-
-		--dc-dialog-backdrop-color: transparent;
-		--dc-dialog-height: 80dvh;
-		--dc-dialog-width: 60ch;
-
-		--aug-border-all: 1px;
-		--aug-inlay-bg: var(--dark);
-		--aug-border-bg: var(--fourth-accent);
+		--dc-dialog-animation-duration: 0.2s;
+		--dc-dialog-backdrop-color: rgba(46, 2, 116, 0.651);
 	}
 	dialog {
-		--aug-border-all: 1px;
-		--aug-inlay-bg: var(--dark);
-		--aug-border-bg: var(--fourth-accent);
-
 		border-radius: 0;
 		border: none;
-		/* padding: 1em; */
-		/* position: absolute; */
-		background-color: #000000ce;
-		backdrop-filter: blur(3px);
-		outline-color: var(--fourth-accent);
+		padding: 0;
+		position: absolute;
+		background-color: var(--color-bg-secondary);
+		outline-color: var(--color-accent-one);
 		outline-style: solid;
 		outline-width: 1px;
-
-		box-shadow: 0 4px 6px var(--fourth-accent);
-		color: var(--light);
-		/* min-width: 30ch; */
+		color: var(--color-text);
+		min-width: 30ch;
 		min-height: 30ch;
-		height: var(--dc-dialog-height);
-		width: var(--dc-dialog-width);
-		max-width: 95svw;
+		margin: auto;
 	}
-	
-	.dialog-container {
-		/* padding: 1em; */
-		container-type: inline-size;
+	dialog > div {
+		padding: 1em;
 		position: relative;
 		display: grid;
 		height: 100%;
-		overflow: hidden;
 	}
-
 	.dialog-grid {
 		display: grid;
 		grid-template-columns: 1fr;
@@ -103,86 +81,84 @@
 		overflow-y: auto;
 		overflow-x: hidden;
 		margin-top: 1rem;
-		scrollbar-width: none;
-	}
-	.dialog-body::-webkit-scrollbar {
-		width: 0px;
+		padding-inline: 0.5rem;
 	}
 	.dialog-footer {
 		margin-top: 1rem;
 	}
-	button.text-button {
-		color: var(--third-accent);
+	.dialog-footer > button {
+		width: 100%;
+		font-family: var(--font-header);
+	}
+	button.close-button {
 		font-size: 1.5rem;
 		display: block;
 		position: absolute;
-		right: -0.25rem;
-		top: -0.5rem;
+		right: 0;
+		top: 0;
+		padding: 0;
+		margin: 0;
+		background-color: transparent;
+	}
+	button.close-button:hover {
+		box-shadow: none;
+		text-shadow: var(--shadow-accent-text);
 	}
 
 	dialog {
-		transition: display var(--dc-dialog-close-animation-duration) allow-discrete,
-			overlay var(--dc-dialog-close-animation-duration) allow-discrete;
-		animation: close var(--dc-dialog-close-animation-duration) forwards;
+		/* animation: fade-out var(--dc-dialog-animation-duration) ease-out forwards; */
+		animation: slideOutUp;
+		animation-duration: var(--dc-dialog-animation-duration);
 	}
+
 	dialog[open] {
-		animation: open var(--dc-dialog-animation-duration) forwards;
-		transition: display var(--dc-dialog-animation-duration) allow-discrete,
-			overlay var(--dc-dialog-animation-duration) allow-discrete;
-	}
-	@keyframes open {
-		from {
-			opacity: 0;
-			transform: translate3d(0, -180svh, 0);
-		}
-		to {
-			opacity: 1;
-			transform: translate3d(0, 0, 0);
-		}
-	}
-	@keyframes close {
-		from {
-			opacity: 1;
-		}
-		to {
-			opacity: 0;
-			transform: translate3d(0, -180svh, 0);
-		}
+		display: grid;
+		/* animation: fade-in var(--dc-dialog-animation-duration) ease-out; */
+		animation: slideInDown ease-in;
+		animation-duration: var(--dc-dialog-animation-duration);
 	}
 
 	dialog::backdrop {
-		
-		background-color: transparent;
-		transition: display var(--dc-dialog-close-animation-duration) allow-discrete,
-			opacity var(--dc-dialog-close-animation-duration) allow-discrete,
-			background-color var(--dc-dialog-close-animation-duration) allow-discrete;
-		animation: close-backdrop var(--dc-dialog-close-animation-duration) forwards;
+		display: block;
+		/* animation: backdrop-fade-out var(--dc-dialog-animation-duration) ease-out forwards; */
+		background-color: rgba(255, 0, 0, 0);
+		transition: background-color var(--dc-dialog-animation-duration) ease-in;
 	}
+
 	dialog[open]::backdrop {
 		background-color: var(--dc-dialog-backdrop-color);
-		animation: open-backdrop var(--dc-dialog-animation-duration) forwards;
-		transition: display var(--dc-dialog-close-animation-duration) allow-discrete,
-			opacity var(--dc-dialog-animation-duration) allow-discrete,
-			background-color var(--dc-dialog-animation-duration) allow-discrete;
+		transition: background-color var(--dc-dialog-animation-duration) ease-in;
+		/* animation: backdrop-fade-in var(--dc-dialog-animation-duration) ease-out;  */
 	}
-	@keyframes close-backdrop {
-		from {
-			opacity: 1;
-			background-color: var(--dc-dialog-backdrop-color);
-		}
-		to {
+
+	/* Animation keyframes */
+
+	@keyframes fade-in {
+		0% {
 			opacity: 0;
-			background-color: transparent;
+			transform: scale(0);
+			display: none;
+		}
+
+		100% {
+			opacity: 1;
+			transform: scale(1);
+			display: block;
+			position: absolute;
 		}
 	}
-	@keyframes open-backdrop {
-		from {
-			background-color: transparent;
-			opacity: 0;
-		}
-		to {
+
+	@keyframes fade-out {
+		0% {
 			opacity: 1;
-			background-color: var(--dc-dialog-backdrop-color);
+			transform: scale(1);
+			display: block;
+			position: absolute;
+		}
+		100% {
+			opacity: 0;
+			transform: scale(0);
+			position: absolute;
 		}
 	}
 </style>
