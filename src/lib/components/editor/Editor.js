@@ -24,12 +24,12 @@ import {
 	getPlayerToken,
 	postSerializedCommand,
 	editor,
-	player
+	player,
+	requestDiceRoll
 } from '../PortalStore.js';
 import { DiceIcon, GearIcon, LeaveIcon, PeopleIcon, PlayerIcon, SaveIcon, ShareIcon } from './DCIconProvider.js';
 import { get } from 'svelte/store';
 import { GridComponent } from './GridComponent.js';
-import { rollDice } from '../DiceStore.js';
 
 /**
  * @type {import("js-draw").Editor}
@@ -117,10 +117,10 @@ export function configureToolbar(isHost) {
 	toolbar.addActionButton(
 		{
 			label: 'Roll Dice',
-			icon: _editor.icons.makeRotateIcon()
+			icon: DiceIcon
 		},
 		async () => {
-			await rollDice();
+			await requestDiceRoll();
 		}
 	);
 	// toolbar.addTaggedActionButton(

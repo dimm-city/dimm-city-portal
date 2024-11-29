@@ -3,6 +3,7 @@
 	import DiceBox from '@3d-dice/dice-box-threejs';
 	const dispatcher = createEventDispatcher();
 
+	let rolling = $state(false);
 	/**
 	 * @typedef {Object} Props
 	 * @property {string} [diceSize]
@@ -59,6 +60,7 @@
 	 * @param {any} diceId
 	 */
 	export async function roll(result, diceTheme, diceId) {
+		rolling = true;
 		initDiceBox();
 
 		if (!diceTheme) diceTheme = defaultDiceConfig.theme_customColorset;
@@ -78,7 +80,9 @@
 		await diceBox.loadTheme(diceTheme);
 		await diceBox.resizeWorld();
 		// Roll the dice
-		return diceBox.roll(result);
+		const output = await diceBox.roll(result);
+		rolling = false;
+		return output;
 	}
 
 	export function clear() {
@@ -89,12 +93,28 @@
 	});
 </script>
 
-<div id="dice-container" class="dice-container"></div>
+<div id="dice-container" class="dice-container" class:rolling></div>
 
 <style>
 	.dice-container {
-		width: 100%;
-		height: 100%;
-		position: relative;
+		inset: 0;
+		position: absolute;
+		z-index: -10;
+		opacity: 0.2;
+		filter: blur(3px);
+		transform: scale(0.8) translate3d(12px, -50px, 3em);
+		transition: all 750ms cubic-bezier(0.455, 0.03, 0.515, 0.955);
+		transition: all 200ms cubic-bezier(0.6, 0.04, 0.98, 0.335);
+		transition-delay: 400ms;
+		overflow: hidden;
+	}
+	.dice-container.rolling {
+		z-index: unset;
+		opacity: 1;
+		filter: blur(0px);
+		transform: scale(1);
+		transition-delay: 0ms;
+		transition: all 200ms cubic-bezier(0.6, 0.04, 0.98, 0.335);
+		transition-timing-function: linear;
 	}
 </style>

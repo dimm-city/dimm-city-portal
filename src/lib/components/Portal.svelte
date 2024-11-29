@@ -13,13 +13,12 @@
 		sessionPassword
 	} from './PortalStore';
 	import Editor from './editor/Editor.svelte';
-	import { rolling, roller } from './DiceStore.js';
-	import DiceRoller from './DiceRoller.svelte';
+	import { isHost } from './PortalStore.js';
 
 	let { config } = $props();
 </script>
 
-<div class="portal-container" class:in-session={$inSession}>
+<div class="portal-container" class:in-session={$inSession} class:host={$isHost}>
 	{#if $inSession == false}
 		<SessionManager portalId={config.portalId} />
 	{:else if $inSession}

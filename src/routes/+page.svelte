@@ -15,6 +15,8 @@
 	console.log('Page loaded', data);
 
 	import '$lib/components/styles.css';
+	import DiceRoller from '$lib/components/DiceRoller.svelte';
+	import { roller } from '$lib/components/DiceStore.js';
 </script>
 
 <svelte:head>
@@ -36,6 +38,7 @@
 	{/if}
 	<Portal config={data.portalConfig} player={data.player} />
 </section>
+	<DiceRoller bind:this={$roller} />
 
 <SvelteToast {options} />
 
@@ -50,8 +53,9 @@
 	}
 	section {
 		min-height: 100dvh;
+		position: relative;
 	}
-	section.in-session::before{
+	section.in-session::before {
 		position: absolute;
 		inset: 0;
 		content: '';

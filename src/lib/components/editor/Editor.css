@@ -92,8 +92,12 @@
 }
 
 @container (max-width: 600px) {
-    .toolbar-edge-toolbar>div.toolbar-element.toolbar-tool-row {
+    .host .toolbar-edge-toolbar>div.toolbar-element.toolbar-tool-row {
         justify-content: center;
+    }
+
+    .toolbar-edge-toolbar>div.toolbar-element.toolbar-tool-row {
+        justify-content: flex-end;
     }
 
     div.toolbar-element.toolbar-tool-row>div:nth-child(6),
