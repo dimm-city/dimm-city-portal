@@ -14,13 +14,12 @@
 	} from './PortalStore';
 	import Editor from './sv-draw/Editor.svelte';
 
-	let {config } = $props();
-
+	let { config } = $props();
 </script>
 
 <div class="portal-container" class:in-session={$inSession}>
 	{#if $inSession == false}
-		<SessionManager portalId={config.portalId}  />
+		<SessionManager portalId={config.portalId} />
 	{:else if $inSession}
 		<Dialog bind:show={$showPlayerList}>
 			<div>
@@ -46,22 +45,19 @@
 				</p>
 			</div>
 		</Dialog>
-		<div class="token-container">
-			<Editor />
-		</div>
+		<Editor />
 	{/if}
 </div>
 
 <style>
-	.portal-container{
+	.portal-container {
 		--dc-dialog-backdrop-color: transparent;
-		width: 60ch;
 	}
 	.portal-container.in-session {
 		width: 100%;
+		height: 100dvh;
 	}
 
-	
 	@media (max-width: 768px) {
 		.portal-container {
 			width: 80dvw;

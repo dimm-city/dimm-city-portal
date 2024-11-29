@@ -11,7 +11,9 @@ import Editor, {
 	SerializableCommand,
 	invertCommand,
 	EditorEventType,
-	Erase
+	Erase,
+	Color4,
+	BackgroundComponentBackgroundType
 } from 'js-draw';
 import { BootstrapIconProvider } from './BootstrapIconProvider';
 import {
@@ -86,7 +88,7 @@ let toolbar;
 /**
  * @param {boolean} isHost
  */
-function configureToolbar(isHost) {
+export function configureToolbar(isHost) {
 	if (!_editor) return;
 	if (toolbar) toolbar.remove();
 
@@ -104,19 +106,19 @@ function configureToolbar(isHost) {
 			}
 		}
 	);
-	toolbar.addTaggedActionButton(
-		['host'],
-		{
-			label: 'host',
-			icon: _editor.icons.makeOverflowIcon()
-		},
-		() => {
-			player.update((p) => {
-				p.host = !p?.host;
-				return p;
-			});
-		}
-	);
+	// toolbar.addTaggedActionButton(
+	// 	['host'],
+	// 	{
+	// 		label: 'host',
+	// 		icon: _editor.icons.makeOverflowIcon()
+	// 	},
+	// 	() => {
+	// 		player.update((p) => {
+	// 			p.host = !p?.host;
+	// 			return p;
+	// 		});
+	// 	}
+	// );
 	if (isHost) {
 		// @ts-ignore
 		if (selectListener?.remove) selectListener?.remove();
@@ -249,13 +251,13 @@ export async function configureEditor(editorElement) {
 			iconProvider: new BootstrapIconProvider()
 		});
 
-		// _editor.dispatch(
-		// 	_editor.setBackgroundStyle({
-		// 		color: Color4.black,
-		// 		type: BackgroundComponentBackgroundType.Grid,
-		// 		autoresize: false
-		// 	})
-		// );
+		_editor.dispatch(
+			_editor.setBackgroundStyle({
+				color: Color4.transparent,
+				type: BackgroundComponentBackgroundType.None,
+				autoresize: true
+			})
+		);
 		_editor.getRootElement().style.minHeight = editorElement.parentElement?.clientHeight + 'px';
 
 		// Event listener for when a command is done
@@ -303,8 +305,5 @@ export async function configureEditor(editorElement) {
 		editor.set(_editor);
 		configureToolbar(get(player)?.host);
 
-		player.subscribe((p) => {
-			configureToolbar(p.host);
-		});
 	}
 }

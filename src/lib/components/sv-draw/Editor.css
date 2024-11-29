@@ -58,9 +58,10 @@
     border-bottom: 1px solid var(--primary-action-foreground-color);
 }
 
-.toolbar-edgemenu-container .toolbar-edgemenu button{
+.toolbar-edgemenu-container .toolbar-edgemenu button {
     font-size: 0.8rem;
 }
+
 .toolbar-edge-toolbar>div.toolbar-element.toolbar-tool-row {
     justify-content: flex-end;
 }
@@ -115,4 +116,9 @@ div.toolbar-edgemenu-container div.action-button-row button {
 
 div.toolbar-edgemenu-container div.action-button-row button[aria-checked=true] {
     color: var(--fourth-accent);
+}
+
+.player-token {
+    border-radius: 40%;
+    border: thin solid var(--icon-color);
 }

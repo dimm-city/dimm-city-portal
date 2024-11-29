@@ -1,6 +1,6 @@
 <script>
 	import { player, sessionMode, handleCreateSession, handleJoinSession } from './PortalStore.js';
-	import {  dev } from '$app/environment';
+	import { dev } from '$app/environment';
 
 	import { toast } from '@zerodevx/svelte-toast';
 	let { portalId = dev ? 'test-portal' : '', password = dev ? 'test' : '' } = $props();
@@ -86,66 +86,69 @@
 	}
 </script>
 
-<div class="session-form-container">
-	<div class="session-form" data-augmented-ui="tl-clip tr-clip bl-clip br-clip both">
-		<div>
-			{#if $sessionMode === 'create' || $sessionMode == null}
-				<h3>Portal Creation</h3>
-				<small>
-					Switch to <a class="switch-mode" onclick={() => ($sessionMode = 'join')}>connect mode</a>
-				</small>
-			{:else if $sessionMode === 'join'}
-				<h3>Portal Connection</h3>
-				<small>
-					Switch to <a class="switch-mode" onclick={() => ($sessionMode = 'create')}>
-						create mode
-					</a>
-				</small>
-			{/if}
-		</div>
-		<hr />
-		<form>
-			<label for="portal-name">
-				Player Name
-				<input
-					name="player-name"
-					type="text"
-					bind:value={$player.name}
-					placeholder="Enter your name"
-					required
-				/>
-			</label>
-			{#if $sessionMode === 'create' || $sessionMode == null}
+<div class="session-manager-container">
+	<div class="session-form-container">
+		<div class="session-form" data-augmented-ui="tl-clip tr-clip bl-clip br-clip both">
+			<div>
+				{#if $sessionMode === 'create' || $sessionMode == null}
+					<h3>Portal Creation</h3>
+					<small>
+						Switch to <a class="switch-mode" onclick={() => ($sessionMode = 'join')}>connect mode</a
+						>
+					</small>
+				{:else if $sessionMode === 'join'}
+					<h3>Portal Connection</h3>
+					<small>
+						Switch to <a class="switch-mode" onclick={() => ($sessionMode = 'create')}>
+							create mode
+						</a>
+					</small>
+				{/if}
+			</div>
+			<hr />
+			<form>
 				<label for="portal-name">
-					Portal Name
+					Player Name
 					<input
-						name="portal-name"
+						name="player-name"
 						type="text"
-						bind:value={name}
-						placeholder="Enter a name for the portal"
+						bind:value={$player.name}
+						placeholder="Enter your name"
 						required
 					/>
 				</label>
-			{:else}
-				<label for="sessionId">
-					Portal ID
-					<input type="text" bind:value={portalId} placeholder="Enter Session ID" required />
+				{#if $sessionMode === 'create' || $sessionMode == null}
+					<label for="portal-name">
+						Portal Name
+						<input
+							name="portal-name"
+							type="text"
+							bind:value={name}
+							placeholder="Enter a name for the portal"
+							required
+						/>
+					</label>
+				{:else}
+					<label for="sessionId">
+						Portal ID
+						<input type="text" bind:value={portalId} placeholder="Enter Session ID" required />
+					</label>
+				{/if}
+				<label for="password">
+					Password
+					<input type="password" bind:value={password} placeholder="Enter Password" required />
 				</label>
-			{/if}
-			<label for="password">
-				Password
-				<input type="password" bind:value={password} placeholder="Enter Password" required />
-			</label>
-		</form>
+			</form>
 
-		<hr />
-		<div>
-			{#if $sessionMode === 'create' || $sessionMode == null}
-				<button onclick={createSession}>Create</button>
-			{/if}
-			{#if $sessionMode === 'join'}
-				<button onclick={joinSession}>Connect</button>
-			{/if}
+			<hr />
+			<div>
+				{#if $sessionMode === 'create' || $sessionMode == null}
+					<button onclick={createSession}>Create</button>
+				{/if}
+				{#if $sessionMode === 'join'}
+					<button onclick={joinSession}>Connect</button>
+				{/if}
+			</div>
 		</div>
 	</div>
 </div>
@@ -160,6 +163,9 @@
 	input {
 		width: 100%;
 		margin-bottom: 1rem;
+	}
+	.session-manager-container {
+		justify-items: center;
 	}
 	.session-form-container {
 		display: grid;
