@@ -11,7 +11,7 @@
 	/**
 	 * @type {HTMLElement}
 	 */
-	let editorElement;
+	let editorElement = $state();
 
 
 	onMount(() => {
@@ -22,7 +22,7 @@
 </script>
 
 <div class="editor-container">
-	<div bind:this={editorElement} />
+	<div bind:this={editorElement}></div>
 </div>
 
 <style>

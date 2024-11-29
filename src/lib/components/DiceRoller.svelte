@@ -3,7 +3,13 @@
 	import DiceBox from '@3d-dice/dice-box-threejs';
 	const dispatcher = createEventDispatcher();
 
-	export let diceSize = 'medium';
+	/**
+	 * @typedef {Object} Props
+	 * @property {string} [diceSize]
+	 */
+
+	/** @type {Props} */
+	let { diceSize = 'medium' } = $props();
 
 	// $: diceSizeModifier = diceSize === 'large' ? 90 : diceSize === 'medium' ? 50 : 0;
 	// $: scale = diceSizeModifier + (window.innerWidth > 500 ? 100 : 90);

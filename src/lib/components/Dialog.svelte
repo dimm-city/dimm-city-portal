@@ -1,3 +1,4 @@
+<!-- @migration-task Error while migrating Svelte code: This migration would change the name of a slot making the component unusable -->
 <script>
 	export let aug = 'tl-clip tr-clip br-clip bl-clip both';
 	export let show = false; // boolean

@@ -43,7 +43,7 @@
 		}
 		portalId = createRandomId(12);
 		$player.host = true;
-		$player = { ...$player, name }; // Clone the object to avoid mutating the original
+		player.set({ ...$player, name }); // Clone the object to avoid mutating the original
 
 		/**
 		 * @type {DC.PortalState}
@@ -91,12 +91,12 @@
 			{#if $sessionMode === 'create' || $sessionMode == null}
 				<h3>Portal Creation</h3>
 				<small>
-					Switch to <a class="switch-mode" on:click={() => ($sessionMode = 'join')}>connect mode</a>
+					Switch to <a class="switch-mode" onclick={() => ($sessionMode = 'join')}>connect mode</a>
 				</small>
 			{:else if $sessionMode === 'join'}
 				<h3>Portal Connection</h3>
 				<small>
-					Switch to <a class="switch-mode" on:click={() => ($sessionMode = 'create')}>
+					Switch to <a class="switch-mode" onclick={() => ($sessionMode = 'create')}>
 						create mode
 					</a>
 				</small>
@@ -140,10 +140,10 @@
 		<hr />
 		<div>
 			{#if $sessionMode === 'create' || $sessionMode == null}
-				<button on:click={createSession}>Create</button>
+				<button onclick={createSession}>Create</button>
 			{/if}
 			{#if $sessionMode === 'join'}
-				<button on:click={joinSession}>Connect</button>
+				<button onclick={joinSession}>Connect</button>
 			{/if}
 		</div>
 	</div>
