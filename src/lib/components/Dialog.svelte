@@ -1,17 +1,6 @@
 <script>
-	import { run } from 'svelte/legacy';
-
-	/** @type {{aug?: string, title?: string, show?: boolean, onclose?: (event: any) => void, onclick?: (event: any) => void, header?: import('svelte').Snippet, children?: import('svelte').Snippet, footer?: import('svelte').Snippet}} */
-	let {
-		aug = '',
-		title = '',
-		show = $bindable(false),
-		onclose,
-		onclick,
-		header,
-		children,
-		footer
-	} = $props();
+	export let aug = 'tl-clip tr-clip br-clip bl-clip both';
+	export let show = false; // boolean
 	export const open = () => {
 		dialog.show();
 		show = true;
@@ -24,67 +13,83 @@
 	/**
 	 * @type {HTMLDialogElement}
 	 */
-	let dialog = $state(); // HTMLDialogElement
+	let dialog; // HTMLDialogElement
 
-	run(() => {
-		if (dialog && show) dialog.showModal();
-		else if (dialog) dialog.close();
-	});
+	$: if (dialog && show) dialog.showModal();
+	else if (dialog) dialog.close();
 </script>
 
-<!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_noninteractive_element_interactions -->
-<dialog bind:this={dialog} {onclose} onclick={(event) => {
-	// @migration-task: incorporate self modifier
-
-	close?.(event);
-}} data-augmented-ui={aug}>
-	<!-- svelte-ignore a11y_no_static_element_interactions -->
-	<div {onclick} class="dialog-container">
+<!-- svelte-ignore a11y-click-events-have-key-events a11y-no-noninteractive-element-interactions -->
+<dialog bind:this={dialog} on:close on:click|self={close} data-augmented-ui={aug}>
+	<!-- svelte-ignore a11y-no-static-element-interactions -->
+	<div on:click|stopPropagation class="dialog-container">
 		<div class="dialog-grid">
 			<div class="dialog-header">
-				{#if header}{@render header()}{:else}
-					<h4>{title}</h4>
-				{/if}
+				<slot name="header" />
 			</div>
 			<div class="dialog-body">
-				{@render children?.()}
+				<slot />
 			</div>
 			<div class="dialog-footer">
-				{#if footer}{@render footer()}{:else}
-					<button onclick={close}>Close</button>
-				{/if}
+				<slot name="footer">
+					<button on:click={close}>Close</button>
+				</slot>
 			</div>
 		</div>
-		<!-- svelte-ignore a11y_autofocus -->
-		<button autofocus class="close-button" onclick={close}><i class="bi bi-x" /></button>
+		<slot name="close">
+			<!-- svelte-ignore a11y-autofocus -->
+			<button class="text-button" autofocus on:click={close}><i class="bi bi-x" /></button>
+		</slot>
 	</div>
 </dialog>
 
 <style>
 	:root {
-		--dc-dialog-animation-duration: 0.2s;
-		--dc-dialog-backdrop-color: rgba(46, 2, 116, 0.651);
+		--dc-dialog-animation-duration: 0.3s;
+		--dc-dialog-close-animation-duration: 0.3s;
+		/* --dc-dialog-backdrop-color: rgba(1, 96, 206, 0.212); */
+
+		--dc-dialog-backdrop-color: transparent;
+		--dc-dialog-height: 80dvh;
+		--dc-dialog-width: 60ch;
+
+		--aug-border-all: 1px;
+		--aug-inlay-bg: var(--dark);
+		--aug-border-bg: var(--fourth-accent);
 	}
 	dialog {
+		--aug-border-all: 1px;
+		--aug-inlay-bg: var(--dark);
+		--aug-border-bg: var(--fourth-accent);
+
 		border-radius: 0;
 		border: none;
-		padding: 0;
-		position: absolute;
-		background-color: var(--color-bg-secondary);
-		outline-color: var(--color-accent-one);
+		/* padding: 1em; */
+		/* position: absolute; */
+		background-color: #000000ce;
+		backdrop-filter: blur(3px);
+		outline-color: var(--fourth-accent);
 		outline-style: solid;
 		outline-width: 1px;
-		color: var(--color-text);
-		min-width: 30ch;
+
+		box-shadow: 0 4px 6px var(--fourth-accent);
+		color: var(--light);
+		/* min-width: 30ch; */
 		min-height: 30ch;
-		margin: auto;
+		height: var(--dc-dialog-height);
+		width: var(--dc-dialog-width);
+		max-width: 95svw;
 	}
-	dialog > div {
-		padding: 1em;
+	
+	.dialog-container {
+		/* padding: 1em; */
+		container-type: inline-size;
 		position: relative;
 		display: grid;
 		height: 100%;
+		overflow: hidden;
 	}
+
 	.dialog-grid {
 		display: grid;
 		grid-template-columns: 1fr;
@@ -97,84 +102,86 @@
 		overflow-y: auto;
 		overflow-x: hidden;
 		margin-top: 1rem;
-		padding-inline: 0.5rem;
+		scrollbar-width: none;
+	}
+	.dialog-body::-webkit-scrollbar {
+		width: 0px;
 	}
 	.dialog-footer {
 		margin-top: 1rem;
 	}
-	.dialog-footer > button {
-		width: 100%;
-		font-family: var(--font-header);
-	}
-	button.close-button {
+	button.text-button {
+		color: var(--third-accent);
 		font-size: 1.5rem;
 		display: block;
 		position: absolute;
-		right: 0;
-		top: 0;
-		padding: 0;
-		margin: 0;
-		background-color: transparent;
-	}
-	button.close-button:hover {
-		box-shadow: none;
-		text-shadow: var(--shadow-accent-text);
+		right: -0.25rem;
+		top: -0.5rem;
 	}
 
 	dialog {
-		/* animation: fade-out var(--dc-dialog-animation-duration) ease-out forwards; */
-		animation: slideOutUp;
-		animation-duration: var(--dc-dialog-animation-duration);
+		transition: display var(--dc-dialog-close-animation-duration) allow-discrete,
+			overlay var(--dc-dialog-close-animation-duration) allow-discrete;
+		animation: close var(--dc-dialog-close-animation-duration) forwards;
 	}
-
 	dialog[open] {
-		display: grid;
-		/* animation: fade-in var(--dc-dialog-animation-duration) ease-out; */
-		animation: slideInDown ease-in;
-		animation-duration: var(--dc-dialog-animation-duration);
+		animation: open var(--dc-dialog-animation-duration) forwards;
+		transition: display var(--dc-dialog-animation-duration) allow-discrete,
+			overlay var(--dc-dialog-animation-duration) allow-discrete;
+	}
+	@keyframes open {
+		from {
+			opacity: 0;
+			transform: translate3d(0, -180svh, 0);
+		}
+		to {
+			opacity: 1;
+			transform: translate3d(0, 0, 0);
+		}
+	}
+	@keyframes close {
+		from {
+			opacity: 1;
+		}
+		to {
+			opacity: 0;
+			transform: translate3d(0, -180svh, 0);
+		}
 	}
 
 	dialog::backdrop {
-		display: block;
-		/* animation: backdrop-fade-out var(--dc-dialog-animation-duration) ease-out forwards; */
-		background-color: rgba(255, 0, 0, 0);
-		transition: background-color var(--dc-dialog-animation-duration) ease-in;
+		
+		background-color: transparent;
+		transition: display var(--dc-dialog-close-animation-duration) allow-discrete,
+			opacity var(--dc-dialog-close-animation-duration) allow-discrete,
+			background-color var(--dc-dialog-close-animation-duration) allow-discrete;
+		animation: close-backdrop var(--dc-dialog-close-animation-duration) forwards;
 	}
-
 	dialog[open]::backdrop {
 		background-color: var(--dc-dialog-backdrop-color);
-		transition: background-color var(--dc-dialog-animation-duration) ease-in;
-		/* animation: backdrop-fade-in var(--dc-dialog-animation-duration) ease-out;  */
+		animation: open-backdrop var(--dc-dialog-animation-duration) forwards;
+		transition: display var(--dc-dialog-close-animation-duration) allow-discrete,
+			opacity var(--dc-dialog-animation-duration) allow-discrete,
+			background-color var(--dc-dialog-animation-duration) allow-discrete;
 	}
-
-	/* Animation keyframes */
-
-	@keyframes fade-in {
-		0% {
-			opacity: 0;
-			transform: scale(0);
-			display: none;
-		}
-
-		100% {
+	@keyframes close-backdrop {
+		from {
 			opacity: 1;
-			transform: scale(1);
-			display: block;
-			position: absolute;
+			background-color: var(--dc-dialog-backdrop-color);
+		}
+		to {
+			opacity: 0;
+			background-color: transparent;
 		}
 	}
-
-	@keyframes fade-out {
-		0% {
-			opacity: 1;
-			transform: scale(1);
-			display: block;
-			position: absolute;
-		}
-		100% {
+	@keyframes open-backdrop {
+		from {
+			background-color: transparent;
 			opacity: 0;
-			transform: scale(0);
-			position: absolute;
+		}
+		to {
+			opacity: 1;
+			background-color: var(--dc-dialog-backdrop-color);
 		}
 	}
 </style>

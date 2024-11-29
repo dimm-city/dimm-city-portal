@@ -1,24 +1,20 @@
 <script>
-	import { createEventDispatcher } from 'svelte';
+	import { player, sessionMode, handleCreateSession, handleJoinSession } from './PortalStore.js';
+	import { browser, building, dev, version } from '$app/environment';
 
-	import { getNotificationsContext } from 'svelte-notifications';
-	const { addNotification } = getNotificationsContext();
-	
-	
-	
+	import { toast } from '@zerodevx/svelte-toast';
+	let portalId = $state(dev ? 'test-portal' : '');
+	let password = $state(dev ? 'test' : '');
 
-	/** @type {{player?: any, mode: string | null, sessionId: string | null, sessionName: string | null, allowHubSwitching?: boolean, portalHubUrl: any}} */
-	let {
-		player = $bindable({ name: 'founder 3', host: false }),
-		mode = $bindable(),
-		sessionId = $bindable(),
-		sessionName = $bindable(),
-		allowHubSwitching = false,
-		portalHubUrl = $bindable()
-	} = $props();
+	/**
+	 * @type {any}
+	 */
+	let name = $state(dev ? 'test-portal' : '');
 
-	let password = $state('');
-	const dispatch = createEventDispatcher();
+	if (dev) {
+		// @ts-ignore
+		$player = { name: 'example', host: false };
+	}
 
 	/**
 	 * @param {number} length
@@ -31,199 +27,156 @@
 		return result;
 	}
 	function createSession() {
-		if (!sessionName || sessionName.length < 1) {
-			addNotification({
-				id: `${new Date().getTime()}-${Math.floor(Math.random() * 9999)}`,
-				position: 'top-right',
-				removeAfter: 3000,
-				allowRemove: true,
-				heading: 'Portal Name Required',
-				type: 'error',
-				text: `You must enter a name to create a portal.`
-			});
+		console.log(`Creating session ${name} with id ${portalId}`);
+
+		if (!name || name.length < 1) {
+			toast.push(`You must provide a name to create a portal.`, { classes: ['error'] });
 			return;
 		}
 		if (password.length < 1) {
-			addNotification({
-				id: `${new Date().getTime()}-${Math.floor(Math.random() * 9999)}`,
-				position: 'top-right',
-				removeAfter: 3000,
-				allowRemove: true,
-				heading: 'Password Required',
-				type: 'error',
-				text: `You must enter a password to create a portal.`
-			});
+			toast.push(`You must provide a password to create a portal.`, { classes: ['error'] });
 			return;
 		}
-		if (player.name.length < 1) {
-			addNotification({
-				id: `${new Date().getTime()}-${Math.floor(Math.random() * 9999)}`,
-				position: 'top-right',
-				removeAfter: 3000,
-				allowRemove: true,
-				heading: 'Name Required',
-				type: 'error',
-				text: `You must enter a name to create a portal.`
-			});
+		if (!$player?.name) {
+			toast.push(`You must provide a name to create a portal.`, { classes: ['error'] });
 			return;
 		}
-		sessionId = createRandomId(12);
-		player.host = true;
-		player = { ...player }; // Clone the object to avoid mutating the original
-		const sessionData = {
-			sessionId,
-			sessionName,
-			password,
-			player
-		};
+		portalId = createRandomId(12);
+		$player.host = true;
+		$player = { ...$player, name }; // Clone the object to avoid mutating the original
 
-		dispatch('createSession', sessionData);
+		/**
+		 * @type {DC.PortalState}
+		 */
+		const sessionData = {
+			sessionId: portalId,
+			name,
+			password: password,
+			host: $player,
+			players: [],
+			player: $player,
+			tokens: []
+		};
+		console.log('Session data: ', sessionData);
+
+		handleCreateSession(sessionData);
 	}
 
 	function joinSession() {
-		if (!sessionId || sessionId.length < 1) {
-			addNotification({
-				id: `${new Date().getTime()}-${Math.floor(Math.random() * 9999)}`,
-				position: 'top-right',
-				removeAfter: 3000,
-				allowRemove: true,
-				heading: 'Portal ID Required',
-				type: 'error',
-				text: `You must enter an ID to enter a portal.`
-			});
+		if (!portalId || portalId.length < 1) {
+			toast.push(`You must provide an ID to enter a portal.`, { classes: ['error'] });
 			return;
 		}
 		if (password.length < 1) {
-			addNotification({
-				id: `${new Date().getTime()}-${Math.floor(Math.random() * 9999)}`,
-				position: 'top-right',
-				removeAfter: 3000,
-				allowRemove: true,
-				heading: 'Password Required',
-				type: 'error',
-				text: `You must enter a password to enter a portal.`
-			});
+			toast.push(`You must provide a password to enter a portal.`, { classes: ['error'] });
 			return;
 		}
-		if (player.name.length < 1) {
-			addNotification({
-				id: `${new Date().getTime()}-${Math.floor(Math.random() * 9999)}`,
-				position: 'top-right',
-				removeAfter: 3000,
-				allowRemove: true,
-				heading: 'Name Required',
-				type: 'error',
-				text: `You must enter a name to enter a portal.`
-			});
+		if (!$player?.name) {
+			toast.push(`You must provide a name to enter a portal.`, { classes: ['error'] });
 			return;
 		}
 		const sessionData = {
-			sessionId,
-			password,
-			player
+			sessionId: portalId,
+			password: password,
+			player: $player
 		};
 
-		dispatch('joinSession', sessionData);
+		handleJoinSession(sessionData);
 	}
 </script>
 
 <div class="session-form-container">
 	<div class="session-form" data-augmented-ui="tl-clip tr-clip bl-clip br-clip both">
-		<!-- <div>
-			{#if mode === 'create' || mode == null}
+		<div>
+			{#if $sessionMode === 'create' || $sessionMode == null}
 				<h3>Portal Creation</h3>
-			{:else if mode === 'join'}
+				<small>
+					Switch to <a class="switch-mode" on:click={() => ($sessionMode = 'join')}>connect mode</a>
+				</small>
+			{:else if $sessionMode === 'join'}
 				<h3>Portal Connection</h3>
+				<small>
+					Switch to <a class="switch-mode" on:click={() => ($sessionMode = 'create')}>
+						create mode
+					</a>
+				</small>
 			{/if}
 		</div>
-		<hr /> -->
+		<hr />
 		<form>
-			{#if allowHubSwitching}
-			<label for="portal-hub-url"> Portal Hub URL </label>	
-			<input
-				type="text"
-				name="portal-hub-url"
-				bind:value={portalHubUrl}
-				placeholder="https://beta.dimm.city/portal"
-				required
-			/>
-			{/if}
-			{#if mode === 'create' || mode == null}
-				<label for="portal-name"> Portal Name </label>
+			<label for="portal-name">
+				Player Name
 				<input
-					name="portal-name"
+					name="player-name"
 					type="text"
-					bind:value={sessionName}
-					placeholder="Enter a name for the portal"
+					bind:value={$player.name}
+					placeholder="Enter your name"
 					required
 				/>
+			</label>
+			{#if $sessionMode === 'create' || $sessionMode == null}
+				<label for="portal-name">
+					Portal Name
+					<input
+						name="portal-name"
+						type="text"
+						bind:value={name}
+						placeholder="Enter a name for the portal"
+						required
+					/>
+				</label>
 			{:else}
-				<label for="sessionId"> Portal ID </label>
-				<input type="text" bind:value={sessionId} placeholder="Enter Portal ID" required />
+				<label for="sessionId">
+					Portal ID
+					<input type="text" bind:value={portalId} placeholder="Enter Session ID" required />
+				</label>
 			{/if}
-			<label for="portal-name"> Player Name </label>
-			<input
-				name="player-name"
-				type="text"
-				bind:value={player.name}
-				placeholder="Enter your name"
-				required
-			/>
-			<label for="password"> Password </label>
-			<input type="password" bind:value={password} placeholder="Enter Password" required />
+			<label for="password">
+				Password
+				<input type="password" bind:value={password} placeholder="Enter Password" required />
+			</label>
 		</form>
 
 		<hr />
 		<div>
-			{#if mode === 'create' || mode == null}
-				<button class="header" onclick={createSession}>Create</button>
-				<small>
-					Switch to <a href="#connect" class="switch-mode" onclick={() => (mode = 'join')}>
-						connect mode
-					</a>
-				</small>
+			{#if $sessionMode === 'create' || $sessionMode == null}
+				<button on:click={createSession}>Create</button>
 			{/if}
-			{#if mode === 'join'}
-				<button class="header" onclick={joinSession}>Connect</button>
-				<small>
-					Switch to <a href="#create" class="switch-mode" onclick={() => (mode = 'create')}>
-						create mode
-					</a>
-				</small>
+			{#if $sessionMode === 'join'}
+				<button on:click={joinSession}>Connect</button>
 			{/if}
 		</div>
 	</div>
 </div>
 
 <style>
-	[data-augmented-ui] {
-		--aug-border-bg: var(--color-accent-one);
-	}
 	label {
 		width: 100%;
-	}
-	input {
-		width: 100%;
-		margin-bottom: 1rem;
 	}
 	.session-form-container {
 		display: grid;
 		height: 100%;
-		outline: var(--color-accent-one) solid var(--outline-width);
-		box-shadow:var(--shadow-accent);
 	}
-	
 	.session-form {
-		width: 100%;
+		--aug-border-bg: var(--third-accent);
+		--aug-border-all: 2px;
 		display: flex;
 		flex-direction: column;
 		align-items: center;
 		justify-content: space-between;
 		margin: auto;
-		gap: 0.5rem;
-		padding: 2rem;
+		gap: 1rem;
+		padding: 1rem;
+		width: 50ch;
 	}
-	
+	@media (max-width: 768px) {
+		h3 {
+			font-size: 1rem;
+		}
+		.session-form {
+			width: 80dvw;
+		}
+	}
 	.session-form > * {
 		margin: auto;
 		width: 100%;
@@ -233,5 +186,10 @@
 		flex-direction: column;
 		align-items: center;
 		justify-content: space-between;
+		row-gap: 1rem;
+	}
+	button {
+		color: var(--fourth-accent);
+		width: 100%;
 	}
 </style>

@@ -1,15 +1,18 @@
 <script>
 	import Portal from '$lib/components/Portal.svelte';
 	import { page } from '$app/stores';
-	import Notifications from 'svelte-notifications';
-	import Alert from '$lib/components/Alert.svelte';
-	
-	
+	import { SvelteToast } from '@zerodevx/svelte-toast';
+
 	/** @type {{data: any}} */
 	let { data } = $props();
 
 	let sessionId = $state($page.url.searchParams?.get('session') ?? null);
 	let inSession = $state(false);
+
+	/** @type {import('@zerodevx/svelte-toast').SvelteToastOptions}*/
+	const options = {};
+
+	import '$lib/components/styles.css';
 </script>
 
 <svelte:head>
@@ -25,22 +28,23 @@
 		href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
 	/>
 </svelte:head>
-<Notifications item={Alert} zIndex={999999}>
-	<section>
-		{#if inSession == false}
-			<h1><small>Welcome to the</small>Dimm City Portal</h1>
-		{/if}
-		<Portal
-			config={data.portalConfig}
-			player={data.player}
-			bind:inSession
-			bind:sessionId
-			sessionMode={$page.url.searchParams?.get('mode')}
-		/>
-	</section>
-</Notifications>
+<section>
+	{#if inSession == false}
+		<h1><small>Welcome to the</small>Dimm City Portal</h1>
+	{/if}
+	<Portal
+		config={data.portalConfig}
+		player={data.player}
+		bind:inSession
+		bind:sessionId
+		sessionMode={$page.url.searchParams?.get('mode')}
+	/>
+</section>
+
+<SvelteToast {options} />
 
 <style>
+	
 	small {
 		display: block;
 		font-size: 0.5rem;
