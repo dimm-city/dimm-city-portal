@@ -114,15 +114,6 @@ export function configureToolbar(isHost) {
 			}
 		}
 	);
-	toolbar.addActionButton(
-		{
-			label: 'Roll Dice',
-			icon: DiceIcon
-		},
-		async () => {
-			await requestDiceRoll();
-		}
-	);
 	// toolbar.addTaggedActionButton(
 	// 	['host'],
 	// 	{
@@ -252,6 +243,15 @@ export function configureToolbar(isHost) {
 		);
 		primaryPanZoomTool.setEnabled(true);
 	}
+	toolbar.addActionButton(
+		{
+			label: 'Roll Dice',
+			icon: DiceIcon
+		},
+		async () => {
+			await requestDiceRoll();
+		}
+	);
 }
 
 /**

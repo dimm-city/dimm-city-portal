@@ -58,10 +58,4 @@
 		width: 100%;
 		height: 100dvh;
 	}
-
-	/* @media (max-width: 768px) {
-		.portal-container {
-			width: 80dvw;
-		}
-	} */
 </style>
