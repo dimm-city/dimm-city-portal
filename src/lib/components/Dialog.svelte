@@ -39,8 +39,7 @@
 				</slot>
 			</div>
 		</div>
-		<!-- svelte-ignore a11y-autofocus -->
-		<button autofocus class="close-button" on:click={close}><i class="bi bi-x" /></button>
+		<button class="close-button" on:click={close} aria-label="Close"><i class="bi bi-x"></i></button>
 	</div>
 </dialog>
 

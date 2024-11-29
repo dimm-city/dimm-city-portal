@@ -13,6 +13,8 @@
 		sessionPassword
 	} from './PortalStore';
 	import Editor from './editor/Editor.svelte';
+	import { rolling, roller } from './DiceStore.js';
+	import DiceRoller from './DiceRoller.svelte';
 
 	let { config } = $props();
 </script>

@@ -26,9 +26,10 @@ import {
 	editor,
 	player
 } from '../PortalStore.js';
-import { GearIcon, LeaveIcon, PeopleIcon, PlayerIcon, SaveIcon, ShareIcon } from './DCIconProvider.js';
+import { DiceIcon, GearIcon, LeaveIcon, PeopleIcon, PlayerIcon, SaveIcon, ShareIcon } from './DCIconProvider.js';
 import { get } from 'svelte/store';
 import { GridComponent } from './GridComponent.js';
+import { rollDice } from '../DiceStore.js';
 
 /**
  * @type {import("js-draw").Editor}
@@ -111,6 +112,15 @@ export function configureToolbar(isHost) {
 				_editor?.remove();
 				leaveSession();
 			}
+		}
+	);
+	toolbar.addActionButton(
+		{
+			label: 'Roll Dice',
+			icon: _editor.icons.makeRotateIcon()
+		},
+		async () => {
+			await rollDice();
 		}
 	);
 	// toolbar.addTaggedActionButton(

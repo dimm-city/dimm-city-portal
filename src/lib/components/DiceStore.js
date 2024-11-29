@@ -59,7 +59,7 @@ export const diceString = derived([diceModifier, diceRollType], ([modifier, dice
 });
 
 /**
- * @type {import('svelte/store').Writable<import('$lib/Portal/DiceRoller.svelte').default>}
+ * @type {import('svelte/store').Writable<import('$lib/components/DiceRoller.svelte').default>}
  */
 export let roller = writable();
 export let rolling = writable(false);
@@ -68,6 +68,8 @@ export let clearDiceDelay = writable(500);
 export let showDiceResultToast = writable(true);
 
 export async function rollDice() {
+	console.log('rolling...');
+	
 	const rollerInstance = get(roller);
 
 	if (get(rolling) || !rollerInstance) return;
