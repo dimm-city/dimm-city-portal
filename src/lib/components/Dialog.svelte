@@ -1,17 +1,7 @@
 <script>
-	import { run } from 'svelte/legacy';
-
-	/** @type {{aug?: string, title?: string, show?: boolean, onclose?: (event: any) => void, onclick?: (event: any) => void, header?: import('svelte').Snippet, children?: import('svelte').Snippet, footer?: import('svelte').Snippet}} */
-	let {
-		aug = '',
-		title = '',
-		show = $bindable(false),
-		onclose,
-		onclick,
-		header,
-		children,
-		footer
-	} = $props();
+	export let aug = '';
+	export let title = '';
+	export let show = false; // boolean
 	export const open = () => {
 		dialog.show();
 		show = true;
@@ -24,39 +14,32 @@
 	/**
 	 * @type {HTMLDialogElement}
 	 */
-	let dialog = $state(); // HTMLDialogElement
+	let dialog; // HTMLDialogElement
 
-	run(() => {
-		if (dialog && show) dialog.showModal();
-		else if (dialog) dialog.close();
-	});
+	$: if (dialog && show) dialog.showModal();
+	else if (dialog) dialog.close();
 </script>
 
-<!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_noninteractive_element_interactions -->
-<dialog bind:this={dialog} {onclose} onclick={(event) => {
-	// @migration-task: incorporate self modifier
-
-	close?.(event);
-}} data-augmented-ui={aug}>
-	<!-- svelte-ignore a11y_no_static_element_interactions -->
-	<div {onclick} class="dialog-container">
+<!-- svelte-ignore a11y-click-events-have-key-events a11y-no-noninteractive-element-interactions -->
+<dialog bind:this={dialog} on:close on:click|self={close} data-augmented-ui={aug}>
+	<!-- svelte-ignore a11y-no-static-element-interactions -->
+	<div on:click|stopPropagation class="dialog-container">
 		<div class="dialog-grid">
 			<div class="dialog-header">
-				{#if header}{@render header()}{:else}
+				<slot name="header">
 					<h4>{title}</h4>
-				{/if}
+				</slot>
 			</div>
 			<div class="dialog-body">
-				{@render children?.()}
+				<slot />
 			</div>
 			<div class="dialog-footer">
-				{#if footer}{@render footer()}{:else}
-					<button onclick={close}>Close</button>
-				{/if}
+				<slot name="footer">
+					<button on:click={close}>Close</button>
+				</slot>
 			</div>
 		</div>
-		<!-- svelte-ignore a11y_autofocus -->
-		<button autofocus class="close-button" onclick={close}><i class="bi bi-x" /></button>
+		<button class="close-button" on:click={close} aria-label="Close"><i class="bi bi-x"></i></button>
 	</div>
 </dialog>
 
