@@ -57,25 +57,18 @@
 		position: absolute;
 		inset: 0;
 		content: '';
-		background-image: url('/assets/dc-banner-yellow.png');
+		background-image: url('/assets/dc-banner-orange.png');
 		background-repeat: no-repeat;
 		background-position: bottom;
 		background-size: 300px auto;
-		opacity: 0.2;
+		background-color: rgba(255, 255, 255);
+		z-index: -90000;
 	}
 
-	:global(body) {
-		/* Colors */
-		--color-bg-main: #08000f;
-		--color-bg-secondary: #190030;
-		--color-text: #ffffffe6;
-		--color-muted-text: #c4c0c0;
-		--color-muted-dark: #4b4b4b;
-		--color-dark-overlay: #11111180;
-		--color-dark: #000000f2;
-
-		/* Accent Color Palette */
-		--color-accent-one: #e6ff00;
-		--color-accent-two: #c643ff;
+	@media (prefers-color-scheme: dark) {
+		section.in-session::before {
+			background-image: url('/assets/dc-banner-yellow.png');
+			background-color: rgb(0, 0, 0);
+		}
 	}
 </style>

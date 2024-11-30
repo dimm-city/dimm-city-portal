@@ -1,0 +1,95 @@
+:root {
+    /* Base Colors */
+    --color-dark: #2e2e2e;
+    /* Dull grey instead of pure black */
+    --color-dark-overlay: rgba(30, 30, 30, 0.8);
+    --color-muted-dark: #5a5a5a;
+    --color-light: #e0e0e0;
+    /* Dull grey instead of white */
+    --color-light-overlay: rgba(224, 224, 224, 0.9);
+    --color-muted-light: #a0a0a0;
+
+    /* Background and Text */
+    --color-bg-main: var(--color-light);
+    --color-bg-secondary: var(--color-light-overlay);
+    --color-text: var(--color-dark);
+    --color-muted-text: var(--color-muted-dark);
+
+    /* Accent Colors */
+    --color-accent-one: #e4772f;
+    /* Muted orange */
+    --color-accent-two: #7a17eb;
+    /* Muted purple */
+    --color-accent-three: #00ffc8;
+    /* Muted teal */
+    --color-accent-four: #ff4081;
+    /* Muted pink */
+
+    /* Shadows */
+    --shadow-light: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --shadow-dark: 0 4px 6px rgba(0, 0, 0, 0.5);
+
+    /* Glow Effects */
+    --glow-accent-one: 0 0 10px var(--color-accent-one);
+    --glow-accent-two: 0 0 10px var(--color-accent-two);
+    --glow-accent-three: 0 0 10px var(--color-accent-three);
+    --glow-accent-four: 0 0 10px var(--color-accent-four);
+
+    /* Transition */
+    --transition-speed: 0.3s;
+
+    /* Toasts */
+    --toastContainerTop: 3.5rem;
+    --toastBackground: var(--color-muted-text);
+    --toastColor: var(--color-muted-light);
+    --toastBarBackground: var(--color-accent-one);
+    --toastBoxShadow: var(--color-accent-one);
+    --toastBorder: var(--color-accent-one);
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        /* Base Colors for Dark Mode */
+        --color-dark: #08000f;
+        --color-dark-overlay: rgba(8, 0, 15, 0.73);
+        --color-muted-dark: #4b4b4b;
+        --color-light: #f3f3f3;
+        --color-light-overlay: rgba(255, 255, 255, 0.9);
+        --color-muted-light: #c4c0c0;
+
+        /* Background and Text */
+        --color-bg-main: var(--color-dark);
+        --color-bg-secondary: var(--color-dark-overlay);
+        --color-text: var(--color-light);
+        --color-muted-text: var(--color-muted-light);
+
+        /* Accent Colors */
+        --color-accent-one: #e6ff00;
+        /* Muted neon green */
+        --color-accent-two: #c643ff;
+        /* Muted neon purple */
+        --color-accent-three: #00ffe6;
+        /* Muted neon teal */
+        --color-accent-four: #ff63a1;
+        /* Muted neon pink */
+
+        /* Shadows */
+        --shadow-light: 0 4px 6px rgba(255, 255, 255, 0.1);
+        --shadow-dark: 0 4px 6px rgba(0, 0, 0, 0.7);
+
+        /* Glow Effects */
+        --glow-accent-one: 0 0 15px var(--color-accent-one);
+        --glow-accent-two: 0 0 15px var(--color-accent-two);
+        --glow-accent-three: 0 0 15px var(--color-accent-three);
+        --glow-accent-four: 0 0 15px var(--color-accent-four);
+
+
+
+        /* Toasts */
+        --toastBackground: var(--color-muted-text);
+        --toastColor: var(--color-muted-dark);
+
+    }
+}
+
+

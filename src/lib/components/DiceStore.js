@@ -122,6 +122,8 @@ export async function processDiceResult(diceString, theme) {
 		resultNumber = Math.min(...result.sets.flatMap((s) => s.rolls).map((r) => r.value));
 	}
 
+	console.log('calc output');
+	
 	if (result.notation.includes('{success}')) {
 		if (resultNumber === 20) {
 			outcome = 'lucid success';
