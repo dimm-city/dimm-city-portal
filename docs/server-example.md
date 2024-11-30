@@ -2,6 +2,7 @@
 
 ## SvelteKit / Vite Dev Server
 
+`vite.config.js`
 ```js
 import { sveltekit } from '@sveltejs/kit/vite';
 import { defineConfig } from 'vite';
@@ -39,7 +40,7 @@ export default defineConfig({
 const socketIo = require('socket.io');
 const httpServer = require('http').createServer();
 const io = socketIo(httpServer, {
-    path: '/portal-connection',
+    path: '/portal-hub',
     cors: {
         origin: '*',
         methods: ['GET', 'POST']

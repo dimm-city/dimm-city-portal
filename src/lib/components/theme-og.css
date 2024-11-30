@@ -1,0 +1,99 @@
+:root {
+    /* Colors */
+    --color-dark: #000000f2;
+    --color-dark-overlay: #11111180;
+    --color-muted-dark: #4b4b4b;
+    --color-light: #f3f3f3;
+    --color-light-overlay: #ffffffe6;
+    --color-muted-light: #c4c0c0;
+
+    --color-bg-main: var(--color-light);
+    --color-bg-secondary: var(--color-light-overlay);
+    --color-text: var(--color-dark);
+    --color-muted-text: var(--color-muted-dark);
+
+    /* Accent Color Palette */
+    --color-accent-one: #e4772f;
+    --color-accent-two: #7a17eb;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+
+        --color-dark: #08000f;
+        --color-dark-overlay: #08000f73;
+        
+        /* Colors */
+        --color-bg-main: var(--color-dark);
+        --color-bg-secondary: var(--color-dark-overlay);
+        --color-text: var(--color-light);
+        --color-muted-text: var(--color-muted-light);
+
+        /* Accent Color Palette */
+        --color-accent-one: #e6ff00;
+        --color-accent-two: #c643ff;
+
+    }
+}
+
+/*https://personalizedrefrigerator.github.io/js-draw/typedoc/#md:changing-the-editors-color-theme*/
+.editor-container .imageEditorContainer {
+    /* Default colors for the editor -- light mode */
+
+    /* Used for unselected buttons and dialog text. */
+    --background-color-1: var(--color-light);
+    --foreground-color-1: var(--color-dark);
+
+    /* Used for some menu/toolbar backgrounds. */
+    --background-color-2: var(--color-light-overlay);
+    --foreground-color-2: var(--color-muted-dark);
+
+    /* Used for other menu/toolbar backgrounds. */
+    --background-color-3: var(--color-light-overlay);
+    --foreground-color-3: var(--color-muted-dark);
+
+    /* Used for selected buttons. */
+    --selection-background-color: var(--color-light-overlay);
+    --selection-foreground-color: var(--color-dark-overlay);
+
+    /* Used for dialog backgrounds */
+    --background-color-transparent: var(--color-dark-overlay);
+
+    /* Used for shadows */
+    --shadow-color: var(--color-dark-overlay);
+
+    /* Color used for some button/input foregrounds */
+    --primary-action-foreground-color: var(--color-accent-one);
+}
+
+@media (prefers-color-scheme: dark) {
+    .editor-container .imageEditorContainer {
+        /* Default colors for the editor -- dark mode */
+
+        /* Used for unselected buttons and dialog text. */
+        --background-color-1: var(--color-dark);
+        --foreground-color-1: var(--color-light);
+
+        /* Used for some menu/toolbar backgrounds. */
+        --background-color-2: var(--color-dark);
+        --foreground-color-2: var(--color-muted-light);
+
+        /* Used for other menu/toolbar backgrounds. */
+        --background-color-3: var(--color-dark);
+        --foreground-color-3: var(--color-muted-light);
+
+        /* Used for selected buttons. */
+
+        --selection-background-color: var(--color-light-overlay);
+        --selection-foreground-color: var(--color-dark-overlay);
+
+        /* Used for dialog backgrounds */
+        --background-color-transparent: var(--color-dark-overlay);
+
+        /* Used for shadows */
+        --shadow-color: var(--color-light-overlay);
+
+        /* Color used for some button/input foregrounds */
+        --primary-action-foreground-color: var(--color-accent-one);
+    }
+}

@@ -14,7 +14,7 @@
 	} from './PortalStore';
 	import Editor from './editor/Editor.svelte';
 	import { isHost } from './PortalStore.js';
-
+	import './theme.css';
 	let { config } = $props();
 </script>
 

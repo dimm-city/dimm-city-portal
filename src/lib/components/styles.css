@@ -1,4 +1,5 @@
-@import url("http://fonts.googleapis.com/css2?family=Titillium+Web:wght@100;200;300;400;500;600;700");
+@import url("//fonts.googleapis.com/css2?family=Titillium+Web:wght@100;200;300;400;500;600;700");
+@import url('./theme.css');
 
 /* https://www.1001fonts.com/lixdu-font.html#license */
 @font-face {
@@ -18,17 +19,17 @@
     --line-height-header: 2rem;
 
     /* Colors */
-    --color-bg-main: #08000f;
+    /* --color-bg-main: #08000f;
     --color-bg-secondary: #190030;
     --color-text: #ffffffe6;
     --color-muted-text: #c4c0c0;
     --color-muted-dark: #4b4b4b;
     --color-dark-overlay: #11111180;
-    --color-dark: #000000f2;
+    --color-dark: #000000f2; */
 
     /* Accent Color Palette */
-    --color-accent-one: #e6ff00;
-    --color-accent-two: #c643ff;
+    /* --color-accent-one: #e6ff00;
+    --color-accent-two: #c643ff; */
 
     /* Borders and Shadows */
     --outline-width: 2px;
@@ -53,6 +54,32 @@
     --color-error-border: var(--color-error-text);
 
 
+}
+
+@media screen and (prefers-color-scheme: dark) {
+    :root {
+        /* Borders and Shadows */
+        --outline-width: 2px;
+        --border-width: 1px;
+        --border-radius: 0rem;
+        --shadow-default: 0 4px 6px var(--color-light-overlay);
+        --shadow-accent: 0 0 20px var(--color-accent-two);
+        --shadow-accent-small: 0 0 10px var(--color-accent-two);
+        --shadow-accent-text: 0 0 4px var(--color-accent-one);
+
+        /* Alert Styles */
+        --color-alert-text: var(--color-text);
+        --color-alert-border: var(--color-accent-one);
+        --color-alert-bg: var(--color-bg-secondary);
+
+        --color-warning-bg: var(--color-accent-two);
+        --color-warning-text: var(--color-text);
+        --color-warning-border: var(--color-warning-text);
+
+        --color-error-bg: var(--color-accent-one);
+        --color-error-text: var(--color-text);
+        --color-error-border: var(--color-error-text);
+    }
 }
 
 [data-augmented-ui] {
@@ -159,7 +186,7 @@ button {
 }
 
 button:hover {
-    box-shadow: var(--shadow-accent-small);
+    /* box-shadow: var(--shadow-accent-small); */
     text-shadow: var(--shadow-accent-text);
     transition-duration: 300ms;
 }
@@ -174,7 +201,7 @@ button.header {
 
 input,
 textarea {
-    background-color: var(--color-dark);
+    background-color: var(--color-bg-secondary);
     color: var(--color-text);
     border: var(--border-width) solid var(--color-accent-two);
     padding: 0.5rem;
