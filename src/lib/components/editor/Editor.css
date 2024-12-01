@@ -124,8 +124,3 @@ div.toolbar-edgemenu-container div.action-button-row button {
 div.toolbar-edgemenu-container div.action-button-row button[aria-checked=true] {
     color: var(--color-accent-two);
 }
-
-.player-token {
-    border-radius: 40%;
-    border: thin solid var(--color-accent-two);
-}
