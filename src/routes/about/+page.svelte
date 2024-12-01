@@ -107,6 +107,7 @@
 <style>
 	section {
 		min-height: 100dvh;
+        margin-inline: 1rem;
 		position: relative;
 		background: rgba(255, 255, 255, 0.1);
 	}
@@ -124,7 +125,6 @@
     }
 
 	section.glass {
-		width: min(90ch, 100svw);
 		min-height: 50svh;
 		place-self: center;
 		margin-top: 1rem;
@@ -144,4 +144,10 @@
 	li {
 		margin-left: 1rem;
 	}
+
+    @container (max-width: 400px){
+        h3{
+            font-size: 0.8rem;
+        }
+    }
 </style>

@@ -56,6 +56,10 @@
 	.layout-container {
 		display: grid;
 		min-height: 100svh;
+		container-type: inline-size;
+	}
+	section{
+		margin-inline: 1rem;
 	}
 	footer {
 		/* position: sticky;
