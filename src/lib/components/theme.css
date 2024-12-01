@@ -3,25 +3,27 @@
     --color-dark: rgba(46, 46, 46, 0.8); /* Dull grey with opacity */
     --color-dark-overlay: rgba(30, 30, 30, 0.6);
     --color-muted-dark: rgba(90, 90, 90, 0.8);
-    --color-light: rgba(224, 224, 224, 0.8); /* Dull grey with opacity */
+    --color-light: #d3d3d3f3; /* Dull grey with opacity */
     --color-light-overlay: rgba(224, 224, 224, 0.85);
     --color-muted-light: rgba(160, 160, 160, 0.8);
 
     /* Background and Text */
     --color-bg-main: var(--color-light);
-    --color-bg-secondary: var(--color-light-overlay);
+    --color-bg-secondary: var(--color-dark-overlay);
     --color-text: #2e2e2e; /* Increased opacity for readability */
     --color-muted-text: #5a5a5a;
 
     /* Accent Colors */
-    --color-accent-one: #e4772f; /* Muted orange */
-    --color-accent-two: #7a17eb; /* Muted purple */
+    --color-accent-one: #cc6633; /* Muted orange */
+    --color-accent-two: #2b428f; /* Muted purple */
     --color-accent-three: #00ffc8; /* Muted teal */
     --color-accent-four: #ff4081; /* Muted pink */
 
     /* Shadows */
     --shadow-light: 0 4px 30px rgba(0, 0, 0, 0.1);
     --shadow-dark: 0 4px 30px rgba(0, 0, 0, 0.5);
+    --shadow-accent: 0 4px 30px var(--color-accent-two);
+
 
     /* Glow Effects */
     --glow-accent-one: 0 0 20px var(--color-accent-one);
