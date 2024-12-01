@@ -21,17 +21,8 @@
 
 <svelte:head>
 	<title>Dimm City Portal</title>
-
-	<link
-		rel="stylesheet"
-		href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
-	/>
-	<link
-		rel="stylesheet"
-		href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
-	/>
 </svelte:head>
-<section class:in-session={$inSession}>
+<section class:in-session="{$inSession}">
 	{#if $inSession == false}
 		<h1><small>Welcome to the</small>Dimm City Portal</h1>
 	{/if}
@@ -49,6 +40,7 @@
 		text-align: center;
 		margin-block: 1.5rem;
 	}
+
 	section {
 		min-height: 100dvh;
 		position: relative;
@@ -64,7 +56,6 @@
 		background-color: rgba(255, 255, 255);
 		z-index: -90000;
 	}
-
 	@media (prefers-color-scheme: dark) {
 		section.in-session::before {
 			background-image: url('/assets/dc-banner-yellow.png');

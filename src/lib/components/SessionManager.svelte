@@ -87,25 +87,15 @@
 </script>
 
 <div class="session-manager-container">
-	<div class="session-form-container">
+	<div class="session-form-container glass">
 		<div class="session-form" data-augmented-ui="tl-clip tr-clip bl-clip br-clip both">
 			<div>
 				{#if $sessionMode === 'create' || $sessionMode == null}
 					<h3>Portal Creation</h3>
-					<small>
-						Switch to <a class="switch-mode" onclick={() => ($sessionMode = 'join')}>connect mode</a
-						>
-					</small>
 				{:else if $sessionMode === 'join'}
 					<h3>Portal Connection</h3>
-					<small>
-						Switch to <a class="switch-mode" onclick={() => ($sessionMode = 'create')}>
-							create mode
-						</a>
-					</small>
 				{/if}
 			</div>
-			<hr />
 			<form>
 				<label for="portal-name">
 					Player Name
@@ -140,13 +130,21 @@
 				</label>
 			</form>
 
-			<hr />
 			<footer>
 				{#if $sessionMode === 'create' || $sessionMode == null}
-					<button onclick={createSession}>Create</button>
+					<button class="connect-button" onclick={createSession}>Create</button>
+					<small>
+						Switch to <button class="switch-mode" onclick={() => ($sessionMode = 'join')}
+							>connect mode</button
+						>
+					</small>
 				{/if}
 				{#if $sessionMode === 'join'}
-					<button onclick={joinSession}>Connect</button>
+					<button class="connect-button" onclick={joinSession}>Connect</button><small>
+						Switch to <button class="switch-mode" onclick={() => ($sessionMode = 'create')}>
+							create mode
+						</button>
+					</small>
 				{/if}
 			</footer>
 		</div>
@@ -167,13 +165,29 @@
 	.session-manager-container {
 		justify-items: center;
 		padding-inline: 1rem;
+		position: relative;
+	}
+	.session-manager-container::before {
+		position: absolute;
+		inset: 0.25rem;
+		background-size: contain;
+		/* place-self: center; */
+		opacity: 0.04;
+		/* background-color: var(--color-accent-three); */
+		/* background-image: url('/assets/the-dark.jpg'); */
+		background-position: center;
+		background-repeat: no-repeat;
+		
+		content: '';
 	}
 	.session-form-container {
 		display: grid;
 		height: 100%;
-		outline: var(--color-accent-one) solid var(--outline-width);
-
 		box-shadow: var(--shadow-accent);
+		background: rgba(255, 255, 255, 0.1);
+		/* border: var(--color-accent-one) solid var(--outline-width);
+		border-radius: 2rem;
+		background-color: var(--color-dark-overlay); */
 	}
 
 	.session-form {
@@ -195,6 +209,10 @@
 		margin: auto;
 		width: 100%;
 	}
+	.switch-mode {
+		appearance: none;
+		color: var(--color-accent-one);
+	}
 	form {
 		display: flex;
 		flex-direction: column;
@@ -202,20 +220,16 @@
 		justify-content: space-between;
 	}
 
-	button {
-		font-family: var(--font-main);
-		color: var(--color-accent-one);
-		background-color: var(--color-accent-two);
-		padding: 0.5rem 1rem;
+	footer button.connect-button {
+		font-family: var(--font-header);
+		width: 100%;
+		padding-block: 0.7rem;
+		color: var(--color-accent-two);
+		background-color: var(--color-accent-one);
 		border-radius: var(--border-radius);
-		transition: background-color, box-shadow, text-shadow;
-		transition-duration: 500ms;
-		transition-timing-function: ease-in-out;
 	}
 
-	button:hover {
-		/* box-shadow: var(--shadow-accent-small); */
-		text-shadow: var(--shadow-accent-text);
-		transition-duration: 300ms;
+	footer small {
+		padding-inline: 0.25rem;
 	}
 </style>

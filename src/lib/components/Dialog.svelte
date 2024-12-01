@@ -98,6 +98,8 @@
 		padding: 0;
 		margin: 0;
 		background-color: transparent;
+		color: var(--color-accent-two);
+	
 	}
 	button.close-button:hover {
 		box-shadow: none;

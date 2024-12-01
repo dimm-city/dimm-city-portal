@@ -1,6 +1,5 @@
 /* Editor Styles */
-.editor-container .imageEditorContainer {
-    /* Light Mode */
+.editor-container  .imageEditorContainer{
     --background-color-1: var(--color-light-overlay);
     --foreground-color-1: var(--color-dark);
 
@@ -19,14 +18,10 @@
 
     --primary-action-foreground-color: var(--color-accent-one);
 
-    /* Apply Shadows and Glow */
-    box-shadow: var(--shadow-light);
-    transition: box-shadow var(--transition-speed);
 }
 
 @media (prefers-color-scheme: dark) {
-    .editor-container .imageEditorContainer {
-        /* Dark Mode */
+    .editor-container  .imageEditorContainer{
         --background-color-1: var(--color-dark-overlay);
         --foreground-color-1: var(--color-light);
 
@@ -41,13 +36,10 @@
 
         --background-color-transparent: var(--color-dark-overlay);
 
-        --shadow-color: var(--color-light-overlay);
+        --shadow-color: var(--shadow-accent);
 
         --primary-action-foreground-color: var(--color-accent-one);
 
-        /* Apply Shadows and Glow */
-        box-shadow: var(--shadow-dark);
-        transition: box-shadow var(--transition-speed);
     }
 }
 
@@ -60,9 +52,20 @@
     padding-inline: 1rem;
     border-bottom: 1px solid var(--primary-action-foreground-color);
 }
-
+.editor-container .toolbar-root,
+.editor-container  .toolbar-edge-toolbar>div.toolbar-element.toolbar-action-row {
+   
+    background-color: var(--background-color-2);
+    color: var(--foreground-color-2);
+    --icon-color: var(--foreground-color-2);
+}
 .toolbar-edgemenu-container .toolbar-edgemenu button {
     font-size: 0.8rem;
+}
+
+.toolbar-edge-toolbar .toolbar-toolContainer>.toolbar-button:hover {
+    color: var(--color-accent-two);
+
 }
 
 .toolbar-edge-toolbar>div.toolbar-element.toolbar-tool-row {
@@ -123,4 +126,27 @@ div.toolbar-edgemenu-container div.action-button-row button {
 
 div.toolbar-edgemenu-container div.action-button-row button[aria-checked=true] {
     color: var(--color-accent-two);
+}
+
+
+div.toolbar-edgemenu-container .toolbar-edgemenu {
+    --toolbar-button-height: 48px;
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+    background-color: var(--glass-bg);
+    color: var(--foreground-color-2);
+    --icon-color: var(--foreground-color-2);
+    /* box-shadow: 0px 0px 1px var(--shadow-color); */
+    box-shadow: var(--shadow-light);
+    padding-left: 10px;
+    padding-right: 10px;
+
+    width: min(400px, 100vw);
+    box-sizing: border-box;
+    border-radius: var(--border-radius);
+    /* border-top-left-radius: 30px; */
+    /* border-top-right-radius: 30px; */
+    transition: transform .1s ease, padding-bottom .1s ease;
+    margin-bottom: 1rem;
 }
