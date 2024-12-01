@@ -18,6 +18,7 @@
 		href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
 	/>
 </svelte:head>
+<div class="layout-container">
 <section class:in-session={$inSession}>
 	{@render children()}
 </section>
@@ -50,11 +51,15 @@
 		</a>
 	</footer>
 {/if}
-
+</div>
 <style>
+	.layout-container {
+		display: grid;
+		min-height: 100svh;
+	}
 	footer {
-		position: fixed;
-		bottom: 1rem;
+		/* position: sticky;
+		bottom: 1rem; */
 		display: grid;
 		grid-auto-flow: column;
 		align-items: end;
