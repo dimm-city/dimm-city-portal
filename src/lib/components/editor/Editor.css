@@ -12,9 +12,9 @@
     --selection-background-color: var(--color-muted-dark);
     --selection-foreground-color: var(--color-light-overlay);
 
-    --background-color-transparent: var(--color-dark-overlay);
+    /* --background-color-transparent: var(--color-muted-dark); */
 
-    --shadow-color: var(--color-dark-overlay);
+    --shadow-light: var(--shadow-accent);
 
     --primary-action-foreground-color: var(--color-accent-one);
 
