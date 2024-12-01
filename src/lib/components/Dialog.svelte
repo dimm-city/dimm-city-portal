@@ -23,7 +23,7 @@
 <!-- svelte-ignore a11y-click-events-have-key-events a11y-no-noninteractive-element-interactions -->
 <dialog bind:this={dialog} on:close on:click|self={close} data-augmented-ui={aug}>
 	<!-- svelte-ignore a11y-no-static-element-interactions -->
-	<div on:click|stopPropagation class="dialog-container">
+	<div on:click|stopPropagation class="dialog-container glass">
 		<div class="dialog-grid">
 			<div class="dialog-header">
 				<slot name="header">
@@ -54,9 +54,9 @@
 		padding: 0;
 		position: absolute;
 		background-color: var(--color-bg-secondary);
-		outline-color: var(--color-accent-one);
+		/* outline-color: var(--color-accent-one);
 		outline-style: solid;
-		outline-width: 1px;
+		outline-width: 1px; */
 		color: var(--color-text);
 		min-width: 30ch;
 		min-height: 30ch;

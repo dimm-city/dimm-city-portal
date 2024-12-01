@@ -1,42 +1,41 @@
 :root {
     /* Base Colors */
-    --color-dark: #2e2e2e;
-    /* Dull grey instead of pure black */
-    --color-dark-overlay: rgba(30, 30, 30, 0.8);
-    --color-muted-dark: #5a5a5a;
-    --color-light: #e0e0e0;
-    /* Dull grey instead of white */
-    --color-light-overlay: rgba(224, 224, 224, 0.9);
-    --color-muted-light: #a0a0a0;
+    --color-dark: rgba(46, 46, 46, 0.8); /* Dull grey with opacity */
+    --color-dark-overlay: rgba(30, 30, 30, 0.6);
+    --color-muted-dark: rgba(90, 90, 90, 0.8);
+    --color-light: rgba(224, 224, 224, 0.8); /* Dull grey with opacity */
+    --color-light-overlay: rgba(224, 224, 224, 0.85);
+    --color-muted-light: rgba(160, 160, 160, 0.8);
 
     /* Background and Text */
     --color-bg-main: var(--color-light);
     --color-bg-secondary: var(--color-light-overlay);
-    --color-text: var(--color-dark);
-    --color-muted-text: var(--color-muted-dark);
+    --color-text: #2e2e2e; /* Increased opacity for readability */
+    --color-muted-text: #5a5a5a;
 
     /* Accent Colors */
-    --color-accent-one: #e4772f;
-    /* Muted orange */
-    --color-accent-two: #7a17eb;
-    /* Muted purple */
-    --color-accent-three: #00ffc8;
-    /* Muted teal */
-    --color-accent-four: #ff4081;
-    /* Muted pink */
+    --color-accent-one: #e4772f; /* Muted orange */
+    --color-accent-two: #7a17eb; /* Muted purple */
+    --color-accent-three: #00ffc8; /* Muted teal */
+    --color-accent-four: #ff4081; /* Muted pink */
 
     /* Shadows */
-    --shadow-light: 0 4px 6px rgba(0, 0, 0, 0.1);
-    --shadow-dark: 0 4px 6px rgba(0, 0, 0, 0.5);
+    --shadow-light: 0 4px 30px rgba(0, 0, 0, 0.1);
+    --shadow-dark: 0 4px 30px rgba(0, 0, 0, 0.5);
 
     /* Glow Effects */
-    --glow-accent-one: 0 0 10px var(--color-accent-one);
-    --glow-accent-two: 0 0 10px var(--color-accent-two);
-    --glow-accent-three: 0 0 10px var(--color-accent-three);
-    --glow-accent-four: 0 0 10px var(--color-accent-four);
+    --glow-accent-one: 0 0 20px var(--color-accent-one);
+    --glow-accent-two: 0 0 20px var(--color-accent-two);
+    --glow-accent-three: 0 0 20px var(--color-accent-three);
+    --glow-accent-four: 0 0 20px var(--color-accent-four);
 
     /* Transition */
     --transition-speed: 0.3s;
+
+    /* Glassmorphism Effects */
+    --glass-bg: rgba(255, 255, 255, 0.1);
+    --glass-border: rgba(255, 255, 255, 0.3);
+    --glass-backdrop: blur(10px);
 
     /* Toasts */
     --toastContainerTop: 3.5rem;
@@ -50,46 +49,62 @@
 @media (prefers-color-scheme: dark) {
     :root {
         /* Base Colors for Dark Mode */
-        --color-dark: #08000f;
-        --color-dark-overlay: rgba(8, 0, 15, 0.73);
-        --color-muted-dark: #4b4b4b;
-        --color-light: #f3f3f3;
-        --color-light-overlay: rgba(255, 255, 255, 0.9);
-        --color-muted-light: #c4c0c0;
+        --color-dark: rgba(8, 0, 15, 0.8);
+        --color-dark-overlay: rgba(8, 0, 15, 0.6);
+        --color-muted-dark: rgba(75, 75, 75, 0.8);
+        --color-light: rgba(243, 243, 243, 0.8);
+        --color-light-overlay: rgba(255, 255, 255, 0.85);
+        --color-muted-light: rgba(196, 192, 192, 0.8);
 
         /* Background and Text */
         --color-bg-main: var(--color-dark);
         --color-bg-secondary: var(--color-dark-overlay);
-        --color-text: var(--color-light);
-        --color-muted-text: var(--color-muted-light);
+        --color-text: #f3f3f3; /* Increased opacity for readability */
+        --color-muted-text: #c4c0c0;
 
         /* Accent Colors */
-        --color-accent-one: #e6ff00;
-        /* Muted neon green */
-        --color-accent-two: #c643ff;
-        /* Muted neon purple */
-        --color-accent-three: #00ffe6;
-        /* Muted neon teal */
-        --color-accent-four: #ff63a1;
-        /* Muted neon pink */
+        --color-accent-one: #e6ff00; /* Muted neon green */
+        --color-accent-two: #c643ff; /* Muted neon purple */
+        --color-accent-three: #00ffe6; /* Muted neon teal */
+        --color-accent-four: #ff63a1; /* Muted neon pink */
 
         /* Shadows */
-        --shadow-light: 0 4px 6px rgba(255, 255, 255, 0.1);
-        --shadow-dark: 0 4px 6px rgba(0, 0, 0, 0.7);
+        --shadow-light: 0 4px 30px rgba(255, 255, 255, 0.1);
+        --shadow-dark: 0 4px 30px rgba(0, 0, 0, 0.7);
 
         /* Glow Effects */
-        --glow-accent-one: 0 0 15px var(--color-accent-one);
-        --glow-accent-two: 0 0 15px var(--color-accent-two);
-        --glow-accent-three: 0 0 15px var(--color-accent-three);
-        --glow-accent-four: 0 0 15px var(--color-accent-four);
+        --glow-accent-one: 0 0 25px var(--color-accent-one);
+        --glow-accent-two: 0 0 25px var(--color-accent-two);
+        --glow-accent-three: 0 0 25px var(--color-accent-three);
+        --glow-accent-four: 0 0 25px var(--color-accent-four);
 
-
+        /* Glassmorphism Effects */
+        --glass-bg: rgba(0, 0, 0, 0.1);
+        --glass-border: rgba(255, 255, 255, 0.3);
+        --glass-backdrop: blur(10px);
 
         /* Toasts */
         --toastBackground: var(--color-muted-text);
         --toastColor: var(--color-muted-dark);
-
     }
 }
 
+/* Glassmorphism Utility Class */
+.glass, .toolbar-tool-properties {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: var(--glass-backdrop);
+    box-shadow: var(--shadow-light);
+    border-radius: 15px;
+    padding: 1rem;
+    transition: background var(--transition-speed), box-shadow var(--transition-speed);
+}
 
+@media (prefers-color-scheme: dark) {
+    .glass, .toolbar-tool-properties {
+        background: var(--glass-bg);
+        border: 1px solid var(--glass-border);
+        backdrop-filter: var(--glass-backdrop);
+        box-shadow: var(--shadow-dark);
+    }
+}

@@ -141,14 +141,14 @@
 			</form>
 
 			<hr />
-			<div>
+			<footer>
 				{#if $sessionMode === 'create' || $sessionMode == null}
 					<button onclick={createSession}>Create</button>
 				{/if}
 				{#if $sessionMode === 'join'}
 					<button onclick={joinSession}>Connect</button>
 				{/if}
-			</div>
+			</footer>
 		</div>
 	</div>
 </div>
@@ -200,5 +200,22 @@
 		flex-direction: column;
 		align-items: center;
 		justify-content: space-between;
+	}
+
+	button {
+		font-family: var(--font-main);
+		color: var(--color-accent-one);
+		background-color: var(--color-accent-two);
+		padding: 0.5rem 1rem;
+		border-radius: var(--border-radius);
+		transition: background-color, box-shadow, text-shadow;
+		transition-duration: 500ms;
+		transition-timing-function: ease-in-out;
+	}
+
+	button:hover {
+		/* box-shadow: var(--shadow-accent-small); */
+		text-shadow: var(--shadow-accent-text);
+		transition-duration: 300ms;
 	}
 </style>
