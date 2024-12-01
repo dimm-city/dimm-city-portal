@@ -15,7 +15,7 @@ import Editor, {
 	Color4,
 	BackgroundComponentBackgroundType
 } from 'js-draw';
-import { BootstrapIconProvider } from './BootstrapIconProvider.js';
+import { BootstrapIconProvider } from '../icons/BootstrapIconProvider.js';
 import {
 	copySessionUrl,
 	leaveSession,
@@ -26,7 +26,7 @@ import {
 	player,
 	requestDiceRoll
 } from '../PortalStore.js';
-import { DiceIcon, GearIcon, LeaveIcon, PeopleIcon, PlayerIcon, SaveIcon, ShareIcon } from './DCIconProvider.js';
+import { DiceIcon, GearIcon, LeaveIcon, PeopleIcon, PlayerIcon, SaveIcon, ShareIcon } from '../icons/DCIconProvider.js';
 import { get } from 'svelte/store';
 import { GridComponent } from './GridComponent.js';
 import { SvelteWidget } from './SvelteWidget.js';

@@ -1,6 +1,6 @@
-import { PlayerIcon } from "./DCIconProvider.js";
-import TokenSelector from "./TokenSelector.svelte";
-import { SvelteWidget } from "./SvelteWidget.js";
+import { PlayerIcon } from "../../icons/DCIconProvider.js";
+import TokenSelector from "../TokenSelector.svelte";
+import { SvelteWidget } from "../SvelteWidget.js";
 export class PlayerTokenWidget extends SvelteWidget {
     //Example of using SvelteWidget as a base class for more complex widgets.
     constructor(editor, props, localizationTable = null) {
