@@ -42,8 +42,11 @@
 	}
 
 	section {
-		min-height: 100dvh;
 		position: relative;
+	}
+	section.in-session{
+		min-height: 100dvh;
+
 	}
 	section.in-session::before {
 		position: absolute;
