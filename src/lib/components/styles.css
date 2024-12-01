@@ -174,7 +174,7 @@ a:hover {
     color: var(--color-accent-one);
 }
 
-button {
+/* button {
     font-family: var(--font-main);
     color: var(--color-accent-one);
     background-color: var(--color-accent-two);
@@ -186,10 +186,10 @@ button {
 }
 
 button:hover {
-    /* box-shadow: var(--shadow-accent-small); */
+    / box-shadow: var(--shadow-accent-small); /
     text-shadow: var(--shadow-accent-text);
     transition-duration: 300ms;
-}
+} */
 
 button.header {
     font-family: var(--font-header);
