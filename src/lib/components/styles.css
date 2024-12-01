@@ -18,23 +18,11 @@
     --spacing-letter: 1.5px;
     --line-height-header: 2rem;
 
-    /* Colors */
-    /* --color-bg-main: #08000f;
-    --color-bg-secondary: #190030;
-    --color-text: #ffffffe6;
-    --color-muted-text: #c4c0c0;
-    --color-muted-dark: #4b4b4b;
-    --color-dark-overlay: #11111180;
-    --color-dark: #000000f2; */
-
-    /* Accent Color Palette */
-    /* --color-accent-one: #e6ff00;
-    --color-accent-two: #c643ff; */
 
     /* Borders and Shadows */
     --outline-width: 2px;
     --border-width: 1px;
-    --border-radius: 0rem;
+    --border-radius: 0.5rem;
     --shadow-default: 0 4px 6px var(--color-dark-overlay);
     --shadow-accent: 0 0 20px var(--color-accent-two);
     --shadow-accent-small: 0 0 10px var(--color-accent-two);
@@ -52,8 +40,6 @@
     --color-error-bg: var(--color-accent-one);
     --color-error-text: var(--color-text);
     --color-error-border: var(--color-error-text);
-
-
 }
 
 @media screen and (prefers-color-scheme: dark) {
@@ -61,7 +47,6 @@
         /* Borders and Shadows */
         --outline-width: 2px;
         --border-width: 1px;
-        --border-radius: 0rem;
         --shadow-default: 0 4px 6px var(--color-light-overlay);
         --shadow-accent: 0 0 20px var(--color-accent-two);
         --shadow-accent-small: 0 0 10px var(--color-accent-two);
@@ -174,6 +159,7 @@ a:hover {
     color: var(--color-accent-one);
 }
 
+
 /* button {
     font-family: var(--font-main);
     color: var(--color-accent-one);
@@ -186,19 +172,10 @@ a:hover {
 }
 
 button:hover {
-    / box-shadow: var(--shadow-accent-small); /
+    /  box-shadow: var(--shadow-accent-small);  /
     text-shadow: var(--shadow-accent-text);
     transition-duration: 300ms;
 } */
-
-footer button,
-button.header {
-    font-family: var(--font-header);
-    width: 100%;
-    margin-block: 0.5rem;
-    color: var(--color-accent-two);
-    background-color: var(--color-accent-one);
-}
 
 input,
 textarea {

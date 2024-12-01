@@ -35,7 +35,7 @@
     /* Glassmorphism Effects */
     --glass-bg: rgba(255, 255, 255, 0.1);
     --glass-border: rgba(255, 255, 255, 0.3);
-    --glass-backdrop: blur(10px);
+    --glass-backdrop: blur(5px);
 
     /* Toasts */
     --toastContainerTop: 3.5rem;
@@ -49,7 +49,7 @@
 @media (prefers-color-scheme: dark) {
     :root {
         /* Base Colors for Dark Mode */
-        --color-dark: rgba(8, 0, 15, 0.8);
+        --color-dark: rgb(8, 0, 15);
         --color-dark-overlay: rgba(8, 0, 15, 0.6);
         --color-muted-dark: rgba(75, 75, 75, 0.8);
         --color-light: rgba(243, 243, 243, 0.8);
@@ -63,7 +63,7 @@
         --color-muted-text: #c4c0c0;
 
         /* Accent Colors */
-        --color-accent-one: #e6ff00; /* Muted neon green */
+        --color-accent-one: #ffa600; /* Muted neon green */
         --color-accent-two: #c643ff; /* Muted neon purple */
         --color-accent-three: #00ffe6; /* Muted neon teal */
         --color-accent-four: #ff63a1; /* Muted neon pink */
@@ -81,7 +81,7 @@
         /* Glassmorphism Effects */
         --glass-bg: rgba(0, 0, 0, 0.1);
         --glass-border: rgba(255, 255, 255, 0.3);
-        --glass-backdrop: blur(10px);
+        --glass-backdrop: blur(5px);
 
         /* Toasts */
         --toastBackground: var(--color-muted-text);
