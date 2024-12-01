@@ -21,7 +21,6 @@ import {
 	leaveSession,
 	showPlayerList,
 	showSessionDetails,
-	getPlayerToken,
 	postSerializedCommand,
 	editor,
 	player,
@@ -30,6 +29,8 @@ import {
 import { DiceIcon, GearIcon, LeaveIcon, PeopleIcon, PlayerIcon, SaveIcon, ShareIcon } from './DCIconProvider.js';
 import { get } from 'svelte/store';
 import { GridComponent } from './GridComponent.js';
+import { SvelteWidget } from './SvelteWidget.js';
+import TokenSelector from './TokenSelector.svelte';
 
 /**
  * @type {import("js-draw").Editor}
@@ -55,43 +56,6 @@ let selectListener;
  * @type {ImageComponent | null}
  */
 let playerToken;
-let playerTokenAdded = false;
-async function addPlayerToken() {
-	if (playerTokenAdded && playerToken) {
-		console.log('Token already added');
-		const s = _editor?.toolController.getMatchingTools(SelectionTool)?.at(0);
-		if (!s) {
-			console.warn('No selection tool found');
-			return;
-		}
-		_editor?.toolController.addPrimaryTool(s);
-		s?.setEnabled(true);
-		s?.setSelection([playerToken]);
-	} else {
-		const token = getPlayerToken();
-		const imageUrl = token?.src;
-		const image = new Image();
-		image.crossOrigin = 'anonymous'; // Allows CORS images without tainting the canvas
-		image.src = imageUrl;
-		image.dataset.playerId = token?.id;
-		image.classList.add('player-token');
-
-		const comp = await ImageComponent.fromImage(image, Mat33.identity);
-		comp.onRemoveFromImage = () => {
-			if (playerToken && !_editor?.image.getAllElements().includes(playerToken)) {
-				console.log('Player token removed');
-				playerToken = null;
-				playerTokenAdded = false;
-			}
-		};
-		comp.attachLoadSaveData('player-id', [token.id]);
-
-		playerToken = comp;
-		playerTokenAdded = true;
-		await _editor?.addAndCenterComponents([comp], true, 'Player token added');
-		console.log('Player token added', playerToken);
-	}
-}
 
 /**
  * @param {boolean} isHost
@@ -184,6 +148,16 @@ export function configureToolbar(isHost) {
 			}
 		);
 	} else {
+
+		toolbar.addWidget(new SvelteWidget(_editor,
+			'Player Token',
+			PlayerIcon,
+			'TokenSelector',
+			TokenSelector,
+			{
+				playerToken
+			}));
+
 		const selectionTools = _editor.toolController.getMatchingTools(SelectionTool);
 		const selectionTool = selectionTools.at(0);
 		if (!selectionTool) {
@@ -199,10 +173,13 @@ export function configureToolbar(isHost) {
 				// @ts-ignore
 				!evt.selectedComponents.every((c) => c == playerToken)
 			) {
-				// @ts-ignore
-				evt.tool.clearSelection();
-				// @ts-ignore
-				evt.tool.setSelection(evt.selectedComponents.filter((c) => c == playerToken));
+				const tokens = evt.selectedComponents.filter((c) => playerToken = c);
+
+				if (tokens.length > 0) {
+					evt.tool.setSelection(tokens);
+				}else{
+					evt.tool.clearSelection();				
+				}
 			}
 		});
 
@@ -229,18 +206,6 @@ export function configureToolbar(isHost) {
 		);
 
 		toolbar.addWidget(handToolWidget);
-		toolbar.addWidget(
-			new ActionButtonWidget(
-				_editor,
-				'Token',
-				() => PlayerIcon,
-				'Token',
-				addPlayerToken,
-				getLocalizationTable(),
-				true,
-				true
-			)
-		);
 		primaryPanZoomTool.setEnabled(true);
 	}
 	toolbar.addActionButton(
@@ -320,7 +285,7 @@ export async function configureEditor(editorElement, backgroundImageUrl = '') {
 
 			_editor.dispatch(_editor.image.addElement(comp));
 		}
-		
+
 		grid = new GridComponent(_editor);
 		_editor.dispatch(_editor.image.addElement(grid));
 
