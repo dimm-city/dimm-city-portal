@@ -108,6 +108,7 @@
 	section {
 		min-height: 100dvh;
         margin-inline: 1rem;
+		margin-block-end: 1rem;
 		position: relative;
 		background: rgba(255, 255, 255, 0.1);
 	}
