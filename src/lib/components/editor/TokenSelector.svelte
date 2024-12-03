@@ -66,8 +66,8 @@
 	:global(.toolbar-edgemenu-container .toolbar-edgemenu button:has(img)) {
 		border: none;
 		margin: 0;
-		background-color: var(--color-light-overlay);
-		box-shadow: 0 1px 2px var(--shadow-color);
+		background-color: var(--color-primary-overlay);
+		box-shadow: 0 1px 2px var(--shadow-accent-two);
 	}
 	img {
 		max-height: 300px;

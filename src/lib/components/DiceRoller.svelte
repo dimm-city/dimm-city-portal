@@ -73,7 +73,7 @@
 
 		// Update the theme
 		diceTheme.name += new Date().getTime().toString();
-		//TODO: figure out scaling dice properly
+		//FIXME: figure out scaling dice properly
 		//diceTheme.scale = scale;
 		diceBox.theme_customColorset = diceTheme;
 		//diceBox.DiceFactory.updateConfig({baseScale: scale, scale: true});

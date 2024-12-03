@@ -1,0 +1,44 @@
+/**
+This file maps the portal CSS properties to the properties for other libraries/components
+*/
+
+:root {
+    /* Toasts */
+    --toastContainerTop: 4.5rem;
+    --toastContainerRight: 1rem;
+    --toastContainerLeft: 1rem;
+    --toastMargin: auto;
+    --toastWidth: min(20rem, min-content);
+    --toastBorderRadius: var(--border-radius);
+
+    --toastBackground: var(--color-alert-bg);
+    --toastColor: var(--color-alert-text);
+
+    --toastBarBackground: var(--color-alert-accent);
+    --toastBorder: var(--color-alert-accent);
+    --toastBoxShadow: var(--shadow-alert);
+
+}
+
+._toastContainer li {
+    margin-bottom: 1rem;
+}
+
+._toastContainer li.warning {
+    --color-alert-accent: var(--color-warning-accent);
+    --toastBarBackground: var(--color-warning-accent);
+    --toastBorder: var(--color-warning-accent);
+    --toastBoxShadow: var(--shadow-warning);
+}
+
+._toastContainer li.error {
+    --color-alert-accent: var(--color-error-accent);
+    --toastBarBackground: var(--color-error-accent);
+    --toastBorder: var(--color-error-accent);
+    --toastBoxShadow: var(--shadow-error);
+}
+
+._toastBtn::after {
+    color: var(--color-accent-one);
+    content: 'X';
+}

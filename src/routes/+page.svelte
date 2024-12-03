@@ -11,7 +11,9 @@
 	sessionMode.set($page.url.searchParams?.get('mode') ?? 'create');
 	player.set(data.player);
 	/** @type {import('@zerodevx/svelte-toast').SvelteToastOptions}*/
-	const options = {};
+	const options = {
+		classes: ['alert']
+	};
 	console.log('Page loaded', data);
 
 	import '$lib/components/styles.css';
@@ -22,7 +24,7 @@
 <svelte:head>
 	<title>Dimm City Portal</title>
 </svelte:head>
-<section class:in-session="{$inSession}">
+<section class:in-session={$inSession}>
 	{#if $inSession == false}
 		<h1><small>Welcome to the</small>Dimm City Portal</h1>
 	{/if}
@@ -44,9 +46,8 @@
 	section {
 		position: relative;
 	}
-	section.in-session{
+	section.in-session {
 		min-height: 100dvh;
-
 	}
 	section.in-session::before {
 		position: absolute;

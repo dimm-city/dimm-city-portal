@@ -87,7 +87,7 @@
 </script>
 
 <div class="session-manager-container">
-	<div class="session-form-container glass">
+	<div class="session-form-container">
 		<div class="session-form" data-augmented-ui="tl-clip tr-clip bl-clip br-clip both">
 			<div>
 				{#if $sessionMode === 'create' || $sessionMode == null}
@@ -173,21 +173,25 @@
 		background-size: contain;
 		/* place-self: center; */
 		opacity: 0.04;
-		/* background-color: var(--color-accent-three); */
 		/* background-image: url('/assets/the-dark.jpg'); */
 		background-position: center;
 		background-repeat: no-repeat;
-		
+
 		content: '';
 	}
 	.session-form-container {
 		display: grid;
 		height: 100%;
-		box-shadow: var(--shadow-accent);
-		background: rgba(255, 255, 255, 0.1);
-		/* border: var(--color-accent-one) solid var(--outline-width);
-		border-radius: 2rem;
-		background-color: var(--color-dark-overlay); */
+
+		background: var(--color-bg-secondary-transparent);
+		border: 1px solid var(--color-primary-overlay);
+		backdrop-filter: var(--filter-backdrop);
+		box-shadow: var(--shadow-accent-two);
+		border-radius: 15px;
+		padding: 1rem;
+		transition:
+			background var(--transition-speed),
+			box-shadow var(--transition-speed);
 	}
 
 	.session-form {
