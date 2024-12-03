@@ -1,71 +1,13 @@
-@import url("//fonts.googleapis.com/css2?family=Titillium+Web:wght@100;200;300;400;500;600;700");
+
+@import url('./theme-map.css');
 @import url('./theme.css');
 
-/* https://www.1001fonts.com/lixdu-font.html#license */
-@font-face {
-    font-family: 'lixdu';
-    src: url('/assets/lixdu.woff');
-    line-height: 2rem;
-}
-
-/* Custom Properties */
-:root {
-    /* Font Families */
-    --font-header: 'lixdu', 'Titillium Web', 'Orbitron', sans-serif;
-    --font-main: 'Titillium Web', 'Tomorrow', 'Droid Sans Mono', sans-serif;
-
-    /* Typography */
-    --spacing-letter: 1.5px;
-    --line-height-header: 2rem;
-
-
-    /* Borders and Shadows */
-    --outline-width: 2px;
-    --border-width: 1px;
-    --border-radius: 0.5rem;
-    --shadow-default: 0 4px 6px var(--color-dark-overlay);
-    --shadow-accent: 0 0 20px var(--color-accent-two);
-    --shadow-accent-small: 0 0 10px var(--color-accent-two);
-    --shadow-accent-text: 0 0 4px var(--color-accent-one);
-
-    /* Alert Styles */
-    --color-alert-text: var(--color-text);
-    --color-alert-border: var(--color-accent-one);
-    --color-alert-bg: var(--color-bg-secondary);
-
-    --color-warning-bg: var(--color-accent-two);
-    --color-warning-text: var(--color-text);
-    --color-warning-border: var(--color-warning-text);
-
-    --color-error-bg: var(--color-accent-one);
-    --color-error-text: var(--color-text);
-    --color-error-border: var(--color-error-text);
-}
-
-@media screen and (prefers-color-scheme: dark) {
+@media (prefers-reduced-motion) {
     :root {
-        /* Borders and Shadows */
-        --outline-width: 2px;
-        --border-width: 1px;
-        --shadow-default: 0 4px 6px var(--color-light-overlay);
-        --shadow-accent: 0 0 20px var(--color-accent-two);
-        --shadow-accent-small: 0 0 10px var(--color-accent-two);
-        --shadow-accent-text: 0 0 4px var(--color-accent-one);
-
-        /* Alert Styles */
-        --color-alert-text: var(--color-text);
-        --color-alert-border: var(--color-accent-one);
-        --color-alert-bg: var(--color-bg-secondary);
-
-        --color-warning-bg: var(--color-accent-two);
-        --color-warning-text: var(--color-text);
-        --color-warning-border: var(--color-warning-text);
-
-        --color-error-bg: var(--color-accent-one);
-        --color-error-text: var(--color-text);
-        --color-error-border: var(--color-error-text);
+        --transition-speed: 0;
     }
 }
+
 
 [data-augmented-ui] {
 
@@ -131,7 +73,7 @@ button {
 
 /* Theme Styles */
 body {
-    background-color: var(--color-bg-main);
+    background-color: var(--color-bg-primary);
     color: var(--color-text);
     font-family: var(--font-main);
     letter-spacing: var(--spacing-letter);
@@ -152,30 +94,13 @@ h6 {
 
 a {
     color: var(--color-accent-two);
-    transition: color 0.3s ease;
+    transition: color var(--transition-speed) ease;
 }
 
 a:hover {
     color: var(--color-accent-one);
 }
 
-
-/* button {
-    font-family: var(--font-main);
-    color: var(--color-accent-one);
-    background-color: var(--color-accent-two);
-    padding: 0.5rem 1rem;
-    border-radius: var(--border-radius);
-    transition: background-color, box-shadow, text-shadow;
-    transition-duration: 500ms;
-    transition-timing-function: ease-in-out;
-}
-
-button:hover {
-    /  box-shadow: var(--shadow-accent-small);  /
-    text-shadow: var(--shadow-accent-text);
-    transition-duration: 300ms;
-} */
 
 input,
 textarea {
@@ -188,5 +113,5 @@ textarea {
 
 ::selection {
     background-color: var(--color-accent-two);
-    color: var(--color-dark);
+    color: var(--color-secondary);
 }

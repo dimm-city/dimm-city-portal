@@ -1,64 +1,37 @@
 /* Editor Styles */
-.editor-container  .imageEditorContainer{
-    --background-color-1: var(--color-light-overlay);
-    --foreground-color-1: var(--color-dark);
+.editor-container .imageEditorContainer {
+    --background-color-1: var(--color-primary-overlay);
+    --foreground-color-1: var(--color-secondary);
 
-    --background-color-2: var(--color-light-overlay);
-    --foreground-color-2: var(--color-muted-dark);
+    --background-color-2: var(--color-primary-overlay);
+    --foreground-color-2: var(--color-secondary-muted);
 
-    --background-color-3: var(--color-light-overlay);
-    --foreground-color-3: var(--color-muted-dark);
+    --background-color-3: var(--color-primary-overlay);
+    --foreground-color-3: var(--color-secondary-muted);
 
-    --selection-background-color: var(--color-muted-dark);
-    --selection-foreground-color: var(--color-light-overlay);
-
-    /* --background-color-transparent: var(--color-muted-dark); */
-
-    --shadow-light: var(--shadow-accent);
+    --background-color-transparent: var(--color-bg-transparent);
+    --selection-background-color: var(--color-secondary-muted);
+    --selection-foreground-color: var(--color-primary-overlay);
 
     --primary-action-foreground-color: var(--color-accent-one);
 
+    --shadow-color: var(--shadow-accent-two);
 }
 
-@media (prefers-color-scheme: dark) {
-    .editor-container  .imageEditorContainer{
-        --background-color-1: var(--color-dark-overlay);
-        --foreground-color-1: var(--color-light);
-
-        --background-color-2: var(--color-dark);
-        --foreground-color-2: var(--color-muted-light);
-
-        --background-color-3: var(--color-dark);
-        --foreground-color-3: var(--color-muted-light);
-
-        --selection-background-color: var(--color-light-overlay);
-        --selection-foreground-color: var(--color-dark-overlay);
-
-        --background-color-transparent: var(--color-dark-overlay);
-
-        --shadow-color: var(--shadow-accent);
-
-        --primary-action-foreground-color: var(--color-accent-one);
-
-    }
-}
 
 .editor-container .toolbar-edge-toolbar {
-    /* Default colors for the editor  -- light mode */
-    /* 
-    --background-color-3: var(--background-color-transparent);
-    --background-color-2: transparent; */
-    /* padding-bottom: 5px; */
     padding-inline: 1rem;
     border-bottom: 1px solid var(--primary-action-foreground-color);
 }
+
 .editor-container .toolbar-root,
-.editor-container  .toolbar-edge-toolbar>div.toolbar-element.toolbar-action-row {
-   
+.editor-container .toolbar-edge-toolbar>div.toolbar-element.toolbar-action-row {
+
     background-color: var(--background-color-2);
     color: var(--foreground-color-2);
     --icon-color: var(--foreground-color-2);
 }
+
 .toolbar-edgemenu-container .toolbar-edgemenu button {
     font-size: 0.8rem;
 }
@@ -79,14 +52,16 @@
     align-items: flex-start;
 }
 
-/* 
-.toolbar-button>.toolbar-icon,
- svg::before {
-    content: '';
-    background-color: rgba(102, 51, 153, 0.349);
-    border-radius: 50%;
-    overflow: visible;
-} */
+.toolbar-tool-properties {
+    background: var(--color-bg-transparent);
+    border: 1px solid var(--color-secondary-overlay);
+    backdrop-filter: var(--filter-backdrop);
+    box-shadow: var(--shadow-accent-two);
+    border-radius: 15px;
+    padding: 1rem;
+    transition: background var(--transition-speed), box-shadow var(--transition-speed);
+}
+
 
 @container (max-width: 800px) {
 
@@ -114,39 +89,55 @@
 }
 
 /*Dialog */
-
 .toolbar-edgemenu-container div.toolbar-help-overlay-button>button {
     width: min-content;
-
 }
 
 div.toolbar-edgemenu-container div.action-button-row button {
     font-family: var(--main-font-family);
 }
+/* div.toolbar-edgemenu-container div.action-button-row button:not(:disabled):hover {
+    font-family: var(--main-font-family);
+    color: var(--color-accent-one);
+} */
 
+
+div.toolbar-edgemenu-container button {
+    box-shadow: var(--shadow-secondary);
+    transition-property: box-shadow,color,border;
+    transition-duration: var(--transition-speed);
+    transition-timing-function: ease-in-out;
+    border: 1px solid transparent;
+    color: var(--color-accent-one);
+} 
+div.toolbar-edgemenu-container button:not(:disabled):hover {
+    box-shadow: var(--shadow-secondary);
+    transition-property: box-shadow, color;
+    transition-duration: var(--transition-speed);
+    transition-timing-function: ease-in-out;
+    border: 1px solid transparent;
+    color: var(--color-accent-two);
+} 
 div.toolbar-edgemenu-container div.action-button-row button[aria-checked=true] {
     color: var(--color-accent-two);
+    box-shadow: none;
+    border: 1px solid var(--color-accent-one);
+    background-color: var(--color-bg-primary-transparent);
 }
-
-
 div.toolbar-edgemenu-container .toolbar-edgemenu {
     --toolbar-button-height: 48px;
     touch-action: none;
     user-select: none;
     -webkit-user-select: none;
-    background-color: var(--glass-bg);
+    /* background-color: var(--color-bg-transparent);
     color: var(--foreground-color-2);
-    --icon-color: var(--foreground-color-2);
-    /* box-shadow: 0px 0px 1px var(--shadow-color); */
-    box-shadow: var(--shadow-light);
-    padding-left: 10px;
-    padding-right: 10px;
-
-    width: min(400px, 100vw);
+    --icon-color: var(--foreground-color-2); */
+    box-shadow: var(--shadow-accent-two);
+    padding-inline: 10px;
+    width: min(400px, 90vw);
     box-sizing: border-box;
     border-radius: var(--border-radius);
-    /* border-top-left-radius: 30px; */
-    /* border-top-right-radius: 30px; */
     transition: transform .1s ease, padding-bottom .1s ease;
+    
     margin-bottom: 1rem;
 }

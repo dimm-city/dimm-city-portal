@@ -1,7 +1,7 @@
 import { getDiceThemes } from './getDiceThemes';
 import { getLocalValue, setLocalValue } from './StoreUtils';
 import { derived, get, writable } from 'svelte/store';
-import { toast } from '@zerodevx/svelte-toast';
+import { showAlert } from './StoreUtils.js';
 export let showDiceConfig = writable(false);
 
 /** @type {import("svelte/store").Writable<DiceTheme[]>} */
@@ -69,7 +69,7 @@ export let showDiceResultToast = writable(true);
 
 export async function rollDice() {
 	console.log('rolling...');
-	
+
 	const rollerInstance = get(roller);
 
 	if (get(rolling) || !rollerInstance) return;
@@ -123,7 +123,7 @@ export async function processDiceResult(diceString, theme) {
 	}
 
 	console.log('calc output');
-	
+
 	if (result.notation.includes('{success}')) {
 		if (resultNumber === 20) {
 			outcome = 'lucid success';
@@ -146,6 +146,6 @@ export async function processDiceResult(diceString, theme) {
 		lastRoll.set(`${outcome} (${resultNumber})`);
 		rolling.set(false);
 		if (get(showDiceResultToast))
-			toast.push(`${outcome} (${resultNumber})`, { classes: ['dice-result'] });
+			showAlert(`${outcome} (${resultNumber})`);
 	}, delay);
 }

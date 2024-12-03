@@ -44,6 +44,6 @@ export class GridComponent extends BackgroundComponent {
 		const highestZ = Math.max(...indexes);
 		this._editor?.dispatchNoAnnounce(this.setZIndex(highestZ + 100));
 	}
-	// TODO: If using collaborative editing, also override `serialize`
+	// NOTE: If using collaborative editing, also override `serialize`
 	// and register a deserialization callback with `registerComponent`.
 }

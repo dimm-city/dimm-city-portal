@@ -1,112 +1,103 @@
+@import url("//fonts.googleapis.com/css2?family=Titillium+Web:wght@100;200;300;400;500;600;700");
+
+/* https://www.1001fonts.com/lixdu-font.html#license */
+@font-face {
+    font-family: 'lixdu';
+    src: url('/assets/lixdu.woff');
+    line-height: 2rem;
+}
+
 :root {
+    /* Font Families */
+    --font-header: 'lixdu', 'Titillium Web', 'Orbitron', sans-serif;
+    --font-main: 'Titillium Web', 'Tomorrow', 'Droid Sans Mono', sans-serif;
+
+    /* Typography */
+    --spacing-letter: 1.5px;
+    --line-height-header: 2rem;
+
     /* Base Colors */
-    --color-dark: rgba(46, 46, 46, 0.8); /* Dull grey with opacity */
-    --color-dark-overlay: rgba(30, 30, 30, 0.6);
-    --color-muted-dark: rgba(90, 90, 90, 0.8);
-    --color-light: #d3d3d3f3; /* Dull grey with opacity */
-    --color-light-overlay: rgba(224, 224, 224, 0.85);
-    --color-muted-light: rgba(160, 160, 160, 0.8);
+    --color-secondary: rgba(46, 46, 46, 0.8);
+    /* Dull grey with opacity */
+    --color-secondary-overlay: rgba(30, 30, 30, 0.6);
+    --color-secondary-muted: rgba(90, 90, 90, 0.8);
+    --color-primary: #d3d3d3f3;
+
+    /* Dull grey with opacity */
+    --color-primary-overlay: rgba(224, 224, 224, 0.85);
+    --color-primary-muted: rgba(160, 160, 160, 0.8);
 
     /* Background and Text */
-    --color-bg-main: var(--color-light);
-    --color-bg-secondary: var(--color-dark-overlay);
-    --color-text: #2e2e2e; /* Increased opacity for readability */
-    --color-muted-text: #5a5a5a;
+    --color-bg-primary: var(--color-primary);
+    --color-bg-transparent: rgba(255, 255, 255, 0.1);
+    --color-bg-secondary: var(--color-primary-overlay);
+    --color-bg-secondary-transparent: rgba(0, 0, 0, 0.1);
+
+    --color-primary-text: #2e2e2e;
+
+    /* Increased opacity for readability */
+    --color-primary-text-muted: #5a5a5a;
 
     /* Accent Colors */
-    --color-accent-one: #cc6633; /* Muted orange */
-    --color-accent-two: #2b428f; /* Muted purple */
-    --color-accent-three: #00ffc8; /* Muted teal */
-    --color-accent-four: #ff4081; /* Muted pink */
-
-    /* Shadows */
-    --shadow-light: 0 4px 30px rgba(0, 0, 0, 0.1);
-    --shadow-dark: 0 4px 30px rgba(0, 0, 0, 0.5);
-    --shadow-accent: 0 4px 30px var(--color-accent-two);
+    --color-accent-one: #cc6633;
+    /* Muted orange */
+    --color-accent-two: #2b428f;
 
 
-    /* Glow Effects */
-    --glow-accent-one: 0 0 20px var(--color-accent-one);
-    --glow-accent-two: 0 0 20px var(--color-accent-two);
-    --glow-accent-three: 0 0 20px var(--color-accent-three);
-    --glow-accent-four: 0 0 20px var(--color-accent-four);
+    /* Borders and Shadows */
+    --outline-width: 2px;
+    --border-width: 1px;
+    --border-radius: 0.5rem;
+    --shadow-default: 0 4px 6px var(--color-secondary-overlay);
+    --shadow-primary: 0 0px 10px var(--color-secondary-overlay);
+    --shadow-secondary: 0 0px 10px rgba(0, 0, 0, 0.5);
+    --shadow-accent-one: 0 0px 10px var(--color-accent-one);
+    --shadow-accent-two: 0 0px 10px var(--color-accent-two);
 
     /* Transition */
     --transition-speed: 0.3s;
 
-    /* Glassmorphism Effects */
-    --glass-bg: rgba(255, 255, 255, 0.1);
-    --glass-border: rgba(255, 255, 255, 0.3);
-    --glass-backdrop: blur(5px);
+    /* Filters */
+    --filter-backdrop: blur(5px);
 
-    /* Toasts */
-    --toastContainerTop: 3.5rem;
-    --toastBackground: var(--color-muted-text);
-    --toastColor: var(--color-muted-light);
-    --toastBarBackground: var(--color-accent-one);
-    --toastBoxShadow: var(--color-accent-one);
-    --toastBorder: var(--color-accent-one);
+
+    /* Alert Styles */
+    --color-alert-bg: var(--color-primary-overlay);
+    --color-alert-text: var(--color-secondary);
+
+    --color-alert-accent: var(--color-accent-one);
+    --shadow-alert: 0 0px 10px var(--color-alert-accent);
+
+    --color-warning-accent: rgb(255, 136, 0);
+    --shadow-warning: 0 0px 10px var(--color-warning-accent);
+
+    --color-error-accent: rgb(247, 33, 18);
+    --shadow-error: 0 0px 10px var(--color-error-accent);
+
 }
 
 @media (prefers-color-scheme: dark) {
     :root {
         /* Base Colors for Dark Mode */
-        --color-dark: rgb(8, 0, 15);
-        --color-dark-overlay: rgba(8, 0, 15, 0.6);
-        --color-muted-dark: rgba(75, 75, 75, 0.8);
-        --color-light: rgba(243, 243, 243, 0.8);
-        --color-light-overlay: rgba(255, 255, 255, 0.85);
-        --color-muted-light: rgba(196, 192, 192, 0.8);
+        --color-primary: rgb(8, 0, 15);
+        --color-primary-overlay: rgba(8, 0, 15, 0.527);
+        --color-primary-muted: rgba(75, 75, 75, 0.8);
+        --color-secondary: rgba(243, 243, 243, 0.8);
+        --color-secondary-overlay: rgba(255, 255, 255, 0.85);
+        --color-secondary-muted: rgba(196, 192, 192, 0.8);
 
         /* Background and Text */
-        --color-bg-main: var(--color-dark);
-        --color-bg-secondary: var(--color-dark-overlay);
-        --color-text: #f3f3f3; /* Increased opacity for readability */
-        --color-muted-text: #c4c0c0;
+        --color-bg-transparent: rgba(0, 0, 0, 0.1);
+        --color-bg-secondary-transparent: rgba(255, 255, 255, 0.1);
+
+        --color-text: #f3f3f3;
+        /* Increased opacity for readability */
+        --color-text-muted: #c4c0c0;
 
         /* Accent Colors */
-        --color-accent-one: #ffa600; /* Muted neon green */
-        --color-accent-two: #c643ff; /* Muted neon purple */
-        --color-accent-three: #00ffe6; /* Muted neon teal */
-        --color-accent-four: #ff63a1; /* Muted neon pink */
+        --color-accent-one: #ffa600;
+        /* Muted neon green */
+        --color-accent-two: #c643ff;
 
-        /* Shadows */
-        --shadow-light: 0 4px 30px rgba(255, 255, 255, 0.1);
-        --shadow-dark: 0 4px 30px rgba(0, 0, 0, 0.7);
-
-        /* Glow Effects */
-        --glow-accent-one: 0 0 25px var(--color-accent-one);
-        --glow-accent-two: 0 0 25px var(--color-accent-two);
-        --glow-accent-three: 0 0 25px var(--color-accent-three);
-        --glow-accent-four: 0 0 25px var(--color-accent-four);
-
-        /* Glassmorphism Effects */
-        --glass-bg: rgba(0, 0, 0, 0.1);
-        --glass-border: rgba(255, 255, 255, 0.3);
-        --glass-backdrop: blur(5px);
-
-        /* Toasts */
-        --toastBackground: var(--color-muted-text);
-        --toastColor: var(--color-muted-dark);
-    }
-}
-
-/* Glassmorphism Utility Class */
-.glass, .toolbar-tool-properties {
-    background: var(--glass-bg);
-    border: 1px solid var(--glass-border);
-    backdrop-filter: var(--glass-backdrop);
-    box-shadow: var(--shadow-light);
-    border-radius: 15px;
-    padding: 1rem;
-    transition: background var(--transition-speed), box-shadow var(--transition-speed);
-}
-
-@media (prefers-color-scheme: dark) {
-    .glass, .toolbar-tool-properties {
-        background: var(--glass-bg);
-        border: 1px solid var(--glass-border);
-        backdrop-filter: var(--glass-backdrop);
-        box-shadow: var(--shadow-dark);
     }
 }

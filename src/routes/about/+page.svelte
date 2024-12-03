@@ -1,14 +1,13 @@
-
 <svelte:head>
 	<title>Dimm City Portal</title>
 </svelte:head>
 <h1><small>About the</small>Dimm City Portal</h1>
-<section class="glass">
+<section>
 	<p>
-		Welcome to the <strong>Dimm City Portal</strong>, an innovative, open-source platform designed for
-		enthusiasts and players of tabletop roleplaying games (TTRPGs). The portal makes
-        it easy to play your favorite TTRPG adventures directly in your web browser—no
-		complicated setups or subscriptions required.
+		Welcome to the <strong>Dimm City Portal</strong>, an innovative, open-source platform designed
+		for enthusiasts and players of tabletop roleplaying games (TTRPGs). The portal makes it easy to
+		play your favorite TTRPG adventures directly in your web browser—no complicated setups or
+		subscriptions required.
 	</p>
 
 	<h3>Check out the demo</h3>
@@ -87,7 +86,6 @@
 		> specification. Contributions of any kind are welcome!
 	</p>
 
-
 	<h3>License</h3>
 	<p>
 		Dimm City Portal is licensed under the <a
@@ -107,7 +105,7 @@
 <style>
 	section {
 		min-height: 100dvh;
-        margin-inline: 1rem;
+		margin-inline: 1rem;
 		margin-block-end: 1rem;
 		position: relative;
 		background: rgba(255, 255, 255, 0.1);
@@ -121,34 +119,43 @@
 		text-align: center;
 		margin-block: 1.5rem;
 	}
-    h3{
-        margin-block: 1rem;
-    }
+	h3 {
+		margin-block: 1rem;
+	}
 
-	section.glass {
+	section {
 		min-height: 50svh;
 		place-self: center;
 		margin-top: 1rem;
-		box-shadow: var(--shadow-accent);
+		padding: 1rem;
 		display: grid;
+
+		background: var(--color-bg-transparent);
+		border: 1px solid var(--color-primary-overlay);
+		backdrop-filter: var(--filter-backdrop);
+		box-shadow: var(--shadow-accent-two);
+		border-radius: var(--border-radius);
+		transition:
+			background var(--transition-speed),
+			box-shadow var(--transition-speed);
 	}
 	p {
 		padding-left: 0.5rem;
 		padding-bottom: 1rem;
 	}
-    p:first-of-type{
-        padding: 0;
-    }
-	ul{
+	p:first-of-type {
+		padding: 0;
+	}
+	ul {
 		margin-left: 2rem;
 	}
 	li {
 		margin-left: 1rem;
 	}
 
-    @container (max-width: 400px){
-        h3{
-            font-size: 0.8rem;
-        }
-    }
+	@container (max-width: 400px) {
+		h3 {
+			font-size: 0.8rem;
+		}
+	}
 </style>

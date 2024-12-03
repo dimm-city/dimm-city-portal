@@ -23,7 +23,7 @@
 <!-- svelte-ignore a11y-click-events-have-key-events a11y-no-noninteractive-element-interactions -->
 <dialog bind:this={dialog} on:close on:click|self={close} data-augmented-ui={aug}>
 	<!-- svelte-ignore a11y-no-static-element-interactions -->
-	<div on:click|stopPropagation class="dialog-container glass">
+	<div on:click|stopPropagation class="dialog-container">
 		<div class="dialog-grid">
 			<div class="dialog-header">
 				<slot name="header">
@@ -39,21 +39,18 @@
 				</slot>
 			</div>
 		</div>
-		<button class="close-button" on:click={close} aria-label="Close"><i class="bi bi-x"></i></button>
+		<button class="close-button" on:click={close} aria-label="Close"><i class="bi bi-x"></i></button
+		>
 	</div>
 </dialog>
 
 <style>
-	:root {
-		--dc-dialog-animation-duration: 0.2s;
-		--dc-dialog-backdrop-color: rgba(46, 2, 116, 0.651);
-	}
 	dialog {
 		border-radius: 0;
 		border: none;
 		padding: 0;
 		position: absolute;
-		background-color: var(--color-bg-secondary);
+		background-color: var(--color-bg-transparent);
 		/* outline-color: var(--color-accent-one);
 		outline-style: solid;
 		outline-width: 1px; */
@@ -67,6 +64,17 @@
 		position: relative;
 		display: grid;
 		height: 100%;
+	}
+	.dialog-container {
+		background: var(--color-primary-overlay);
+		border: 1px solid var(--color-secondary);
+		backdrop-filter: var(--filter-backdrop);
+		box-shadow: var(--shadow-accent-two);
+		border-radius: var(--border-radius);
+		padding: 0.5rem;
+		transition:
+			background var(--transition-speed),
+			box-shadow var(--transition-speed);
 	}
 	.dialog-grid {
 		display: grid;
@@ -99,37 +107,36 @@
 		margin: 0;
 		background-color: transparent;
 		color: var(--color-accent-two);
-	
 	}
 	button.close-button:hover {
 		box-shadow: none;
-		text-shadow: var(--shadow-accent-text);
+		text-shadow: var(--shadow-accent-two);
 	}
 
 	dialog {
-		/* animation: fade-out var(--dc-dialog-animation-duration) ease-out forwards; */
+		/* animation: fade-out var(--transition-speed) ease-out forwards; */
 		animation: slideOutUp;
-		animation-duration: var(--dc-dialog-animation-duration);
+		animation-duration: var(--transition-speed);
 	}
 
 	dialog[open] {
 		display: grid;
-		/* animation: fade-in var(--dc-dialog-animation-duration) ease-out; */
+		/* animation: fade-in var(--transition-speed) ease-out; */
 		animation: slideInDown ease-in;
-		animation-duration: var(--dc-dialog-animation-duration);
+		animation-duration: var(--transition-speed);
 	}
 
 	dialog::backdrop {
 		display: block;
-		/* animation: backdrop-fade-out var(--dc-dialog-animation-duration) ease-out forwards; */
+		/* animation: backdrop-fade-out var(--transition-speed) ease-out forwards; */
 		background-color: rgba(255, 0, 0, 0);
-		transition: background-color var(--dc-dialog-animation-duration) ease-in;
+		transition: background-color var(--transition-speed) ease-in;
 	}
 
 	dialog[open]::backdrop {
-		background-color: var(--dc-dialog-backdrop-color);
-		transition: background-color var(--dc-dialog-animation-duration) ease-in;
-		/* animation: backdrop-fade-in var(--dc-dialog-animation-duration) ease-out;  */
+		background-color: var(--color-bg-transparent);
+		transition: background-color var(--transition-speed) ease-in;
+		/* animation: backdrop-fade-in var(--transition-speed) ease-out;  */
 	}
 
 	/* Animation keyframes */

@@ -1,4 +1,10 @@
 import { browser } from "$app/environment";
+import { toast } from "@zerodevx/svelte-toast";
+
+
+export const showAlert = (message) => { toast.push(message, {classes: ['']}) };
+export const showWarning = (message) => { toast.push(message, {classes: ['warning']}) };
+export const showError = (message) => { toast.push(message, {classes: ['error']}) };
 
 /**
  * Get the expiry time.

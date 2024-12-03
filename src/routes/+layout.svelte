@@ -19,57 +19,54 @@
 	/>
 </svelte:head>
 <div class="layout-container">
-<section class:in-session={$inSession}>
-	{@render children()}
-</section>
-{#if !$inSession}
-	<footer>
-		<a
-			title="GitHub Repository"
-			aria-label="GitHub Repository"
-			href="https://github.com/dimm-city/dimm-city-portal"
-			target="_blank"
-		>
-			<i class="bi bi-github"></i>
-		</a>
-		{#if $page.url.pathname === '/'}
-			<a aria-label="About Dimm City Portal" title="About Dimm City Portal" href="/about">
-				<i class="bi bi-patch-question"></i>
+	<section class:in-session={$inSession}>
+		{@render children()}
+	</section>
+	{#if !$inSession}
+		<footer>
+			<a
+				title="GitHub Repository"
+				aria-label="GitHub Repository"
+				href="https://github.com/dimm-city/dimm-city-portal"
+				target="_blank"
+			>
+				<i class="bi bi-github"></i>
 			</a>
-		{:else}
-			<a aria-label="Dimm City Portal" title="Dimm City Portal" href="/">
-				<i class="bi bi-brilliance"></i>
+			{#if $page.url.pathname === '/'}
+				<a aria-label="About Dimm City Portal" title="About Dimm City Portal" href="/about">
+					<i class="bi bi-patch-question"></i>
+				</a>
+			{:else}
+				<a aria-label="Dimm City Portal" title="Dimm City Portal" href="/">
+					<i class="bi bi-brilliance"></i>
+				</a>
+			{/if}
+			<a
+				title="Dimm City Subreddit"
+				aria-label="Dimm City Subreddit"
+				href="https://github.com/dimm-city/dimm-city-portal"
+				target="_blank"
+			>
+				<i class="bi bi-reddit"></i>
 			</a>
-		{/if}
-		<a
-			title="Dimm City Subreddit"
-			aria-label="Dimm City Subreddit"
-			href="https://github.com/dimm-city/dimm-city-portal"
-			target="_blank"
-		>
-			<i class="bi bi-reddit"></i>
-		</a>
-	</footer>
-{/if}
+		</footer>
+	{/if}
 </div>
+
 <style>
 	.layout-container {
 		display: grid;
 		min-height: 100svh;
 		container-type: inline-size;
 	}
-	section{
-		margin-inline: 1rem;
-	}
+
 	footer {
-		/* position: sticky;
-		bottom: 1rem; */
 		display: grid;
 		grid-auto-flow: column;
 		align-items: end;
 		gap: 1rem;
 		justify-content: center;
-		width: 100%;
+		grid-template-columns: auto;
 	}
 	footer a:nth-child(2) {
 		font-size: 1.5rem;
