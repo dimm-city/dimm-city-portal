@@ -1,5 +1,33 @@
 {
     "files.exclude": {
         "**/node_modules": true
-    }
+    },
+    "todo-tree.tree.showCountsInTree": true,
+    "todo-tree.highlights.customHighlight": {
+        "TODO": {
+            "icon": "circle",
+            "iconColour": "#ece931",
+            "foreground": "#ece931",
+            "background": "#00000000"
+        },
+        "NOTE": {
+            "icon": "log",
+            "iconColour": "#dddddd",
+            "foreground": "#dddddd",
+            "background": "#00000000"
+        },
+        "DONE": {
+            "icon": "check-circle",
+            "iconColour": "#3ede66",
+            "foreground": "#3ede66",
+            "background": "#00000000"
+        },
+        "FIXME": {
+            "iconColour": "#a33a3b",
+            "foreground": "#a33a3b",
+            "background": "#00000000",
+            "gutterIcon": true
+        }
+    },
+    "todo-tree.general.showActivityBarBadge": true
 }
