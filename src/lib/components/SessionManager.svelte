@@ -1,12 +1,8 @@
 <script>
-	import { player, sessionMode, handleCreateSession, handleJoinSession } from './PortalStore.js';
+	import { player, handleCreateSession, handleJoinSession } from './PortalStore.js';
 	import { dev } from '$app/environment';
-
-	import { toast } from '@zerodevx/svelte-toast';
-	let { portalId = dev ? 'test-portal' : '', password = dev ? 'test' : '' } = $props();
-	// let portalId = $state(dev ? 'test-portal' : '');
-	// let password = $state(dev ? 'test' : '');
-
+	import { showError } from './StoreUtils.js';
+	let { activeSession} = $props();
 	/**
 	 * @type {any}
 	 */
@@ -28,21 +24,21 @@
 		return result;
 	}
 	function createSession() {
-		console.log(`Creating session ${name} with id ${portalId}`);
+		console.log(`Creating session ${name} with id ${activeSession.portalId}`);
 
 		if (!name || name.length < 1) {
-			toast.push(`You must provide a name to create a portal.`, { classes: ['error'] });
+			showError(`You must provide a name to create a portal.`);
 			return;
 		}
-		if (password.length < 1) {
-			toast.push(`You must provide a password to create a portal.`, { classes: ['error'] });
+		if (activeSession.password.length < 1) {
+			showError(`You must provide a password to create a portal.`);
 			return;
 		}
 		if (!$player?.name) {
-			toast.push(`You must provide a name to create a portal.`, { classes: ['error'] });
+			showError(`You must provide a name to create a portal.`);
 			return;
 		}
-		portalId = createRandomId(12);
+		activeSession.portalId = createRandomId(12);
 		$player.host = true;
 		player.set({ ...$player, name }); // Clone the object to avoid mutating the original
 
@@ -50,9 +46,9 @@
 		 * @type {DC.PortalState}
 		 */
 		const sessionData = {
-			sessionId: portalId,
+			sessionId: activeSession.portalId,
 			name,
-			password: password,
+			password: activeSession.password,
 			host: $player,
 			players: [],
 			player: $player,
@@ -64,21 +60,21 @@
 	}
 
 	function joinSession() {
-		if (!portalId || portalId.length < 1) {
-			toast.push(`You must provide an ID to enter a portal.`, { classes: ['error'] });
+		if (!activeSession.portalId || activeSession.portalId.length < 1) {
+			showError(`You must provide an ID to enter a portal.`);
 			return;
 		}
-		if (password.length < 1) {
-			toast.push(`You must provide a password to enter a portal.`, { classes: ['error'] });
+		if (activeSession.password.length < 1) {
+			showError(`You must provide a password to enter a portal.`);
 			return;
 		}
 		if (!$player?.name) {
-			toast.push(`You must provide a name to enter a portal.`, { classes: ['error'] });
+			showError(`You must provide a name to enter a portal.`);
 			return;
 		}
 		const sessionData = {
-			sessionId: portalId,
-			password: password,
+			sessionId: activeSession.portalId,
+			password: activeSession.password,
 			player: $player
 		};
 
@@ -90,9 +86,9 @@
 	<div class="session-form-container">
 		<div class="session-form" data-augmented-ui="tl-clip tr-clip bl-clip br-clip both">
 			<div>
-				{#if $sessionMode === 'create' || $sessionMode == null}
+				{#if activeSession.sessionMode === 'create' || activeSession.sessionMode == null}
 					<h3>Portal Creation</h3>
-				{:else if $sessionMode === 'join'}
+				{:else if activeSession.sessionMode === 'join'}
 					<h3>Portal Connection</h3>
 				{/if}
 			</div>
@@ -107,7 +103,7 @@
 						required
 					/>
 				</label>
-				{#if $sessionMode === 'create' || $sessionMode == null}
+				{#if activeSession.sessionMode === 'create' || activeSession.sessionMode == null}
 					<label for="portal-name">
 						Portal Name
 						<input
@@ -121,27 +117,27 @@
 				{:else}
 					<label for="sessionId">
 						Portal ID
-						<input type="text" bind:value={portalId} placeholder="Enter Session ID" required />
+						<input type="text" bind:value={activeSession.portalId} placeholder="Enter Session ID" required />
 					</label>
 				{/if}
 				<label for="password">
 					Password
-					<input type="password" bind:value={password} placeholder="Enter Password" required />
+					<input type="password" bind:value={activeSession.password} placeholder="Enter Password" required />
 				</label>
 			</form>
 
 			<footer>
-				{#if $sessionMode === 'create' || $sessionMode == null}
+				{#if activeSession.sessionMode === 'create' || activeSession.sessionMode == null}
 					<button class="connect-button" onclick={createSession}>Create</button>
 					<small>
-						Switch to <button class="switch-mode" onclick={() => ($sessionMode = 'join')}
+						Switch to <button class="switch-mode" onclick={() => (activeSession.sessionMode = 'join')}
 							>connect mode</button
 						>
 					</small>
 				{/if}
-				{#if $sessionMode === 'join'}
+				{#if activeSession.sessionMode === 'join'}
 					<button class="connect-button" onclick={joinSession}>Connect</button><small>
-						Switch to <button class="switch-mode" onclick={() => ($sessionMode = 'create')}>
+						Switch to <button class="switch-mode" onclick={() => (activeSession.sessionMode = 'create')}>
 							create mode
 						</button>
 					</small>

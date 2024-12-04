@@ -15,12 +15,12 @@
 	import Editor from './editor/Editor.svelte';
 	import { isHost } from './PortalStore.js';
 	import './theme.css';
-	let { config } = $props();
+	let { config, player } = $props();
 </script>
 
 <div class="portal-container" class:in-session={$inSession} class:host={$isHost}>
 	{#if $inSession == false}
-		<SessionManager portalId={config.portalId} />
+		<SessionManager activeSession={config?.activeSession} />
 	{:else if $inSession}
 		<Dialog bind:show={$showPlayerList}>
 			<div>
