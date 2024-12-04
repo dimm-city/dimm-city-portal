@@ -74,7 +74,7 @@ button {
 /* Theme Styles */
 body {
     background-color: var(--color-bg-primary);
-    color: var(--color-text);
+    color: var(--color-primary-text);
     font-family: var(--font-main);
     letter-spacing: var(--spacing-letter);
     line-height: 1.6;

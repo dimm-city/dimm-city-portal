@@ -204,11 +204,6 @@
 		gap: 0.5rem;
 		padding: 2rem;
 	}
-	/* @media (max-width: 768px) {
-		.session-form {
-			width: 80dvw;
-		}
-	} */
 	.session-form > * {
 		margin: auto;
 		width: 100%;
@@ -216,6 +211,10 @@
 	.switch-mode {
 		appearance: none;
 		color: var(--color-accent-one);
+		transition: color var(--transition-speed) ease-in-out;
+		&:hover{
+			color: var(--color-accent-two);
+		}
 	}
 	form {
 		display: flex;
@@ -231,6 +230,14 @@
 		color: var(--color-accent-two);
 		background-color: var(--color-accent-one);
 		border-radius: var(--border-radius);
+		opacity: 0.8;
+		transition:
+			opacity var(--transition-speed) ease-in-out,
+			box-shadow var(--transition-speed) ease-in-out;
+		&:hover {
+			box-shadow: var(--show-accent-one);
+			opacity: 1;
+		}
 	}
 
 	footer small {

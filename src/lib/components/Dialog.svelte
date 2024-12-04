@@ -73,8 +73,8 @@
 		border-radius: var(--border-radius);
 		padding: 0.5rem;
 		transition:
-			background var(--transition-speed),
-			box-shadow var(--transition-speed);
+			background var(--transition-speed) ease-in,
+			box-shadow var(--transition-speed) ease-in-out;
 	}
 	.dialog-grid {
 		display: grid;
@@ -95,7 +95,18 @@
 	}
 	.dialog-footer > button {
 		width: 100%;
+		padding: 0.25rem;
 		font-family: var(--font-header);
+		color: var(--color-accent-one);
+		background-color: var(--color-accent-two);
+		border-radius: var(--border-radius);
+		opacity: 0.8;
+		transition: box-shadow var(--transition-speed) ease-in,
+			opacity var(--transition-speed) ease-in;		
+		&:hover {
+			box-shadow: var(--shadow-accent-two);
+			opacity: 1;
+		}
 	}
 	button.close-button {
 		font-size: 1.5rem;

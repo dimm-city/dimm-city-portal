@@ -1,21 +1,21 @@
 /* Editor Styles */
 .editor-container .imageEditorContainer {
-    --background-color-1: var(--color-primary-overlay);
-    --foreground-color-1: var(--color-secondary);
+    --background-color-1: var(--color-bg-primary);
+    --foreground-color-1: var(--color-primary-text);
 
-    --background-color-2: var(--color-primary-overlay);
-    --foreground-color-2: var(--color-secondary-muted);
+    --background-color-2: var(--color-bg-primary);
+    --foreground-color-2: var(--color-secondary);
 
     --background-color-3: var(--color-primary-overlay);
     --foreground-color-3: var(--color-secondary-muted);
 
     --background-color-transparent: var(--color-bg-transparent);
-    --selection-background-color: var(--color-secondary-muted);
-    --selection-foreground-color: var(--color-primary-overlay);
+    --selection-background-color: var(--color-bg-secondary-transparent);
+    --selection-foreground-color: var(--color-primary-text);
 
     --primary-action-foreground-color: var(--color-accent-one);
 
-    --shadow-color: var(--shadow-accent-two);
+    --shadow-color: var(--color-accent-two);
 }
 
 
@@ -37,7 +37,7 @@
 }
 
 .toolbar-edge-toolbar .toolbar-toolContainer>.toolbar-button:hover {
-    color: var(--color-accent-two);
+    color: var(--color-accent-one);
 
 }
 
@@ -51,17 +51,6 @@
     display: flex;
     align-items: flex-start;
 }
-
-.toolbar-tool-properties {
-    background: var(--color-bg-transparent);
-    border: 1px solid var(--color-secondary-overlay);
-    backdrop-filter: var(--filter-backdrop);
-    box-shadow: var(--shadow-accent-two);
-    border-radius: 15px;
-    padding: 1rem;
-    transition: background var(--transition-speed), box-shadow var(--transition-speed);
-}
-
 
 @container (max-width: 800px) {
 
@@ -96,48 +85,74 @@
 div.toolbar-edgemenu-container div.action-button-row button {
     font-family: var(--main-font-family);
 }
-/* div.toolbar-edgemenu-container div.action-button-row button:not(:disabled):hover {
-    font-family: var(--main-font-family);
-    color: var(--color-accent-one);
-} */
-
 
 div.toolbar-edgemenu-container button {
-    box-shadow: var(--shadow-secondary);
-    transition-property: box-shadow,color,border;
+    box-shadow: none;
+    transition-property: box-shadow, color, border;
     transition-duration: var(--transition-speed);
     transition-timing-function: ease-in-out;
     border: 1px solid transparent;
     color: var(--color-accent-one);
-} 
+}
+
 div.toolbar-edgemenu-container button:not(:disabled):hover {
-    box-shadow: var(--shadow-secondary);
+    box-shadow: var(--shadow-accent-one);
     transition-property: box-shadow, color;
     transition-duration: var(--transition-speed);
     transition-timing-function: ease-in-out;
     border: 1px solid transparent;
     color: var(--color-accent-two);
-} 
+}
+
+div.toolbar-edgemenu-container {
+    button.pipetteButton.active {
+        --icon-color: var(--color-accent-two);
+        background-color: inherit;
+    }
+
+    button.drag-elem:not(:disabled):hover,
+    button.about-button:not(:disabled):hover,
+    button.pipetteButton:not(:disabled):hover {
+        --icon-color: var(--color-accent-two);
+        box-shadow: none;
+        color: var(--color-accent-two);
+    }
+}
+
 div.toolbar-edgemenu-container div.action-button-row button[aria-checked=true] {
     color: var(--color-accent-two);
     box-shadow: none;
     border: 1px solid var(--color-accent-one);
     background-color: var(--color-bg-primary-transparent);
 }
+
 div.toolbar-edgemenu-container .toolbar-edgemenu {
     --toolbar-button-height: 48px;
     touch-action: none;
     user-select: none;
     -webkit-user-select: none;
-    /* background-color: var(--color-bg-transparent);
-    color: var(--foreground-color-2);
-    --icon-color: var(--foreground-color-2); */
+    background-color: var(--color-bg-transparent);
     box-shadow: var(--shadow-accent-two);
     padding-inline: 10px;
     width: min(400px, 90vw);
     box-sizing: border-box;
     border-radius: var(--border-radius);
     transition: transform .1s ease, padding-bottom .1s ease;
-    
+
     margin-bottom: 1rem;
+}
+
+div.toolbar-edgemenu-container .toolbar-grid-selector .choice-button.checked {
+    background-color: var(--selection-background-color);
+    color: var(--selection-foreground-color);
+    --icon-color: var(--selection-foreground-color);
+    border: 1px solid var(--color-accent-one);
+    border-radius: var(--border-radius);
+}
+
+/*Context Menu*/
+div.editor-container .editor-popup-menu-option:hover,
+.editor-popup-menu-option:focus-visible {
+    background-color: var(--background-color-2);
+    color: var(--color-accent-one);
 }
