@@ -1,7 +1,6 @@
 <script>
-	export let aug = '';
-	export let title = '';
-	export let show = false; // boolean
+	let { aug, title, show = $bindable(false), onclose, children, header, footer } = $props();
+
 	export const open = () => {
 		dialog.show();
 		show = true;
@@ -11,36 +10,40 @@
 		dialog.close();
 		show = false;
 	};
+
 	/**
 	 * @type {HTMLDialogElement}
 	 */
 	let dialog; // HTMLDialogElement
 
-	$: if (dialog && show) dialog.showModal();
-	else if (dialog) dialog.close();
+	$effect(() => {
+		if (dialog && show) dialog.showModal();
+		else if (dialog) dialog.close();
+	});
 </script>
 
-<!-- svelte-ignore a11y-click-events-have-key-events a11y-no-noninteractive-element-interactions -->
-<dialog bind:this={dialog} on:close on:click|self={close} data-augmented-ui={aug}>
-	<!-- svelte-ignore a11y-no-static-element-interactions -->
-	<div on:click|stopPropagation class="dialog-container">
+<dialog bind:this={dialog} {onclose} data-augmented-ui={aug}>
+	<div class="dialog-container">
 		<div class="dialog-grid">
 			<div class="dialog-header">
-				<slot name="header">
+				{#if header}
+					{@render header()}
+				{:else}
 					<h4>{title}</h4>
-				</slot>
+				{/if}
 			</div>
 			<div class="dialog-body">
-				<slot />
+				{@render children()}
 			</div>
 			<div class="dialog-footer">
-				<slot name="footer">
-					<button on:click={close}>Close</button>
-				</slot>
+				{#if footer}
+					{@render footer()}
+				{:else}
+					<button onclick={close}>Close</button>
+				{/if}
 			</div>
 		</div>
-		<button class="close-button" on:click={close} aria-label="Close"><i class="bi bi-x"></i></button
-		>
+		<button class="close-button" onclick={close} aria-label="Close"><i class="bi bi-x"></i></button>
 	</div>
 </dialog>
 
@@ -101,8 +104,9 @@
 		background-color: var(--color-accent-two);
 		border-radius: var(--border-radius);
 		opacity: 0.8;
-		transition: box-shadow var(--transition-speed) ease-in,
-			opacity var(--transition-speed) ease-in;		
+		transition:
+			box-shadow var(--transition-speed) ease-in,
+			opacity var(--transition-speed) ease-in;
 		&:hover {
 			box-shadow: var(--shadow-accent-two);
 			opacity: 1;

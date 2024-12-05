@@ -64,7 +64,7 @@
 		margin: 10px;
 	}
 	:global(.toolbar-edgemenu-container .toolbar-edgemenu button:has(img)) {
-		border: none;
+		border: 1px solid transparent;
 		margin: 0;
 		background-color: var(--color-primary-overlay);
 		box-shadow: 0 1px 2px var(--shadow-accent-two);
@@ -73,6 +73,9 @@
 		max-height: 300px;
 	}
 
+	button{
+		box-sizing: border-box;
+	}
 	.token-selector-contianer {
 		width: 80svw;
 	}
