@@ -4,34 +4,29 @@
 	import DiceRoller from '$lib/components/DiceRoller.svelte';
 	import { page } from '$app/stores';
 	import { SvelteToast } from '@zerodevx/svelte-toast';
-	import { player, inSession, roller } from '$lib/components/PortalStore';
+	import { portal } from '$lib/models/PortalState.svelte.js';
 
 	/** @type {{data: any}} */
 	let { data } = $props();
+	
+	portal.session.id = $page.url.searchParams?.get('session') ?? null;
+	portal.session.mode = $page.url.searchParams?.get('mode') ?? 'create';
 
-	let config = $state(data.portalConfig);
-	config.activeSession = { sessionMode: 'create' };
-	config.activeSession.portalId = $page.url.searchParams?.get('session') ?? null;
-	config.activeSession.sessionMode = $page.url.searchParams?.get('mode') ?? 'create';
-	player.set(data.player);
-
-	/** @type {import('@zerodevx/svelte-toast').SvelteToastOptions}*/
-	const toastOptions = {
-		classes: ['alert']
-	};
+	portal.config = { ...portal.config, ...data.config };
+	portal.player = data.player;
 </script>
 
 <svelte:head>
 	<title>Dimm City Portal</title>
 </svelte:head>
-<section class:in-session={$inSession}>
-	{#if $inSession == false}
+<section class:in-session={portal.session.mode == 'active'}>
+	{#if portal.session.mode != 'active'}
 		<h1><small>Welcome to the</small>Dimm City Portal</h1>
 	{/if}
-	<Portal config={config}  player={data.player} />
+	<Portal />
 </section>
-<DiceRoller bind:this={$roller} />
-<SvelteToast options={toastOptions} />
+<DiceRoller bind:this={portal.ui.diceBox} />
+<SvelteToast options={portal.config.toast} />
 
 <style>
 	small {

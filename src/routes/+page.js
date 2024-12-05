@@ -1,4 +1,5 @@
 import { env } from '$env/dynamic/public';
+import { getDiceThemes } from './getDiceThemes.js';
 
 
 export const load = async () => {
@@ -51,6 +52,7 @@ export const load = async () => {
 		hubUrl: env.PUBLIC_PORTAL_HUB_URL ?? 'http://localhost:5173/portal-hub',
 		allowHubSwitching: false, //If true, the user can switch between hubs in session manager component.
 		backgroundImageUrl: '',
+		availableDiceThemes: await getDiceThemes(),
 		diceOptions: [
 			{
 				label: '1d20',

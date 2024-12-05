@@ -1,8 +1,8 @@
 <script>
 	import { page } from '$app/stores';
-	import { inSession } from '$lib/components/PortalStore';
 
 	import '$lib/components/styles.css';
+	import { portal } from '$lib/models/PortalState.svelte.js';
 	let { children } = $props();
 </script>
 
@@ -19,10 +19,10 @@
 	/>
 </svelte:head>
 <div class="layout-container">
-	<section class:in-session={$inSession}>
+	<section class:in-session={portal.session.mode == 'active'}>
 		{@render children()}
 	</section>
-	{#if !$inSession}
+	{#if !portal.session.mode != 'active'}
 		<footer>
 			<a
 				title="GitHub Repository"

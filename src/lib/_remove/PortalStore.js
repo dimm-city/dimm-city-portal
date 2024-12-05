@@ -6,8 +6,8 @@ import Editor, { SerializableCommand } from 'js-draw';
 import { io } from 'socket.io-client';
 import { derived, get, writable } from 'svelte/store';
 
-import { getDiceThemes } from './getDiceThemes';
-import { getLocalValue, setLocalValue, showAlert } from './StoreUtils';
+import { getDiceThemes } from '../../routes/getDiceThemes.js';
+import { getLocalValue, setLocalValue, showAlert } from '../components/StoreUtils.js';
 
 export let showDiceConfig = writable(false);
 

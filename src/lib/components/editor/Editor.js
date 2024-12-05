@@ -16,27 +16,25 @@ import Editor, {
 	BackgroundComponentBackgroundType
 } from 'js-draw';
 import { BootstrapIconProvider } from '../icons/BootstrapIconProvider.js';
-import {
-	copySessionUrl,
-	leaveSession,
-	showPlayerList,
-	showSessionDetails,
-	postSerializedCommand,
-	editor,
-	player,
-	requestDiceRoll
-} from '../PortalStore.js';
+// import {
+// 	copySessionUrl,
+// 	leaveSession,
+// 	postSerializedCommand,
+// 	requestDiceRoll
+// } from '../PortalStore.js';
 import { DiceIcon, GearIcon, LeaveIcon, PeopleIcon, PlayerIcon, SaveIcon, ShareIcon } from '../icons/DCIconProvider.js';
-import { get } from 'svelte/store';
+
 import { GridComponent } from './GridComponent.js';
 import { SvelteWidget } from './SvelteWidget.js';
 import TokenSelector from './TokenSelector.svelte';
+import { portal } from '$lib/models/PortalState.svelte.js';
+import {
+	copySessionUrl,
+	leaveSession,
+	postSerializedCommand,
+	requestDiceRoll
+} from '$lib/models/Session.svelte.js';
 
-/**
- * @type {import("js-draw").Editor}
- */
-// @ts-ignore
-let _editor = get(editor);
 
 /**
  * @type {import("js-draw").AbstractToolbar}
@@ -57,14 +55,12 @@ let selectListener;
  */
 let playerToken;
 
-/**
- * @param {boolean} isHost
- */
-export function configureToolbar(isHost) {
-	if (!_editor) return;
+
+export function configureToolbar() {
+	if (!portal.ui.editor) return;
 	if (toolbar) toolbar.remove();
 
-	toolbar = makeEdgeToolbar(_editor);
+	toolbar = makeEdgeToolbar(portal.ui.editor);
 
 	toolbar.addActionButton(
 		{
@@ -73,7 +69,7 @@ export function configureToolbar(isHost) {
 		},
 		() => {
 			if (window.confirm('Are you sure you want to leave?')) {
-				_editor?.remove();
+				portal.ui.editor?.remove();
 				leaveSession();
 			}
 		}
@@ -82,7 +78,7 @@ export function configureToolbar(isHost) {
 	// 	['host'],
 	// 	{
 	// 		label: 'host',
-	// 		icon: _editor.icons.makeOverflowIcon()
+	// 		icon: portal.ui.editor.icons.makeOverflowIcon()
 	// 	},
 	// 	() => {
 	// 		player.update((p) => {
@@ -91,7 +87,7 @@ export function configureToolbar(isHost) {
 	// 		});
 	// 	}
 	// );
-	if (isHost) {
+	if (portal.player.isHost) {
 		// @ts-ignore
 		if (selectListener?.remove) selectListener?.remove();
 
@@ -101,8 +97,8 @@ export function configureToolbar(isHost) {
 				icon: SaveIcon
 			},
 			async () => {
-				if (!_editor) return;
-				const data = await _editor.toSVGAsync();
+				if (!portal.ui.editor) return;
+				const data = await portal.ui.editor.toSVGAsync();
 				localStorage.setItem('scene', data.innerHTML);
 			}
 		);
@@ -115,7 +111,7 @@ export function configureToolbar(isHost) {
 				icon: GearIcon
 			},
 			() => {
-				showSessionDetails.set(true);
+				portal.ui.showSessionDetails = true;
 			}
 		);
 		toolbar.addTaggedActionButton(
@@ -125,7 +121,7 @@ export function configureToolbar(isHost) {
 				icon: PeopleIcon
 			},
 			() => {
-				showPlayerList.set(true);
+				portal.ui.showPlayerList = true;
 			}
 		);
 		toolbar.addTaggedActionButton(
@@ -140,16 +136,16 @@ export function configureToolbar(isHost) {
 		toolbar.addActionButton(
 			{
 				label: getLocalizationTable().undo,
-				icon: _editor.icons.makeUndoIcon()
+				icon: portal.ui.editor.icons.makeUndoIcon()
 			},
 			() => {
-				if (!_editor) return;
-				_editor.history.undo();
+				if (!portal.ui.editor) return;
+				portal.ui.editor.history.undo();
 			}
 		);
 	} else {
 
-		toolbar.addWidget(new SvelteWidget(_editor,
+		toolbar.addWidget(new SvelteWidget(portal.ui.editor,
 			'Player Token',
 			PlayerIcon,
 			'TokenSelector',
@@ -158,16 +154,16 @@ export function configureToolbar(isHost) {
 				playerToken
 			}));
 
-		const selectionTools = _editor.toolController.getMatchingTools(SelectionTool);
+		const selectionTools = portal.ui.editor.toolController.getMatchingTools(SelectionTool);
 		const selectionTool = selectionTools.at(0);
 		if (!selectionTool) {
 			throw new Error('No selection tool found');
 		}
 
-		selectListener = _editor.notifier.on(EditorEventType.SelectionUpdated, (evt) => {
+		selectListener = portal.ui.editor.notifier.on(EditorEventType.SelectionUpdated, (evt) => {
 			console.log('selectionUpdated', evt);
 			if (
-				!isHost &&
+				!portal.player.isHost &&
 				// @ts-ignore
 				evt.selectedComponents.length > 0 &&
 				// @ts-ignore
@@ -177,21 +173,21 @@ export function configureToolbar(isHost) {
 
 				if (tokens.length > 0) {
 					evt.tool.setSelection(tokens);
-				}else{
-					evt.tool.clearSelection();				
+				} else {
+					evt.tool.clearSelection();
 				}
 			}
 		});
 
 		const selectionToolWidget = new SelectionToolWidget(
-			_editor,
+			portal.ui.editor,
 			selectionTool,
 			getLocalizationTable(['en'])
 		);
 
 		toolbar.addWidget(selectionToolWidget);
 
-		const primaryPanZoomToolList = _editor.toolController
+		const primaryPanZoomToolList = portal.ui.editor.toolController
 			.getPrimaryTools()
 			.filter((tool) => tool instanceof PanZoomTool);
 		const primaryPanZoomTool = primaryPanZoomToolList.at(0);
@@ -200,7 +196,7 @@ export function configureToolbar(isHost) {
 		}
 
 		const handToolWidget = new HandToolWidget(
-			_editor,
+			portal.ui.editor,
 			primaryPanZoomTool,
 			getLocalizationTable(['en'])
 		);
@@ -219,27 +215,24 @@ export function configureToolbar(isHost) {
 	);
 }
 
-/**
- * @param {HTMLElement} editorElement
- */
-export async function configureEditor(editorElement, backgroundImageUrl = '') {
-	if (!_editor) {
-		_editor = new Editor(editorElement, {
+export async function configureEditor(backgroundImageUrl = '') {
+	if (!portal.ui.editor && portal.ui.editorElement) {
+		portal.ui.editor = new Editor(portal.ui.editorElement, {
 			wheelEventsEnabled: 'only-if-focused',
 			iconProvider: new BootstrapIconProvider()
 		});
 
-		_editor.dispatch(
-			_editor.setBackgroundStyle({
+		portal.ui.editor.dispatch(
+			portal.ui.editor.setBackgroundStyle({
 				color: Color4.transparent,
 				type: BackgroundComponentBackgroundType.None,
 				autoresize: true
 			})
 		);
-		_editor.getRootElement().style.minHeight = editorElement.parentElement?.clientHeight + 'px';
+		portal.ui.editor.getRootElement().style.minHeight = portal.ui.editorElement.parentElement?.clientHeight + 'px';
 
 		// Event listener for when a command is done
-		_editor.notifier.on(EditorEventType.CommandDone, (evt) => {
+		portal.ui.editor.notifier.on(EditorEventType.CommandDone, (evt) => {
 			console.log('Command done', evt);
 
 			// @ts-ignore
@@ -265,7 +258,7 @@ export async function configureEditor(editorElement, backgroundImageUrl = '') {
 		});
 
 		// Event listener for when a command is undone
-		_editor.notifier.on(EditorEventType.CommandUndone, (evt) => {
+		portal.ui.editor.notifier.on(EditorEventType.CommandUndone, (evt) => {
 			// @ts-ignore
 			if (!(evt.command instanceof SerializableCommand)) {
 				// @ts-ignore
@@ -283,13 +276,12 @@ export async function configureEditor(editorElement, backgroundImageUrl = '') {
 
 			const comp = await ImageComponent.fromImage(image, Mat33.identity);
 
-			_editor.dispatch(_editor.image.addElement(comp));
+			portal.ui.editor.dispatch(portal.ui.editor.image.addElement(comp));
 		}
 
-		grid = new GridComponent(_editor);
-		_editor.dispatch(_editor.image.addElement(grid));
-
-		editor.set(_editor);
-		configureToolbar(get(player)?.host);
+		grid = new GridComponent(portal.ui.editor);
+		portal.ui.editor.dispatch(portal.ui.editor.image.addElement(grid));
+		
+		configureToolbar();
 	}
 }

@@ -1,8 +1,8 @@
 <script>
-	import { player, handleCreateSession, handleJoinSession } from './PortalStore.js';
+	import { portal } from '$lib/models/PortalState.svelte.js';
+	import { handleCreateSession, handleJoinSession } from '$lib/models/Session.svelte.js';
 	import { dev } from '$app/environment';
 	import { showError } from './StoreUtils.js';
-	let { activeSession} = $props();
 	/**
 	 * @type {any}
 	 */
@@ -10,7 +10,7 @@
 
 	if (dev) {
 		// @ts-ignore
-		$player = { name: 'example', host: false };
+		portal.player = { name: 'example', host: false };
 	}
 
 	/**
@@ -24,34 +24,34 @@
 		return result;
 	}
 	function createSession() {
-		console.log(`Creating session ${name} with id ${activeSession.portalId}`);
+		console.log(`Creating session ${name} with id ${portal.session.id}`);
 
 		if (!name || name.length < 1) {
 			showError(`You must provide a name to create a portal.`);
 			return;
 		}
-		if (activeSession.password.length < 1) {
+		if (portal.session.password.length < 1) {
 			showError(`You must provide a password to create a portal.`);
 			return;
 		}
-		if (!$player?.name) {
+		if (!portal.player?.name) {
 			showError(`You must provide a name to create a portal.`);
 			return;
 		}
-		activeSession.portalId = createRandomId(12);
-		$player.host = true;
-		player.set({ ...$player, name }); // Clone the object to avoid mutating the original
+		portal.session.id = createRandomId(12);
+		portal.player.isHost = true;
+		portal.player = ({ ...portal.player, name }); // Clone the object to avoid mutating the original
 
 		/**
 		 * @type {DC.PortalState}
 		 */
 		const sessionData = {
-			sessionId: activeSession.portalId,
+			sessionId: portal.session.id,
 			name,
-			password: activeSession.password,
-			host: $player,
+			password: portal.session.password,
+			host: portal.player,
 			players: [],
-			player: $player,
+			player: portal.player,
 			tokens: []
 		};
 		console.log('Session data: ', sessionData);
@@ -60,22 +60,22 @@
 	}
 
 	function joinSession() {
-		if (!activeSession.portalId || activeSession.portalId.length < 1) {
+		if (!portal.session.id || portal.session.id.length < 1) {
 			showError(`You must provide an ID to enter a portal.`);
 			return;
 		}
-		if (activeSession.password.length < 1) {
+		if (portal.session.password.length < 1) {
 			showError(`You must provide a password to enter a portal.`);
 			return;
 		}
-		if (!$player?.name) {
+		if (!portal.player?.name) {
 			showError(`You must provide a name to enter a portal.`);
 			return;
 		}
 		const sessionData = {
-			sessionId: activeSession.portalId,
-			password: activeSession.password,
-			player: $player
+			sessionId: portal.session.id,
+			password: portal.session.password,
+			player: portal.player
 		};
 
 		handleJoinSession(sessionData);
@@ -86,9 +86,9 @@
 	<div class="session-form-container">
 		<div class="session-form" data-augmented-ui="tl-clip tr-clip bl-clip br-clip both">
 			<div>
-				{#if activeSession.sessionMode === 'create' || activeSession.sessionMode == null}
+				{#if portal.session.mode === 'create' || portal.session.mode == null}
 					<h3>Portal Creation</h3>
-				{:else if activeSession.sessionMode === 'join'}
+				{:else if portal.session.mode === 'join'}
 					<h3>Portal Connection</h3>
 				{/if}
 			</div>
@@ -98,12 +98,12 @@
 					<input
 						name="player-name"
 						type="text"
-						bind:value={$player.name}
+						bind:value={portal.player.name}
 						placeholder="Enter your name"
 						required
 					/>
 				</label>
-				{#if activeSession.sessionMode === 'create' || activeSession.sessionMode == null}
+				{#if portal.session.mode === 'create' || portal.session.mode == null}
 					<label for="portal-name">
 						Portal Name
 						<input
@@ -117,27 +117,41 @@
 				{:else}
 					<label for="sessionId">
 						Portal ID
-						<input type="text" bind:value={activeSession.portalId} placeholder="Enter Session ID" required />
+						<input
+							type="text"
+							bind:value={portal.session.id}
+							placeholder="Enter Session ID"
+							required
+						/>
 					</label>
 				{/if}
 				<label for="password">
 					Password
-					<input type="password" bind:value={activeSession.password} placeholder="Enter Password" required />
+					<input
+						type="password"
+						bind:value={portal.session.password}
+						placeholder="Enter Password"
+						required
+					/>
 				</label>
 			</form>
 
 			<footer>
-				{#if activeSession.sessionMode === 'create' || activeSession.sessionMode == null}
+				{#if portal.session.mode === 'create' || portal.session.mode == null}
 					<button class="connect-button" onclick={createSession}>Create</button>
 					<small>
-						Switch to <button class="switch-mode" onclick={() => (activeSession.sessionMode = 'join')}
-							>connect mode</button
+						Switch to <button
+							class="switch-mode"
+							onclick={() => (portal.session.mode = 'join')}>connect mode</button
 						>
 					</small>
 				{/if}
-				{#if activeSession.sessionMode === 'join'}
+				{#if portal.session.mode === 'join'}
 					<button class="connect-button" onclick={joinSession}>Connect</button><small>
-						Switch to <button class="switch-mode" onclick={() => (activeSession.sessionMode = 'create')}>
+						Switch to <button
+							class="switch-mode"
+							onclick={() => (portal.session.mode = 'create')}
+						>
 							create mode
 						</button>
 					</small>
@@ -208,7 +222,7 @@
 		appearance: none;
 		color: var(--color-accent-one);
 		transition: color var(--transition-speed) ease-in-out;
-		&:hover{
+		&:hover {
 			color: var(--color-accent-two);
 		}
 	}

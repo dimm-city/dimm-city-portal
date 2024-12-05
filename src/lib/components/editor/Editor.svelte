@@ -1,30 +1,26 @@
 <script>
 	import 'js-draw/bundledStyles';
 	import './Editor.css';
-	import { onMount } from 'svelte';
-	import { fetchUpdates, player, inSession } from '../PortalStore.js';
+	// import { onMount } from 'svelte';
+	// import { fetchUpdates, player, inSession } from '../PortalStore.js';
+
 	import { configureEditor, configureToolbar } from './Editor.js';
-
-	let {backgroundImageUrl} = $props();
-	/**
-	 * @type {HTMLElement}
-	 */
-	let editorElement = $state();
-
-	player.subscribe((p) => {
-		if (p?.id && $inSession) configureToolbar(p.host);
-	});
+	import { portal } from '$lib/models/PortalState.svelte.js';
+	import { fetchUpdates } from '$lib/models/Session.svelte.js';
+	import { onMount } from 'svelte';
 
 	onMount(() => {
-		console.log('Editor mounting...', backgroundImageUrl);
-		
-		configureEditor(editorElement, backgroundImageUrl);
-		fetchUpdates(0);
+		if (portal.player?.id && portal.session.mode == 'active') configureToolbar(portal.player.isHost);
+
+		console.log('Editor mounting...', portal.config.defaultScene.backgroundImageUrl);
+
+		configureEditor(portal.config.defaultScene.backgroundUrl);
+		fetchUpdates();
 	});
 </script>
 
 <div class="editor-container">
-	<div bind:this={editorElement}></div>
+	<div bind:this={portal.ui.editorElement}></div>
 </div>
 
 <style>

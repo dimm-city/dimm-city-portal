@@ -1,33 +1,25 @@
 <script>
 	import Dialog from './Dialog.svelte';
 	import SessionManager from './SessionManager.svelte';
-
-	import {
-		host,
-		inSession,
-		players,
-		showPlayerList,
-		sessionId,
-		sessionName,
-		showSessionDetails,
-		sessionPassword
-	} from './PortalStore';
+	import { portal } from "$lib/models/PortalState.svelte.js";
 	import Editor from './editor/Editor.svelte';
-	import { isHost } from './PortalStore.js';
 	import './theme.css';
-	let { config, player } = $props();
+	import { init } from '$lib/models/Session.svelte.js';
+	$effect(()=>{
+		init();
+	});
 </script>
 
-<div class="portal-container" class:in-session={$inSession} class:host={$isHost}>
-	{#if $inSession == false}
-		<SessionManager activeSession={config?.activeSession} />
-	{:else if $inSession}
-		<Dialog bind:show={$showPlayerList}>
+<div class="portal-container" class:in-session={portal.session.mode == 'active'} class:host={portal.player?.isHost}>
+	{#if portal.session.mode  != 'active'}
+		<SessionManager />
+	{:else}
+		<Dialog bind:show={portal.ui.showPlayerList}>
 			<div>
 				<h4>Players in Session</h4>
 				<ul>
-					<li>{$host.name} (Dream Master)</li>
-					{#each $players as p}
+					<li>{portal.session.host.name} (Dream Master)</li>
+					{#each portal.session.players as p}
 						<li>
 							{p.name}
 						</li>
@@ -35,18 +27,18 @@
 				</ul>
 			</div>
 		</Dialog>
-		<Dialog bind:show={$showSessionDetails}>
+		<Dialog bind:show={portal.ui.showSessionDetails}>
 			<div>
-				<h2>{$sessionName}</h2>
+				<h2>{portal.session.name}</h2>
 				<p>
-					ID: {$sessionId}
+					ID: {portal.session.id}
 				</p>
 				<p>
-					Password: {$sessionPassword ?? '***********'}
+					Password: {portal.session.password ?? '***********'}
 				</p>
 			</div>
 		</Dialog>
-		<Editor backgroundImageUrl={config.backgroundImageUrl} />
+		<Editor backgroundImageUrl={portal.config.defaultScene.backgroundImageUrl} />
 	{/if}
 </div>
 
