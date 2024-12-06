@@ -5,8 +5,8 @@
 	// import { fetchUpdates, player, inSession } from '../PortalStore.js';
 
 	import { configureEditor, configureToolbar } from './Editor.js';
-	import { portal } from '$lib/models/PortalState.svelte.js';
-	import { fetchUpdates } from '$lib/models/Session.svelte.js';
+	import { portal } from '$lib/components/Portal.svelte.js';
+	import { fetchUpdates } from '$lib/components/Session.svelte.js';
 	import { onMount } from 'svelte';
 
 	onMount(() => {

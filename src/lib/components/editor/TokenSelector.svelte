@@ -1,6 +1,6 @@
 <script>
 	import { ImageComponent, Mat33, SelectionTool } from 'js-draw';
-	import { portal } from '$lib/models/PortalState.svelte.js';
+	import { portal } from '$lib/components/Portal.svelte.js';
 	let { editor, hideDropdown, playerToken = $bindable() } = $props();
 
 	const token = portal.player.availableTokens?.at(0) ?? []; //HACK: do this better

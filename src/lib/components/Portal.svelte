@@ -1,10 +1,10 @@
 <script>
 	import Dialog from './Dialog.svelte';
 	import SessionManager from './SessionManager.svelte';
-	import { portal } from "$lib/models/PortalState.svelte.js";
+	import { portal } from "$lib/components/Portal.svelte.js";
 	import Editor from './editor/Editor.svelte';
 	import './theme.css';
-	import { init } from '$lib/models/Session.svelte.js';
+	import { init } from '$lib/components/Session.svelte.js';
 	$effect(()=>{
 		init();
 	});

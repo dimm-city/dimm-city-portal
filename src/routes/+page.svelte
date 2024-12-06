@@ -4,7 +4,7 @@
 	import DiceRoller from '$lib/components/DiceRoller.svelte';
 	import { page } from '$app/stores';
 	import { SvelteToast } from '@zerodevx/svelte-toast';
-	import { portal } from '$lib/models/PortalState.svelte.js';
+	import { portal } from '$lib/components/Portal.svelte.js';
 
 	/** @type {{data: any}} */
 	let { data } = $props();

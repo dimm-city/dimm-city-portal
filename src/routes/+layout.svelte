@@ -2,7 +2,7 @@
 	import { page } from '$app/stores';
 
 	import '$lib/components/styles.css';
-	import { portal } from '$lib/models/PortalState.svelte.js';
+	import { portal } from '$lib/components/Portal.svelte.js';
 	let { children } = $props();
 </script>
 

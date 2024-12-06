@@ -27,13 +27,13 @@ import { DiceIcon, GearIcon, LeaveIcon, PeopleIcon, PlayerIcon, SaveIcon, ShareI
 import { GridComponent } from './GridComponent.js';
 import { SvelteWidget } from './SvelteWidget.js';
 import TokenSelector from './TokenSelector.svelte';
-import { portal } from '$lib/models/PortalState.svelte.js';
+import { portal } from '$lib/components/Portal.svelte.js';
 import {
 	copySessionUrl,
 	leaveSession,
 	postSerializedCommand,
 	requestDiceRoll
-} from '$lib/models/Session.svelte.js';
+} from '$lib/components/Session.svelte.js';
 
 
 /**

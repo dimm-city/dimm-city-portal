@@ -1,6 +1,6 @@
 <script>
-	import { portal } from '$lib/models/PortalState.svelte.js';
-	import { handleCreateSession, handleJoinSession } from '$lib/models/Session.svelte.js';
+	import { portal } from '$lib/components/Portal.svelte.js';
+	import { handleCreateSession, handleJoinSession } from '$lib/components/Session.svelte.js';
 	import { dev } from '$app/environment';
 	import { showError } from './StoreUtils.js';
 	/**

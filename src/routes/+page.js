@@ -6,7 +6,7 @@ export const load = async () => {
 	 * NOTE: The player data could be loaded from a database based 
 	 * the logged in user and their profile.
 	 */
-	/** @type {import('$lib/types.js').Player} */
+	/** @type {import('$lib/_remove/types.js').Player} */
 	let player = {
 		name: '',
 		diceId: [-1],
