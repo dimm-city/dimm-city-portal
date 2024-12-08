@@ -156,3 +156,38 @@ div.editor-container .editor-popup-menu-option:hover,
     background-color: var(--background-color-2);
     color: var(--color-accent-one);
 }
+
+
+
+.portal-container.rolling .dice-icon {
+    color: var(--color-accent-one);
+    animation: spin 1s linear infinite forwards;
+}
+
+.portal-container.not-rolling .dice-icon {
+    animation: slow-down-spin ease-out 1.5s forwards;
+}
+
+@keyframes slow-down-spin {
+    from {
+        transform: rotate(0deg);
+        color: var(--color-accent-one);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes spin {
+    0% {
+
+        color: var(--color-accent-one);
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+        color: var(--color-accent-one);
+    }
+}

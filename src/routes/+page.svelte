@@ -25,7 +25,7 @@
 	{/if}
 	<Portal />
 </section>
-<DiceRoller bind:this={portal.ui.diceBox} />
+<DiceRoller />
 <SvelteToast options={portal.config.toast} />
 
 <style>

@@ -14,8 +14,7 @@ export const portal = $state({
       name: 'local',
       url: 'http://localhost:5173',
       config: { path: '/portal-hub' }
-    }],
-    availableSessions: [],
+    }],    
     defaultScene: {
       backgroundUrl: '/assets/dc-banner-yellow.png',
     },
@@ -35,6 +34,29 @@ export const portal = $state({
         description: '',
         size: 'medium'
       }],
+      config: {
+        assetPath: '/dice/',
+        sounds: false,
+        volume: 100,
+        sound_dieMaterial: 'plastic',
+        theme_customColorset: {
+          name: 'pink',
+          foreground: 'white',
+          background: '#ef1ebf',
+          texture: 'glass',
+          description: 'Default pink dice',
+          material: 'glass',
+          scale: 0
+        },
+        theme_colorset: 'pink',
+        baseScale: 110,
+        strength: 1,
+        onRollComplete: (/** @type {any} */ result) => {
+          
+          const e = new Event('rollCompleted', result);
+          portal.ui.editorElement?.dispatchEvent(e);
+        }
+      }
     },
     plugins: [],
   },
@@ -42,6 +64,7 @@ export const portal = $state({
     id: '',
     name: '',
     isHost: false,
+    availableSessions: [],
     selectedDiceTheme: 'default',
     diceNotation: '1d20',
     diceModifier: '',
@@ -71,7 +94,8 @@ export const portal = $state({
       modifier: '',
       result: 0,
     }],
-    log: []
+    log: [],
+    chat:[]
   },
   ui: {
     editor: null, // an inistance of the Editor component

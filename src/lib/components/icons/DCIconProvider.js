@@ -1,3 +1,5 @@
+import { portal } from "../Portal.svelte.js";
+
 const iconElement = (/** @type {string} */ data) => {
 	const icon = document.createElement('div');
 	icon.innerHTML = data;
@@ -8,6 +10,7 @@ export const DiceIcon = iconElement(`<svg
 	fill="currentColor"
 	width="100%"
 	height="100%"
+	class="dice-icon ${portal.ui.rolling ? "rolling": ""}"
 	viewBox="-16 0 512 512"
 	xmlns="http://www.w3.org/2000/svg"
 >

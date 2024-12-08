@@ -57,7 +57,8 @@
  * @property {number} lastUpdateIndex - Index of the last update in the session log.
  * @property {Command[]} commands - List of commands executed in the session.
  * @property {DiceRoll[]} diceRolls - List of dice rolls in the session.
- * @property {Chat[]} log - Chat log of messages in the session.
+ * @property {Chat[]} log - Session log.
+ * @property {Chat[]} chat - Chat log of messages in the session.
  */
 
 /**
@@ -65,20 +66,21 @@
  * @property {string} id - The ID of the player.
  * @property {string} name - The name of the player.
  * @property {boolean} isHost - Indicates whether the player is the host.
- * @property {string} selectedDiceTheme - The selected dice theme for the player.
+ * @property {DiceTheme} selectedDiceTheme - The selected dice theme for the player.
  * @property {string} diceNotation - The default dice notation for the player (e.g., '1d20').
  * @property {string} diceModifier - The default dice modifier for the player.
  * @property {string} diceRollType - The type of dice roll (e.g., 'success').
  * @property {DiceTheme[]} availableDiceThemes - An array of available dice themes for the player.
  * @property {Token[]} availableTokens - An array of available tokens for the player.
  * @property {Chat[]} chats - An array of chat messages for the player.
+ * @property {SessionDetails[]} availableSessions - An array of available session details.
  */
 
 /**
  * @typedef {Object} UiState
  * @property {HTMLElement | null} editorElement - An instance of the HTML element targeted by the Editor component.
  * @property {import("js-draw").Editor | null} editor - An instance of the Editor component. 
- * @property {import('@3d-dice/dice-box-threejs').DiceBox | null} diceBox - An instance of the DiceRoller component.
+ * @property {import("@3d-dice/dice-box-threejs").default} diceBox - An instance of the DiceRoller component.
  * @property {boolean} rolling - Indicates whether dice are currently rolling.
  * @property {boolean} showSessionDetails - Indicates whether to show session details.
  * @property {boolean} showPlayerList - Indicates whether to show the player list.
@@ -90,7 +92,6 @@
  * @typedef {Object} Config
  * @property {{name: string, url: string, config: {path: string}}} selectedHub - The selected hub.
  * @property {{name: string, url: string, config: {path: string}}[]} availableHubs - An array of available hubs.
- * @property {SessionDetails[]} availableSessions - An array of available session details.
  * @property {DefaultScene} defaultScene - Details about the default scene.
  * @property {DiceConfig} dice - Configuration options for dice.
  * @property {import('@zerodevx/svelte-toast').SvelteToastOptions} toast - Configuration options for the toast alerts.
@@ -108,6 +109,31 @@
  * @property {boolean} showDiceResultToast - Indicates whether to show a toast notification with the dice result.
  * @property {DiceType[]} availableDiceTypes - An array of available dice types.
  * @property {DiceTheme[]} availableThemes - An array of available themes for dice.
+ * @property {DiceBoxConfig} config - Configuration options for the dice box.
+ */
+
+/**
+ * @typedef {Object} ThemeCustomColorset
+ * @property {string} name - The name of the theme.
+ * @property {string} foreground - The foreground color of the theme.
+ * @property {string} background - The background color of the theme in hex format.
+ * @property {string} texture - The texture type of the theme.
+ * @property {string} description - A description of the theme.
+ * @property {string} material - The material type of the theme.
+ * @property {number} scale - The scale factor for the theme.
+ */
+
+/**
+ * @typedef {Object} DiceBoxConfig
+ * @property {string} assetPath - The path to the dice assets.
+ * @property {boolean} sounds - Whether sounds are enabled or not.
+ * @property {number} volume - The volume level of the sounds (0-100).
+ * @property {string} sound_dieMaterial - The material type for die sounds.
+ * @property {ThemeCustomColorset} theme_customColorset - Custom color set details for the theme.
+ * @property {string} theme_colorset - The name of the color set theme.
+ * @property {number} baseScale - The base scale factor for the dice.
+ * @property {number} strength - The strength of the dice roll (likely a multiplier).
+ * @property {function(any): void} onRollComplete - Callback function to be called when the roll is complete.
  */
 
 /**

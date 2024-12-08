@@ -1,17 +1,23 @@
 <script>
 	import Dialog from './Dialog.svelte';
 	import SessionManager from './SessionManager.svelte';
-	import { portal } from "$lib/components/Portal.svelte.js";
+	import { portal } from '$lib/components/Portal.svelte.js';
 	import Editor from './editor/Editor.svelte';
 	import './theme.css';
 	import { init } from '$lib/components/Session.svelte.js';
-	$effect(()=>{
+	$effect(() => {
 		init();
 	});
 </script>
 
-<div class="portal-container" class:in-session={portal.session.mode == 'active'} class:host={portal.player?.isHost}>
-	{#if portal.session.mode  != 'active'}
+<div
+	class="portal-container"
+	class:rolling={portal.ui.rolling}
+	class:not-rolling={!portal.ui.rolling}
+	class:in-session={portal.session.mode == 'active'}
+	class:host={portal.player?.isHost}
+>
+	{#if portal.session.mode != 'active'}
 		<SessionManager />
 	{:else}
 		<Dialog bind:show={portal.ui.showPlayerList}>

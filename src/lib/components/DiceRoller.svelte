@@ -1,69 +1,34 @@
 <script>
-	import { createEventDispatcher, onMount } from 'svelte';
 	import DiceBox from '@3d-dice/dice-box-threejs';
-	const dispatcher = createEventDispatcher();
+	import { portal } from './Portal.svelte.js';
+	import { onMount } from 'svelte';
 
-	let rolling = $state(false);
-	/**
-	 * @typedef {Object} Props
-	 * @property {string} [diceSize]
-	 */
-
-	/** @type {Props} */
-	let { diceSize = 'medium' } = $props();
-
-	// $: diceSizeModifier = diceSize === 'large' ? 90 : diceSize === 'medium' ? 50 : 0;
-	// $: scale = diceSizeModifier + (window.innerWidth > 500 ? 100 : 90);
-
-	/**
-	 * @type {DiceBox}
-	 */
-	let diceBox;
-
-	let defaultDiceConfig = {
-		assetPath: '/dice/',
-		sounds: false,
-		volume: 100,
-		sound_dieMaterial: 'plastic',
-		theme_customColorset: {
-			name: 'pink',
-			foreground: 'white',
-			background: '#ef1ebf',
-			texture: 'glass',
-			description: 'Default pink dice',
-			material: 'glass',
-			scale: 0
-		},
-		theme_colorset: 'pink',
-		baseScale: 110,
-		strength: 1,
-		onRollComplete: (/** @type {any} */ result) => {
-			//rolling = false;
-			dispatcher('rollCompleted', result);
-		}
-	};
+	let initialized = false;
 
 	function initDiceBox() {
-		if (diceBox) return;
+		if (initialized && portal.ui.diceBox != null) return;
+		const diceSize = portal.player.selectedDiceTheme?.size ?? 'medium';
 		let diceSizeModifier = diceSize === 'large' ? 90 : diceSize === 'medium' ? 50 : 0;
 		let scale = diceSizeModifier + (window.innerWidth > 500 ? 100 : 90);
-		defaultDiceConfig.baseScale = scale;
-		console.log('Initializing dice box...', defaultDiceConfig);
-		diceBox = new DiceBox('#dice-container', defaultDiceConfig);
-		diceBox.initialize();
-		//}
+		portal.config.dice.config.baseScale = scale;
+		console.log('Initializing dice box...', portal.config.dice.config);
+		portal.ui.diceBox = new DiceBox('#dice-container', portal.config.dice.config);
+		portal.ui.diceBox.initialize();
+		initialized = true;
 	}
-	// This function will be called from the main component to roll the dice
+	
 	/**
 	 * @param {any} result
 	 * @param {{ name: string; }} diceTheme
 	 * @param {any} diceId
 	 */
 	export async function roll(result, diceTheme, diceId) {
-		rolling = true;
+		portal.ui.rolling = true;
 		initDiceBox();
 
-		if (!diceTheme) diceTheme = defaultDiceConfig.theme_customColorset;
+		if (!diceTheme) diceTheme = portal.config.dice.config.theme_customColorset;
+
+		const diceSize = portal.player.selectedDiceTheme?.size ?? 'medium';
 
 		let diceSizeModifier =
 			diceSize === 'x-large' ? 130 : diceSize === 'large' ? 90 : diceSize === 'medium' ? 50 : 0;
@@ -75,25 +40,27 @@
 		diceTheme.name += new Date().getTime().toString();
 		//FIXME: figure out scaling dice properly
 		//diceTheme.scale = scale;
-		diceBox.theme_customColorset = diceTheme;
-		//diceBox.DiceFactory.updateConfig({baseScale: scale, scale: true});
-		await diceBox.loadTheme(diceTheme);
-		await diceBox.resizeWorld();
+		portal.ui.diceBox.theme_customColorset = diceTheme;
+		//portal.ui.diceBox.DiceFactory.updateConfig({baseScale: scale, scale: true});
+		await portal.ui.diceBox.loadTheme(diceTheme);
+		await portal.ui.diceBox.resizeWorld();
 		// Roll the dice
-		const output = await diceBox.roll(result);
-		rolling = false;
+		const output = await portal.ui.diceBox.roll(result);
+
+		portal.ui.rolling = false;
 		return output;
 	}
 
 	export function clear() {
-		if (diceBox) diceBox.clearDice();
+		if (portal.ui.diceBox) portal.ui.diceBox.clearDice();
 	}
+
 	onMount(() => {
 		initDiceBox();
 	});
 </script>
 
-<div id="dice-container" class="dice-container" class:rolling></div>
+<div id="dice-container" class="dice-container" class:rolling={portal.ui.rolling}></div>
 
 <style>
 	.dice-container {

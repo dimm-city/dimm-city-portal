@@ -5,7 +5,6 @@ import Editor, {
 	makeEdgeToolbar,
 	Mat33,
 	PanZoomTool,
-	ActionButtonWidget,
 	SelectionTool,
 	SelectionToolWidget,
 	SerializableCommand,
