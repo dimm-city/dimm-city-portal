@@ -16,18 +16,34 @@
 	 */
 	let dialog; // HTMLDialogElement
 
+	/**
+	 * @param {KeyboardEvent} event
+	 */
+	function handleKeydown(event) {
+		if (event.key === 'Escape') {
+			close();
+		}
+	}
+
 	$: if (dialog && show) dialog.showModal();
 	else if (dialog) dialog.close();
 </script>
 
-<!-- svelte-ignore a11y-click-events-have-key-events a11y-no-noninteractive-element-interactions -->
-<dialog bind:this={dialog} on:close on:click|self={close} data-augmented-ui={aug}>
-	<!-- svelte-ignore a11y-no-static-element-interactions -->
-	<div on:click|stopPropagation class="dialog-container">
+<dialog
+	bind:this={dialog}
+	on:close
+	on:click|self={close}
+	on:keydown={handleKeydown}
+	data-augmented-ui={aug}
+	role="dialog"
+	aria-modal="true"
+	aria-labelledby="dialog-title"
+>
+	<div on:click|stopPropagation on:keydown={handleKeydown} class="dialog-container" role="document">
 		<div class="dialog-grid">
 			<div class="dialog-header">
 				<slot name="header">
-					<h4>{title}</h4>
+					<h4 id="dialog-title">{title}</h4>
 				</slot>
 			</div>
 			<div class="dialog-body">
@@ -39,8 +55,14 @@
 				</slot>
 			</div>
 		</div>
-		<button class="close-button" on:click={close} aria-label="Close"><i class="bi bi-x"></i></button
+		<button
+			class="close-button"
+			on:click={close}
+			aria-label="Close dialog"
+			title="Close dialog"
 		>
+			<i class="bi bi-x" aria-hidden="true"></i>
+		</button>
 	</div>
 </dialog>
 

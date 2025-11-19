@@ -97,51 +97,96 @@
 				{/if}
 			</div>
 			<form>
-				<label for="portal-name">
+				<label for="player-name">
 					Player Name
 					<input
+						id="player-name"
 						name="player-name"
 						type="text"
 						bind:value={$player.name}
 						placeholder="Enter your name"
 						required
+						aria-required="true"
+						aria-invalid={!$player.name}
 					/>
 				</label>
 				{#if $sessionMode === 'create' || $sessionMode == null}
 					<label for="portal-name">
 						Portal Name
 						<input
+							id="portal-name"
 							name="portal-name"
 							type="text"
 							bind:value={name}
 							placeholder="Enter a name for the portal"
 							required
+							aria-required="true"
+							aria-invalid={!name || name.length < 1}
 						/>
 					</label>
 				{:else}
-					<label for="sessionId">
+					<label for="session-id">
 						Portal ID
-						<input type="text" bind:value={portalId} placeholder="Enter Session ID" required />
+						<input
+							id="session-id"
+							name="session-id"
+							type="text"
+							bind:value={portalId}
+							placeholder="Enter Session ID"
+							required
+							aria-required="true"
+							aria-invalid={!portalId || portalId.length < 1}
+						/>
 					</label>
 				{/if}
 				<label for="password">
 					Password
-					<input type="password" bind:value={password} placeholder="Enter Password" required />
+					<input
+						id="password"
+						name="password"
+						type="password"
+						bind:value={password}
+						placeholder="Enter Password"
+						required
+						aria-required="true"
+						aria-invalid={!password || password.length < 1}
+					/>
 				</label>
 			</form>
 
 			<footer>
 				{#if $sessionMode === 'create' || $sessionMode == null}
-					<button class="connect-button" onclick={createSession}>Create</button>
+					<button
+						class="connect-button"
+						onclick={createSession}
+						aria-label="Create new portal session"
+					>
+						Create
+					</button>
 					<small>
-						Switch to <button class="switch-mode" onclick={() => ($sessionMode = 'join')}
-							>connect mode</button
+						Switch to <button
+							class="switch-mode"
+							onclick={() => ($sessionMode = 'join')}
+							aria-label="Switch to connect mode"
 						>
+							connect mode
+						</button>
 					</small>
 				{/if}
 				{#if $sessionMode === 'join'}
-					<button class="connect-button" onclick={joinSession}>Connect</button><small>
-						Switch to <button class="switch-mode" onclick={() => ($sessionMode = 'create')}>
+					<button
+						class="connect-button"
+						onclick={joinSession}
+						aria-label="Connect to existing portal session"
+					>
+						Connect
+					</button>
+					<small>
+						Switch to <button
+							class="switch-mode"
+							onclick={() => ($sessionMode = 'create')}
+							aria-label="Switch to create mode"
+						>
 							create mode
 						</button>
 					</small>
