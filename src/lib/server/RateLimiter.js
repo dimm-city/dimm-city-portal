@@ -28,6 +28,10 @@ const config = {
 		duration: 900, // 15 minutes
 		blockDuration: 900, // block for 15 minutes after limit
 	},
+	chatMessages: {
+		points: parseInt(process.env.RATE_LIMIT_CHAT_MESSAGES || '30'),
+		duration: 60, // 1 minute
+	},
 };
 
 /**
@@ -83,6 +87,16 @@ export const passwordAttemptLimiter = new RateLimiterMemory({
 });
 
 /**
+ * Chat Message Rate Limiter
+ * Limits: 30 messages per minute per socket
+ * Prevents chat spam and flooding
+ */
+export const chatMessageLimiter = new RateLimiterMemory({
+	points: config.chatMessages.points,
+	duration: config.chatMessages.duration,
+});
+
+/**
  * Helper function to handle rate limit errors
  * @param {Error} error - Rate limiter error
  * @param {object} socket - Socket.IO socket
@@ -114,6 +128,7 @@ function getRateLimitMessage(action) {
 		diceRoll: 'Too many dice rolls. Please slow down.',
 		command: 'Too many actions. Please slow down.',
 		passwordAttempt: 'Too many failed password attempts. Account temporarily locked.',
+		chatMessage: 'Too many messages. Please slow down.',
 	};
 
 	return messages[action] || 'Too many requests. Please try again later.';
@@ -128,5 +143,6 @@ export function logRateLimiterConfig() {
 	console.log(`  Session Join: ${config.sessionJoin.points} per ${config.sessionJoin.duration}s`);
 	console.log(`  Dice Rolls: ${config.diceRolls.points} per ${config.diceRolls.duration}s`);
 	console.log(`  Commands: ${config.commands.points} per ${config.commands.duration}s`);
+	console.log(`  Chat Messages: ${config.chatMessages.points} per ${config.chatMessages.duration}s`);
 	console.log(`  Password Attempts: ${config.passwordAttempts.points} per ${config.passwordAttempts.duration}s (block: ${config.passwordAttempts.blockDuration}s)`);
 }

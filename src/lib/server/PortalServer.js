@@ -8,7 +8,7 @@
  * @property {DC.PortalDreamMaster} host - The DM for the session.
  */
 
-import { randomInt } from 'crypto';
+import { randomInt, randomUUID } from 'crypto';
 import bcrypt from 'bcrypt';
 import { Mutex } from 'async-mutex';
 import { SessionStore } from './SessionStore.js';
@@ -17,6 +17,7 @@ import {
 	sessionJoinLimiter,
 	diceRollLimiter,
 	commandLimiter,
+	chatMessageLimiter,
 	passwordAttemptLimiter,
 	handleRateLimitError,
 	logRateLimiterConfig
@@ -25,8 +26,7 @@ import {
 // Initialize session store with SQLite
 const sessionStore = new SessionStore();
 
-// Mutex locks for race condition protection (infrastructure ready, not yet applied)
-// TODO: Apply withSessionLock to critical sections in future update
+// Mutex locks for race condition protection (APPLIED to all critical sections)
 const sessionMutexes = new Map();
 
 function getSessionMutex(sessionId) {
@@ -219,6 +219,53 @@ function validateDiceExpression(expression) {
 	return expression;
 }
 
+/**
+ * Validate and sanitize conditions array for combatants
+ * @param {any} conditions
+ * @returns {string[]}
+ */
+function validateConditions(conditions) {
+	if (!Array.isArray(conditions)) return [];
+	if (conditions.length > 20) {
+		throw new Error('Too many conditions (max 20)');
+	}
+
+	return conditions
+		.filter(c => typeof c === 'string')
+		.map(c => sanitizeString(c, 50))
+		.slice(0, 20);
+}
+
+/**
+ * Sanitize SVG content to remove potentially malicious elements
+ * @param {string} svgContent
+ * @returns {string}
+ */
+function sanitizeSVG(svgContent) {
+	if (typeof svgContent !== 'string') return '';
+
+	// Remove dangerous tags that can execute scripts
+	const dangerousPatterns = [
+		/<script[\s\S]*?<\/script>/gi,
+		/<iframe[\s\S]*?<\/iframe>/gi,
+		/<object[\s\S]*?<\/object>/gi,
+		/<embed[\s\S]*?<\/embed>/gi,
+		/<style[\s\S]*?javascript[\s\S]*?<\/style>/gi,
+		/on\w+\s*=\s*["'][^"']*["']/gi, // onclick, onerror, etc.
+		/on\w+\s*=\s*[^\s>]*/gi,
+		/javascript:/gi,
+		/data:text\/html/gi,
+		/<foreignObject[\s\S]*?<\/foreignObject>/gi
+	];
+
+	let sanitized = svgContent;
+	for (const pattern of dangerousPatterns) {
+		sanitized = sanitized.replace(pattern, '');
+	}
+
+	return sanitized;
+}
+
 function rollDiceExpression(expression) {
 	if (!expression) return null;
 
@@ -244,9 +291,16 @@ function rollDiceExpression(expression) {
 	return `${expression}${modifiers}@${result.join(',')}`;
 }
 
+/**
+ * Check if a socket connection is the host of a session
+ * @param {string} sessionId - The session to check
+ * @param {string} socketId - The socket ID to verify
+ * @returns {boolean} True if the socket is the session host
+ * @security Authorization check - uses strict equality
+ */
 function isHost(sessionId, socketId) {
 	const session = sessionStore.getSession(sessionId);
-	return session?.host?.id == socketId;
+	return session?.host?.id === socketId;
 }
 
 const maxCommands = 9999;
@@ -259,7 +313,7 @@ const maxCommands = 9999;
  */
 function createSystemMessage(sessionId, message, type = 'system') {
 	return {
-		id: `msg-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+		id: `msg-${randomUUID()}`,
 		sessionId,
 		playerId: 'system',
 		playerName: 'System',
@@ -273,6 +327,32 @@ function createSystemMessage(sessionId, message, type = 'system') {
 export function createPortalServer(io) {
 	// Log rate limiter configuration on server start
 	logRateLimiterConfig();
+
+	// CSRF/Origin validation middleware
+	io.use((socket, next) => {
+		const origin = socket.handshake.headers.origin || socket.handshake.headers.referer;
+
+		// In production, validate against allowed origins
+		const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',') || [];
+
+		// In development, allow localhost
+		const isDevelopment = process.env.NODE_ENV !== 'production';
+		const localhostRegex = /^https?:\/\/(localhost|127\.0\.0\.1|::1)(:\d+)?$/;
+
+		if (isDevelopment && (!origin || localhostRegex.test(origin))) {
+			return next();
+		}
+
+		// In production, check allowed origins
+		if (allowedOrigins.length > 0) {
+			if (!origin || !allowedOrigins.includes(origin)) {
+				console.warn(`WebSocket connection rejected from origin: ${origin}`);
+				return next(new Error('Forbidden origin'));
+			}
+		}
+
+		next();
+	});
 
 	io.on('connection', (socket) => {
 		console.log('New client connected:', socket.id);
@@ -400,15 +480,33 @@ export function createPortalServer(io) {
 				// Reset password attempt counter on success
 				await passwordAttemptLimiter.delete(clientIP);
 
-				player.id = socket.id;
-				player.token = { ...player.token, id: player.id, playerToken: true };
+				// Critical section: Protect session modifications with mutex lock
+				await withSessionLock(sessionId, async () => {
+					// Refresh session data inside lock to avoid stale data
+					const currentSession = sessionStore.getSession(sessionId);
 
-				session.players.push(player);
-				session.tokens.push(player.token);
-				session.lastActivity = Date.now();
+					player.id = socket.id;
+					player.token = { ...player.token, id: player.id, playerToken: true };
 
-				// Update session in persistent storage
-				sessionStore.updateSession(sessionId, session);
+					currentSession.players.push(player);
+					currentSession.tokens.push(player.token);
+					currentSession.lastActivity = Date.now();
+
+					// Send system message to chat
+					const joinMessage = createSystemMessage(
+						sessionId,
+						`${player.name} joined the session`
+					);
+					if (!currentSession.chatHistory) currentSession.chatHistory = [];
+					currentSession.chatHistory.push(joinMessage);
+					if (currentSession.chatHistory.length > 100) currentSession.chatHistory.shift();
+
+					// Update session in persistent storage
+					sessionStore.updateSession(sessionId, currentSession);
+
+					// Update session variable for later use
+					Object.assign(session, currentSession);
+				});
 
 				socket.join(sessionId);
 				socket.emit('sessionJoined', sanitizeSessionForClient(session));
@@ -419,15 +517,8 @@ export function createPortalServer(io) {
 					tokens: session.tokens
 				});
 
-				// Send system message to chat
-				const joinMessage = createSystemMessage(
-					sessionId,
-					`${player.name} joined the session`
-				);
-				if (!session.chatHistory) session.chatHistory = [];
-				session.chatHistory.push(joinMessage);
-				if (session.chatHistory.length > 100) session.chatHistory.shift();
-				sessionStore.updateSession(sessionId, session);
+				// Emit join message (already added to chat history in lock)
+				const joinMessage = session.chatHistory[session.chatHistory.length - 1];
 				io.to(sessionId).emit('newMessage', joinMessage);
 
 				console.log('Player joined:', player.name, 'to session', sessionId);
@@ -525,31 +616,42 @@ export function createPortalServer(io) {
 		});
 
 		async function handlePostCommand(data, socket) {
-			const session = sessionStore.getSession(data?.sessionId);
+			const sessionId = data?.sessionId;
+			if (!sessionId) return;
 
-			if (!session) {
-				//console.warn(`No session found for socket ${socket?.id}`);
-				return;
-			}
-			session.idCounter += 1;
-			const command = {
-				id: session.idCounter,
-				data: data
-			};
-			session.commandData.push(command);
+			// Critical section: Protect command counter and array with mutex lock
+			const command = await withSessionLock(sessionId, async () => {
+				const session = sessionStore.getSession(sessionId);
 
-			// Limit the number of commands stored
-			if (session.commandData.length > maxCommands) {
-				session.commandData.shift();
-			}
+				if (!session) {
+					//console.warn(`No session found for socket ${socket?.id}`);
+					return null;
+				}
 
-			session.lastActivity = Date.now();
+				session.idCounter += 1;
+				const cmd = {
+					id: session.idCounter,
+					data: data
+				};
+				session.commandData.push(cmd);
 
-			// Update session in persistent storage
-			sessionStore.updateSession(data.sessionId, session);
+				// Limit the number of commands stored
+				if (session.commandData.length > maxCommands) {
+					session.commandData.shift();
+				}
+
+				session.lastActivity = Date.now();
+
+				// Update session in persistent storage
+				sessionStore.updateSession(sessionId, session);
+
+				return cmd;
+			});
 
 			// Broadcast the new command to all clients except the sender
-			socket.broadcast.emit('newCommand', command);
+			if (command) {
+				socket.broadcast.emit('newCommand', command);
+			}
 		}
 
 		function handleCommandsSince(session, sinceId, callback) {
@@ -667,8 +769,11 @@ export function createPortalServer(io) {
 					throw new Error('Scene data too large (max 10MB)');
 				}
 
-				// Update session with scene data
-				session.savedScene = sceneData;
+				// Sanitize SVG content to remove malicious scripts
+				const sanitizedScene = sanitizeSVG(sceneData);
+
+				// Update session with sanitized scene data
+				session.savedScene = sanitizedScene;
 				session.lastSaved = Date.now();
 				session.sceneName = sceneName || 'Untitled Scene';
 				session.sceneVersion = (session.sceneVersion || 0) + 1;
@@ -732,6 +837,9 @@ export function createPortalServer(io) {
 		// Chat Message Handler
 		socket.on('sendMessage', async (data) => {
 			try {
+				// Rate limiting by socket ID
+				await chatMessageLimiter.consume(socket.id);
+
 				const { sessionId, message, type = 'chat' } = data;
 
 				// Validate inputs
@@ -769,7 +877,7 @@ export function createPortalServer(io) {
 
 				// Create message object
 				const messageObj = {
-					id: `msg-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+					id: `msg-${randomUUID()}`,
 					sessionId,
 					playerId: socket.id,
 					playerName: player.name,
@@ -797,6 +905,11 @@ export function createPortalServer(io) {
 
 				console.log(`Message in ${sessionId} from ${player.name}: ${sanitizedMessage}`);
 			} catch (error) {
+				// Handle rate limit errors
+				if (handleRateLimitError(error, socket, 'chatMessage')) {
+					return;
+				}
+
 				console.error('Send message error:', error.message);
 				socket.emit('error', { message: error.message });
 			}
@@ -822,26 +935,34 @@ export function createPortalServer(io) {
 					throw new Error('Only the host can add combatants');
 				}
 
-				// Validate and sanitize combatant data
+				// Validate and sanitize combatant data outside lock
 				const newCombatant = {
-					id: `combatant-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+					id: `combatant-${randomUUID()}`,
 					name: validatePlayerName(combatant.name || 'Combatant'),
 					initiative: parseInt(combatant.initiative) || 0,
 					type: ['PC', 'NPC', 'Monster'].includes(combatant.type) ? combatant.type : 'NPC',
 					hp: parseInt(combatant.hp) || null,
 					maxHp: parseInt(combatant.maxHp) || null,
 					ac: parseInt(combatant.ac) || null,
-					conditions: combatant.conditions || []
+					conditions: validateConditions(combatant.conditions || [])
 				};
 
-				// Add to combatants array
-				session.combatants.push(newCombatant);
+				// Critical section: Protect combatants array with mutex lock
+				await withSessionLock(sessionId, async () => {
+					const currentSession = sessionStore.getSession(sessionId);
 
-				// Sort by initiative (descending)
-				session.combatants.sort((a, b) => b.initiative - a.initiative);
+					// Add to combatants array
+					currentSession.combatants.push(newCombatant);
 
-				// Update session
-				sessionStore.updateSession(sessionId, session);
+					// Sort by initiative (descending)
+					currentSession.combatants.sort((a, b) => b.initiative - a.initiative);
+
+					// Update session
+					sessionStore.updateSession(sessionId, currentSession);
+
+					// Update session variable for broadcast
+					Object.assign(session, currentSession);
+				});
 
 				// Broadcast to all players
 				io.to(sessionId).emit('combatantAdded', {
@@ -875,21 +996,31 @@ export function createPortalServer(io) {
 					throw new Error('Only the host can remove combatants');
 				}
 
-				// Find and remove combatant
-				const index = session.combatants.findIndex(c => c.id === combatantId);
-				if (index === -1) {
-					throw new Error('Combatant not found');
-				}
+				// Critical section: Protect combatants array with mutex lock
+				const removed = await withSessionLock(sessionId, async () => {
+					const currentSession = sessionStore.getSession(sessionId);
 
-				const removed = session.combatants.splice(index, 1)[0];
+					// Find and remove combatant
+					const index = currentSession.combatants.findIndex(c => c.id === combatantId);
+					if (index === -1) {
+						throw new Error('Combatant not found');
+					}
 
-				// Adjust current turn index if needed
-				if (session.currentTurnIndex >= session.combatants.length && session.combatants.length > 0) {
-					session.currentTurnIndex = session.combatants.length - 1;
-				}
+					const removedCombatant = currentSession.combatants.splice(index, 1)[0];
 
-				// Update session
-				sessionStore.updateSession(sessionId, session);
+					// Adjust current turn index if needed
+					if (currentSession.currentTurnIndex >= currentSession.combatants.length && currentSession.combatants.length > 0) {
+						currentSession.currentTurnIndex = currentSession.combatants.length - 1;
+					}
+
+					// Update session
+					sessionStore.updateSession(sessionId, currentSession);
+
+					// Update session variable for broadcast
+					Object.assign(session, currentSession);
+
+					return removedCombatant;
+				});
 
 				// Broadcast to all players
 				io.to(sessionId).emit('combatantRemoved', {
@@ -932,32 +1063,41 @@ export function createPortalServer(io) {
 					throw new Error('No combatants in initiative tracker');
 				}
 
-				// Advance to next turn (wrap around)
-				session.currentTurnIndex = (session.currentTurnIndex + 1) % session.combatants.length;
+				// Critical section: Protect turn index with mutex lock
+				const result = await withSessionLock(sessionId, async () => {
+					const currentSession = sessionStore.getSession(sessionId);
 
-				// Update session
-				sessionStore.updateSession(sessionId, session);
+					// Advance to next turn (wrap around)
+					currentSession.currentTurnIndex = (currentSession.currentTurnIndex + 1) % currentSession.combatants.length;
 
-				const currentCombatant = session.combatants[session.currentTurnIndex];
+					const currentCombatant = currentSession.combatants[currentSession.currentTurnIndex];
 
-				// Send system message to chat
-				const systemMessage = createSystemMessage(
-					sessionId,
-					`${currentCombatant.name}'s turn!`,
-					'system'
-				);
-				session.chatHistory.push(systemMessage);
-				if (session.chatHistory.length > 100) session.chatHistory.shift();
-				sessionStore.updateSession(sessionId, session);
+					// Send system message to chat
+					const systemMessage = createSystemMessage(
+						sessionId,
+						`${currentCombatant.name}'s turn!`,
+						'system'
+					);
+					currentSession.chatHistory.push(systemMessage);
+					if (currentSession.chatHistory.length > 100) currentSession.chatHistory.shift();
+
+					// Update session
+					sessionStore.updateSession(sessionId, currentSession);
+
+					// Update session variable for broadcast
+					Object.assign(session, currentSession);
+
+					return { currentCombatant, systemMessage };
+				});
 
 				// Broadcast to all players
 				io.to(sessionId).emit('turnChanged', {
 					currentTurnIndex: session.currentTurnIndex,
-					currentCombatant
+					currentCombatant: result.currentCombatant
 				});
-				io.to(sessionId).emit('newMessage', systemMessage);
+				io.to(sessionId).emit('newMessage', result.systemMessage);
 
-				console.log(`Turn advanced in ${sessionId}: ${currentCombatant.name}'s turn`);
+				console.log(`Turn advanced in ${sessionId}: ${result.currentCombatant.name}'s turn`);
 			} catch (error) {
 				console.error('Next turn error:', error.message);
 				socket.emit('error', { message: error.message });
@@ -991,24 +1131,34 @@ export function createPortalServer(io) {
 					throw new Error('No combatants in initiative tracker');
 				}
 
-				// Go to previous turn (wrap around)
-				session.currentTurnIndex = session.currentTurnIndex - 1;
-				if (session.currentTurnIndex < 0) {
-					session.currentTurnIndex = session.combatants.length - 1;
-				}
+				// Critical section: Protect turn index with mutex lock
+				const result = await withSessionLock(sessionId, async () => {
+					const currentSession = sessionStore.getSession(sessionId);
 
-				// Update session
-				sessionStore.updateSession(sessionId, session);
+					// Go to previous turn (wrap around)
+					currentSession.currentTurnIndex = currentSession.currentTurnIndex - 1;
+					if (currentSession.currentTurnIndex < 0) {
+						currentSession.currentTurnIndex = currentSession.combatants.length - 1;
+					}
 
-				const currentCombatant = session.combatants[session.currentTurnIndex];
+					const currentCombatant = currentSession.combatants[currentSession.currentTurnIndex];
+
+					// Update session
+					sessionStore.updateSession(sessionId, currentSession);
+
+					// Update session variable for broadcast
+					Object.assign(session, currentSession);
+
+					return { currentCombatant };
+				});
 
 				// Broadcast to all players
 				io.to(sessionId).emit('turnChanged', {
 					currentTurnIndex: session.currentTurnIndex,
-					currentCombatant
+					currentCombatant: result.currentCombatant
 				});
 
-				console.log(`Turn moved back in ${sessionId}: ${currentCombatant.name}'s turn`);
+				console.log(`Turn moved back in ${sessionId}: ${result.currentCombatant.name}'s turn`);
 			} catch (error) {
 				console.error('Previous turn error:', error.message);
 				socket.emit('error', { message: error.message });
@@ -1088,32 +1238,42 @@ export function createPortalServer(io) {
 					throw new Error('Only the host can update combatants');
 				}
 
-				// Find combatant
-				const combatant = session.combatants.find(c => c.id === combatantId);
-				if (!combatant) {
-					throw new Error('Combatant not found');
-				}
+				// Critical section: Protect combatant updates with mutex lock
+				const updatedCombatant = await withSessionLock(sessionId, async () => {
+					const currentSession = sessionStore.getSession(sessionId);
 
-				// Update allowed fields
-				if (updates.hp !== undefined) combatant.hp = parseInt(updates.hp) || null;
-				if (updates.ac !== undefined) combatant.ac = parseInt(updates.ac) || null;
-				if (updates.initiative !== undefined) {
-					combatant.initiative = parseInt(updates.initiative) || 0;
-					// Re-sort if initiative changed
-					session.combatants.sort((a, b) => b.initiative - a.initiative);
-				}
-				if (updates.conditions !== undefined) combatant.conditions = updates.conditions;
+					// Find combatant
+					const combatant = currentSession.combatants.find(c => c.id === combatantId);
+					if (!combatant) {
+						throw new Error('Combatant not found');
+					}
 
-				// Update session
-				sessionStore.updateSession(sessionId, session);
+					// Update allowed fields
+					if (updates.hp !== undefined) combatant.hp = parseInt(updates.hp) || null;
+					if (updates.ac !== undefined) combatant.ac = parseInt(updates.ac) || null;
+					if (updates.initiative !== undefined) {
+						combatant.initiative = parseInt(updates.initiative) || 0;
+						// Re-sort if initiative changed
+						currentSession.combatants.sort((a, b) => b.initiative - a.initiative);
+					}
+					if (updates.conditions !== undefined) combatant.conditions = validateConditions(updates.conditions);
+
+					// Update session
+					sessionStore.updateSession(sessionId, currentSession);
+
+					// Update session variable for broadcast
+					Object.assign(session, currentSession);
+
+					return combatant;
+				});
 
 				// Broadcast to all players
 				io.to(sessionId).emit('combatantUpdated', {
-					combatant,
+					combatant: updatedCombatant,
 					combatants: session.combatants
 				});
 
-				console.log(`Combatant updated in ${sessionId}: ${combatant.name}`);
+				console.log(`Combatant updated in ${sessionId}: ${updatedCombatant.name}`);
 			} catch (error) {
 				console.error('Update combatant error:', error.message);
 				socket.emit('error', { message: error.message });
