@@ -71,6 +71,40 @@
     if (message.playerId === socket.id) return 'own-message';
     return 'other-message';
   }
+
+  /**
+   * Sanitize color value to prevent CSS injection
+   * Only allow valid hex colors
+   * @param {string} color
+   * @returns {string}
+   */
+  function sanitizeColor(color) {
+    if (!color || typeof color !== 'string') return '#888888';
+
+    // Only allow hex colors in format #RGB or #RRGGBB
+    const hexColorRegex = /^#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{6})$/;
+
+    if (hexColorRegex.test(color)) {
+      return color;
+    }
+
+    // Default to gray if invalid
+    return '#888888';
+  }
+
+  /**
+   * Escape HTML entities to prevent XSS
+   * Defense in depth - Svelte auto-escapes {text}, but this ensures safety
+   * @param {string} text
+   * @returns {string}
+   */
+  function escapeHtml(text) {
+    if (!text || typeof text !== 'string') return '';
+
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+  }
 </script>
 
 <div class="chat-panel" class:minimized={isMinimized}>
@@ -102,7 +136,7 @@
         {#each messages as message}
           <div class="message {getMessageClass(message)}">
             <div class="message-header">
-              <span class="player-name" style="color: {message.color}">
+              <span class="player-name" style="color: {sanitizeColor(message.color)}">
                 {message.playerName}
               </span>
               <span class="timestamp">{formatTime(message.timestamp)}</span>

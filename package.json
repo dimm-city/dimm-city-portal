@@ -60,6 +60,7 @@
 	"types": "./dist/index.d.ts",
 	"type": "module",
 	"dependencies": {
+		"async-mutex": "^0.5.0",
 		"bcrypt": "^6.0.0",
 		"better-sqlite3": "^12.4.1",
 		"dompurify": "^3.3.0",

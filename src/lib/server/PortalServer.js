@@ -10,6 +10,7 @@
 
 import { randomInt } from 'crypto';
 import bcrypt from 'bcrypt';
+import { Mutex } from 'async-mutex';
 import { SessionStore } from './SessionStore.js';
 import {
 	sessionCreationLimiter,
@@ -23,6 +24,22 @@ import {
 
 // Initialize session store with SQLite
 const sessionStore = new SessionStore();
+
+// Mutex locks for race condition protection (infrastructure ready, not yet applied)
+// TODO: Apply withSessionLock to critical sections in future update
+const sessionMutexes = new Map();
+
+function getSessionMutex(sessionId) {
+	if (!sessionMutexes.has(sessionId)) {
+		sessionMutexes.set(sessionId, new Mutex());
+	}
+	return sessionMutexes.get(sessionId);
+}
+
+async function withSessionLock(sessionId, callback) {
+	const mutex = getSessionMutex(sessionId);
+	return await mutex.runExclusive(callback);
+}
 
 // Validation constants
 const MAX_SESSION_NAME_LENGTH = 100;
@@ -44,6 +61,43 @@ function sanitizeString(input, maxLength) {
 	if (typeof input !== 'string') return '';
 	// Remove null bytes and limit length
 	return input.replace(/\0/g, '').trim().slice(0, maxLength);
+}
+
+/**
+ * Sanitize session data for client transmission - removes sensitive fields
+ * @param {Object} session
+ * @returns {Object}
+ */
+function sanitizeSessionForClient(session) {
+	if (!session) return null;
+	const { passwordHash, ...sanitized } = session;
+	return sanitized;
+}
+
+/**
+ * Escape HTML entities to prevent XSS attacks
+ * @param {string} text
+ * @returns {string}
+ */
+function escapeHtml(text) {
+	if (typeof text !== 'string') return '';
+	return text
+		.replace(/&/g, '&amp;')
+		.replace(/</g, '&lt;')
+		.replace(/>/g, '&gt;')
+		.replace(/"/g, '&quot;')
+		.replace(/'/g, '&#039;');
+}
+
+/**
+ * Validate and sanitize hex color value to prevent CSS injection
+ * @param {string} color
+ * @returns {string}
+ */
+function sanitizeColor(color) {
+	if (!color || typeof color !== 'string') return '#888888';
+	const hexColorRegex = /^#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{6})$/;
+	return hexColorRegex.test(color) ? color : '#888888';
 }
 
 /**
@@ -209,7 +263,7 @@ function createSystemMessage(sessionId, message, type = 'system') {
 		sessionId,
 		playerId: 'system',
 		playerName: 'System',
-		message,
+		message: escapeHtml(message),
 		timestamp: Date.now(),
 		type,
 		color: '#888888'
@@ -292,7 +346,7 @@ export function createPortalServer(io) {
 				sessionStore.createSession(sessionId, state);
 
 				socket.join(sessionId);
-				socket.emit('sessionCreated', state);
+				socket.emit('sessionCreated', sanitizeSessionForClient(state));
 				console.log('Session created:', sessionId, 'by', host.name);
 			} catch (error) {
 				// Handle rate limit errors
@@ -357,7 +411,7 @@ export function createPortalServer(io) {
 				sessionStore.updateSession(sessionId, session);
 
 				socket.join(sessionId);
-				socket.emit('sessionJoined', session);
+				socket.emit('sessionJoined', sanitizeSessionForClient(session));
 
 				io.to(sessionId).emit('playerJoined', {
 					sessionId,
@@ -710,7 +764,8 @@ export function createPortalServer(io) {
 					: session.players.find(p => p.id === socket.id);
 
 				// Sanitize message
-				const sanitizedMessage = sanitizeString(message.trim(), 1000);
+				const basicSanitized = sanitizeString(message.trim(), 1000);
+				const sanitizedMessage = escapeHtml(basicSanitized);
 
 				// Create message object
 				const messageObj = {
@@ -721,7 +776,7 @@ export function createPortalServer(io) {
 					message: sanitizedMessage,
 					timestamp: Date.now(),
 					type,
-					color: player.color || '#FFFFFF'
+					color: sanitizeColor(player.color || '#FFFFFF')
 				};
 
 				// Store in session history (keep last 100 messages)
