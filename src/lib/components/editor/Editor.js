@@ -31,6 +31,7 @@ import { get } from 'svelte/store';
 import { GridComponent } from './GridComponent.js';
 import { SvelteWidget } from './SvelteWidget.js';
 import TokenSelector from './TokenSelector.svelte';
+import DOMPurify from 'dompurify';
 
 /**
  * @type {import("js-draw").Editor}
@@ -103,7 +104,14 @@ export function configureToolbar(isHost) {
 			async () => {
 				if (!_editor) return;
 				const data = await _editor.toSVGAsync();
-				localStorage.setItem('scene', data.innerHTML);
+
+				// Sanitize SVG content before saving to localStorage to prevent XSS
+				const cleanSVG = DOMPurify.sanitize(data.innerHTML, {
+					USE_PROFILES: { svg: true, svgFilters: true }
+				});
+
+				localStorage.setItem('scene', cleanSVG);
+				console.log('Scene saved securely');
 			}
 		);
 		toolbar.addDefaultEditorControlWidgets();

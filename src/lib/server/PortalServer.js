@@ -9,6 +9,7 @@
  */
 
 import { randomInt } from 'crypto';
+import bcrypt from 'bcrypt';
 
 const sessions = [];
 
@@ -16,9 +17,11 @@ const sessions = [];
 const MAX_SESSION_NAME_LENGTH = 100;
 const MAX_PLAYER_NAME_LENGTH = 50;
 const MAX_SESSION_ID_LENGTH = 50;
+const MIN_PASSWORD_LENGTH = 8;
 const MAX_PASSWORD_LENGTH = 100;
 const MAX_DICE_COUNT = 100;
 const MAX_DICE_TYPE = 1000;
+const BCRYPT_SALT_ROUNDS = 10;
 
 /**
  * Sanitize string input by removing potentially dangerous characters
@@ -84,15 +87,29 @@ function validateSessionId(sessionId) {
 }
 
 /**
- * Validate password
+ * Validate password strength and format
  * @param {string} password
  * @returns {string}
  */
 function validatePassword(password) {
 	const sanitized = sanitizeString(password, MAX_PASSWORD_LENGTH);
+
 	if (!sanitized || sanitized.length < 1) {
 		throw new Error('Password is required');
 	}
+
+	if (sanitized.length < MIN_PASSWORD_LENGTH) {
+		throw new Error(`Password must be at least ${MIN_PASSWORD_LENGTH} characters long`);
+	}
+
+	// Check for basic complexity (at least one letter and one number)
+	const hasLetter = /[a-zA-Z]/.test(sanitized);
+	const hasNumber = /[0-9]/.test(sanitized);
+
+	if (!hasLetter || !hasNumber) {
+		throw new Error('Password must contain at least one letter and one number');
+	}
+
 	return sanitized;
 }
 
@@ -174,7 +191,7 @@ export function createPortalServer(io) {
 		console.log('New client connected:', socket.id);
 
 		// Session Management Events
-		socket.on('createSession', (data) => {
+		socket.on('createSession', async (data) => {
 			try {
 				if (!data) {
 					throw new Error('No session data provided');
@@ -198,12 +215,15 @@ export function createPortalServer(io) {
 					throw new Error('Session ID already exists');
 				}
 
+				// Hash password before storage
+				const passwordHash = await bcrypt.hash(password, BCRYPT_SALT_ROUNDS);
+
 				host.id = socket.id;
 				host.token = { ...host.token, id: host.id };
 
 				const state = {
 					sessionId,
-					password,
+					passwordHash, // Store hashed password
 					name,
 					host,
 					players: [],
@@ -225,7 +245,7 @@ export function createPortalServer(io) {
 			}
 		});
 
-		socket.on('joinSession', (data) => {
+		socket.on('joinSession', async (data) => {
 			try {
 				if (!data) {
 					throw new Error('No session data provided');
@@ -249,7 +269,10 @@ export function createPortalServer(io) {
 					throw new Error('Session not found');
 				}
 
-				if (session.password !== password) {
+				// Verify password using bcrypt
+				const isPasswordValid = await bcrypt.compare(password, session.passwordHash);
+
+				if (!isPasswordValid) {
 					throw new Error('Invalid password');
 				}
 
