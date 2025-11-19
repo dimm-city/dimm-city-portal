@@ -3,6 +3,7 @@
 	import SessionManager from './SessionManager.svelte';
 	import InitiativeTracker from './InitiativeTracker.svelte';
 	import ChatPanel from './ChatPanel.svelte';
+	import DemoWelcome from './DemoWelcome.svelte';
 
 	import {
 		host,
@@ -18,6 +19,16 @@
 	import { isHost } from './PortalStore.js';
 	import './theme.css';
 	let { config } = $props();
+
+	// Check if current session is the demo session
+	let isDemoSession = $derived($sessionId === 'demo-goblin-ambush');
+	let showDemoWelcome = $state(false);
+
+	$effect(() => {
+		if (isDemoSession && $inSession) {
+			showDemoWelcome = true;
+		}
+	});
 </script>
 
 <div class="portal-container" class:in-session={$inSession} class:host={$isHost}>
@@ -51,6 +62,9 @@
 		<Editor backgroundImageUrl={config.backgroundImageUrl} />
 		<InitiativeTracker />
 		<ChatPanel />
+		{#if isDemoSession && showDemoWelcome}
+			<DemoWelcome onClose={() => (showDemoWelcome = false)} />
+		{/if}
 	{/if}
 </div>
 
