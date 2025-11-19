@@ -16,9 +16,9 @@
 | **TOTAL (Week 1-2)** | **10** | **10** | **0** | **0** | **100%** |
 
 **Estimated Time Remaining:** 0 days - ALL WEEK 1-2 LAUNCH BLOCKERS COMPLETE! ✅
-**Current Status:** 100% complete - Ready for RC1!
+**Current Status:** 100% complete - Ready for RC1 + Security Hardening!
 **Blockers:** None
-**Progress This Session:** 10 tasks completed (Initiative Tracker, Docker, Environment Config, Backup/Restore, Battle Maps, Token Pack, Demo Session, README, Self-Hosting Guide)
+**Progress This Session:** 11 tasks completed (Initiative Tracker, Dice Animations, Docker, Environment Config, Backup/Restore, Battle Maps, Token Pack, Demo Session, README, Self-Hosting Guide, Security Fixes)
 
 ---
 
@@ -134,9 +134,18 @@
 
 ---
 
-### Task 1.2: Dice Roll Animations ⏳
-**Priority:** P0 | **Effort:** 0.5 day (4-6 hours) | **Status:** 🔴 Not Started
+### Task 1.2: Dice Roll Animations ✅ COMPLETE
+**Priority:** P0 | **Effort:** 0.5 day (4-6 hours) | **Status:** ✅ Complete (lightweight CSS implementation)
 **Reference:** [AAA_VTT_ROADMAP.md §1.2](./AAA_VTT_ROADMAP.md#12-dice-roll-animations-)
+
+**Implementation:** Created lightweight CSS-based dice animation system with:
+- DiceAnimation.svelte component with rolling animations and special effects
+- Integration with existing dice roll system via PortalStore
+- Gold confetti and glow effects for critical hits (nat 20)
+- Red flash and shake for critical fails (nat 1)
+- Auto-dismiss after 4 seconds or click to dismiss
+- Respects `prefers-reduced-motion` for accessibility
+- LocalStorage setting for enable/disable (default: enabled)
 
 #### Animation Library Setup (1 hour)
 - [ ] **1.2.1** Choose animation approach

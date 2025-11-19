@@ -48,6 +48,19 @@ export const host = writable(null);
 
 export let showPlayerList = writable(false);
 export let showPlayerSettings = writable(false);
+
+// Dice animation state (for simple CSS animations)
+export let diceAnimationEnabled = writable(
+	typeof localStorage !== 'undefined' ? localStorage.getItem('diceAnimationEnabled') !== 'false' : true
+);
+export let currentDiceAnimation = writable(null);
+
+// Update localStorage when animation setting changes
+if (typeof window !== 'undefined') {
+	diceAnimationEnabled.subscribe(value => {
+		localStorage.setItem('diceAnimationEnabled', value.toString());
+	});
+}
 export let showSceneSettings = writable(false);
 export let showMapBrowser = writable(false);
 
@@ -329,11 +342,31 @@ export function loadScene() {
 	});
 }
 /**
- * @param {{ result: any; diceTheme: any; }} data
+ * @param {{ result: any; diceTheme: any; playerName: string; }} data
  */
 async function onDiceRollResult(data) {
 	try {
-		const { result, diceTheme } = data;
+		const { result, diceTheme, playerName } = data;
+
+		// Trigger simple CSS animation if enabled
+		if (get(diceAnimationEnabled)) {
+			// Parse dice result string (format: "1d20@15" or "2d6@3,4")
+			const match = result.match(/(\d+)d(\d+)@(.+)/);
+			if (match) {
+				const [, numDice, diceType, valuesStr] = match;
+				const values = valuesStr.split(',').map(v => parseInt(v.trim()));
+				const totalValue = values.reduce((sum, v) => sum + v, 0);
+
+				// Set animation data
+				currentDiceAnimation.set({
+					diceType: `d${diceType}`,
+					result: totalValue,
+					playerName: playerName || 'Player'
+				});
+			}
+		}
+
+		// Process with existing 3D dice system
 		await processDiceResult(result, diceTheme);
 	} catch (error) {
 		console.error('Failed to process dice roll result:', error);

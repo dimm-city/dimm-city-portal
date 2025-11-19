@@ -4,6 +4,7 @@
 	import InitiativeTracker from './InitiativeTracker.svelte';
 	import ChatPanel from './ChatPanel.svelte';
 	import DemoWelcome from './DemoWelcome.svelte';
+	import DiceAnimation from './DiceAnimation.svelte';
 
 	import {
 		host,
@@ -13,12 +14,18 @@
 		sessionId,
 		sessionName,
 		showSessionDetails,
-		sessionPassword
+		sessionPassword,
+		currentDiceAnimation
 	} from './PortalStore';
 	import Editor from './editor/Editor.svelte';
 	import { isHost } from './PortalStore.js';
 	import './theme.css';
 	let { config } = $props();
+
+	// Handle dice animation completion
+	function handleAnimationComplete() {
+		currentDiceAnimation.set(null);
+	}
 
 	// Check if current session is the demo session
 	let isDemoSession = $derived($sessionId === 'demo-goblin-ambush');
@@ -65,6 +72,16 @@
 		{#if isDemoSession && showDemoWelcome}
 			<DemoWelcome onClose={() => (showDemoWelcome = false)} />
 		{/if}
+	{/if}
+
+	<!-- Dice animation overlay (global, shows even outside of session) -->
+	{#if $currentDiceAnimation}
+		<DiceAnimation
+			diceType={$currentDiceAnimation.diceType}
+			result={$currentDiceAnimation.result}
+			playerName={$currentDiceAnimation.playerName}
+			onComplete={handleAnimationComplete}
+		/>
 	{/if}
 </div>
 
