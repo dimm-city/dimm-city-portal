@@ -10,7 +10,10 @@
 		"check": "svelte-kit sync && svelte-check --tsconfig ./jsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./jsconfig.json --watch",
 		"lint": "prettier --check . && eslint .",
-		"format": "prettier --write ."
+		"format": "prettier --write .",
+		"backup": "node scripts/backup.js",
+		"backup:auto": "node scripts/backup.js --auto",
+		"restore": "node scripts/restore.js"
 	},
 	"exports": {
 		".": {

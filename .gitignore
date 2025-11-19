@@ -22,3 +22,11 @@ vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 
 *.mp4
+
+# Data and backups
+/data/*.db
+/data/*.db-wal
+/data/*.db-shm
+/backups/*.db
+/backups/*.json
+/backups/.last-hash
