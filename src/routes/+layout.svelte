@@ -2,9 +2,24 @@
 	import { page } from '$app/stores';
 	import { inSession } from '$lib/components/PortalStore';
 	import ErrorBoundary from '$lib/components/ErrorBoundary.svelte';
+	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
 
 	import '$lib/components/styles.css';
 	let { children } = $props();
+
+	// Register service worker for PWA support
+	onMount(() => {
+		if (browser && 'serviceWorker' in navigator) {
+			navigator.serviceWorker.register('/sw.js')
+				.then(registration => {
+					console.log('Service Worker registered:', registration);
+				})
+				.catch(error => {
+					console.log('Service Worker registration failed:', error);
+				});
+		}
+	});
 </script>
 
 <svelte:head>
