@@ -24,7 +24,9 @@ import {
 	postSerializedCommand,
 	editor,
 	player,
-	requestDiceRoll
+	requestDiceRoll,
+	saveScene,
+	loadScene
 } from '../PortalStore.js';
 import { DiceIcon, GearIcon, LeaveIcon, PeopleIcon, PlayerIcon, SaveIcon, ShareIcon } from '../icons/DCIconProvider.js';
 import { get } from 'svelte/store';
@@ -96,22 +98,86 @@ export function configureToolbar(isHost) {
 		// @ts-ignore
 		if (selectListener?.remove) selectListener?.remove();
 
+		// Save Scene button
 		toolbar.addActionButton(
 			{
-				label: getLocalizationTable().save,
+				label: 'Save Scene',
 				icon: SaveIcon
 			},
 			async () => {
 				if (!_editor) return;
-				const data = await _editor.toSVGAsync();
+				try {
+					const data = await _editor.toSVGAsync();
 
-				// Sanitize SVG content before saving to localStorage to prevent XSS
-				const cleanSVG = DOMPurify.sanitize(data.innerHTML, {
-					USE_PROFILES: { svg: true, svgFilters: true }
-				});
+					// Sanitize SVG content before saving to prevent XSS
+					const cleanSVG = DOMPurify.sanitize(data.innerHTML, {
+						USE_PROFILES: { svg: true, svgFilters: true }
+					});
 
-				localStorage.setItem('scene', cleanSVG);
-				console.log('Scene saved securely');
+					// Get scene name (you can add a UI input for this later)
+					const sceneName = 'Scene ' + new Date().toLocaleString();
+
+					// Save to server using the new saveScene function
+					await saveScene(cleanSVG, sceneName);
+					console.log('Scene saved to server');
+				} catch (error) {
+					console.error('Failed to save scene:', error);
+				}
+			}
+		);
+
+		// Load Scene button
+		toolbar.addActionButton(
+			{
+				label: 'Load Scene',
+				icon: _editor.icons.makeOpenIcon()
+			},
+			async () => {
+				if (!_editor) return;
+				try {
+					const sceneData = await loadScene();
+					if (sceneData.savedScene) {
+						// Load the SVG into the editor
+						await _editor.loadFrom(sceneData.savedScene);
+						console.log('Scene loaded from server');
+					} else {
+						console.log('No saved scene found');
+					}
+				} catch (error) {
+					console.error('Failed to load scene:', error);
+				}
+			}
+		);
+
+		// Export Scene button
+		toolbar.addActionButton(
+			{
+				label: 'Export SVG',
+				icon: _editor.icons.makeDownloadIcon()
+			},
+			async () => {
+				if (!_editor) return;
+				try {
+					const data = await _editor.toSVGAsync();
+
+					// Sanitize SVG before export
+					const cleanSVG = DOMPurify.sanitize(data.innerHTML, {
+						USE_PROFILES: { svg: true, svgFilters: true }
+					});
+
+					// Create download link
+					const blob = new Blob([cleanSVG], { type: 'image/svg+xml' });
+					const url = URL.createObjectURL(blob);
+					const a = document.createElement('a');
+					a.href = url;
+					a.download = 'scene-' + new Date().toISOString().split('T')[0] + '.svg';
+					a.click();
+					URL.revokeObjectURL(url);
+
+					console.log('Scene exported as SVG');
+				} catch (error) {
+					console.error('Failed to export scene:', error);
+				}
 			}
 		);
 		toolbar.addDefaultEditorControlWidgets();
@@ -298,6 +364,43 @@ export async function configureEditor(editorElement, backgroundImageUrl = '') {
 		_editor.dispatch(_editor.image.addElement(grid));
 
 		editor.set(_editor);
+
+		// Auto-load saved scene if it exists
+		try {
+			const sceneData = await loadScene();
+			if (sceneData.savedScene) {
+				await _editor.loadFrom(sceneData.savedScene);
+				console.log('Auto-loaded saved scene:', sceneData.sceneName);
+			}
+		} catch (error) {
+			console.log('No saved scene to auto-load or error loading:', error.message);
+		}
+
 		configureToolbar(get(player)?.host);
+
+		// Start auto-save interval for hosts (every 5 minutes)
+		if (get(player)?.host) {
+			const autoSaveInterval = setInterval(async () => {
+				try {
+					if (!_editor) return;
+					const data = await _editor.toSVGAsync();
+					const cleanSVG = DOMPurify.sanitize(data.innerHTML, {
+						USE_PROFILES: { svg: true, svgFilters: true }
+					});
+					const sceneName = 'Auto-save ' + new Date().toLocaleString();
+					await saveScene(cleanSVG, sceneName);
+					console.log('Auto-saved scene at', new Date().toLocaleTimeString());
+				} catch (error) {
+					console.error('Auto-save failed:', error);
+				}
+			}, 5 * 60 * 1000); // 5 minutes
+
+			// Clean up interval when editor is removed
+			const originalRemove = _editor.remove.bind(_editor);
+			_editor.remove = () => {
+				clearInterval(autoSaveInterval);
+				originalRemove();
+			};
+		}
 	}
 }

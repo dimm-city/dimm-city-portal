@@ -225,6 +225,108 @@ export function requestDiceRoll(expression = '1d20') {
 		toast.push('Failed to roll dice. Please try again.', { classes: ['error'] });
 	}
 }
+
+/**
+ * Save current scene to the server
+ * @param {string} sceneData - Sanitized SVG data
+ * @param {string} sceneName - Name of the scene
+ * @returns {Promise<void>}
+ */
+export function saveScene(sceneData, sceneName = 'Untitled Scene') {
+	return new Promise((resolve, reject) => {
+		try {
+			const _sessionId = get(sessionId);
+			if (!_sessionId) {
+				throw new Error('No active session');
+			}
+
+			socket.emit('saveScene', {
+				sessionId: _sessionId,
+				sceneData,
+				sceneName
+			});
+
+			// Listen for save confirmation
+			socket.once('sceneSaved', (data) => {
+				if (data.success) {
+					console.log('Scene saved successfully:', data);
+					toast.push(`Scene "${sceneName}" saved successfully!`, { classes: ['success'] });
+					resolve();
+				} else {
+					reject(new Error('Failed to save scene'));
+				}
+			});
+
+			// Handle errors
+			const errorHandler = (error) => {
+				if (error.message.includes('scene')) {
+					reject(new Error(error.message));
+					socket.off('error', errorHandler);
+				}
+			};
+			socket.on('error', errorHandler);
+
+			// Timeout after 10 seconds
+			setTimeout(() => {
+				reject(new Error('Save scene timeout'));
+			}, 10000);
+		} catch (error) {
+			console.error('Failed to save scene:', error);
+			toast.push('Failed to save scene. Please try again.', { classes: ['error'] });
+			reject(error);
+		}
+	});
+}
+
+/**
+ * Load saved scene from the server
+ * @returns {Promise<{savedScene: string, sceneName: string, lastSaved: number}>}
+ */
+export function loadScene() {
+	return new Promise((resolve, reject) => {
+		try {
+			const _sessionId = get(sessionId);
+			if (!_sessionId) {
+				throw new Error('No active session');
+			}
+
+			socket.emit('loadScene', {
+				sessionId: _sessionId
+			});
+
+			// Listen for load response
+			socket.once('sceneLoaded', (data) => {
+				if (data.success) {
+					console.log('Scene loaded successfully:', data);
+					if (data.savedScene) {
+						toast.push(`Scene "${data.sceneName}" loaded!`, { classes: ['success'] });
+					}
+					resolve(data);
+				} else {
+					reject(new Error('Failed to load scene'));
+				}
+			});
+
+			// Handle errors
+			const errorHandler = (error) => {
+				if (error.message.includes('scene') || error.message.includes('Session')) {
+					reject(new Error(error.message));
+					socket.off('error', errorHandler);
+				}
+			};
+			socket.on('error', errorHandler);
+
+			// Timeout after 10 seconds
+			setTimeout(() => {
+				reject(new Error('Load scene timeout'));
+			}, 10000);
+		} catch (error) {
+			console.error('Failed to load scene:', error);
+			toast.push('Failed to load scene. Please try again.', { classes: ['error'] });
+			reject(error);
+		}
+	});
+}
 /**
  * @param {{ result: any; diceTheme: any; }} data
  */

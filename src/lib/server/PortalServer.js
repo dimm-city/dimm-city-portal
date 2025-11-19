@@ -250,7 +250,11 @@ export function createPortalServer(io) {
 					commandData: [],
 					idCounter: 0,
 					createdAt: Date.now(),
-					lastActivity: Date.now()
+					lastActivity: Date.now(),
+					// Scene persistence
+					savedScene: null, // SVG data
+					sceneName: 'Untitled Scene',
+					lastSaved: null
 				};
 
 				// Save to persistent storage
@@ -504,6 +508,94 @@ export function createPortalServer(io) {
 				}
 
 				console.error('Dice roll error:', error.message);
+				socket.emit('error', { message: error.message });
+			}
+		});
+
+
+		// Scene Management Events
+		socket.on('saveScene', async (data) => {
+			try {
+				const { sessionId, sceneData, sceneName } = data;
+
+				// Validate inputs
+				if (!sessionId || !sceneData) {
+					throw new Error('Session ID and scene data are required');
+				}
+
+				// Verify socket is host
+				if (!isHost(sessionId, socket.id)) {
+					throw new Error('Only the host can save scenes');
+				}
+
+				// Get session
+				const session = sessionStore.getSession(sessionId);
+				if (!session) {
+					throw new Error('Session not found');
+				}
+
+				// Validate SVG size (prevent DOS) - 10MB limit
+				if (sceneData.length > 10 * 1024 * 1024) {
+					throw new Error('Scene data too large (max 10MB)');
+				}
+
+				// Update session with scene data
+				session.savedScene = sceneData;
+				session.lastSaved = Date.now();
+				session.sceneName = sceneName || 'Untitled Scene';
+				session.sceneVersion = (session.sceneVersion || 0) + 1;
+				session.lastActivity = Date.now();
+
+				// Save to database
+				sessionStore.updateSession(sessionId, session);
+
+				// Confirm to client
+				socket.emit('sceneSaved', {
+					success: true,
+					lastSaved: session.lastSaved,
+					sceneVersion: session.sceneVersion,
+					sceneName: session.sceneName
+				});
+
+				// Notify all players that scene metadata was updated
+				io.to(sessionId).emit('sceneMetadataUpdated', {
+					sceneName: session.sceneName,
+					lastSaved: session.lastSaved
+				});
+
+				console.log(`Scene saved for session ${sessionId}: "${sceneName}"`);
+			} catch (error) {
+				console.error('Save scene error:', error.message);
+				socket.emit('error', { message: error.message });
+			}
+		});
+
+		socket.on('loadScene', (data) => {
+			try {
+				const { sessionId } = data;
+
+				// Validate
+				if (!sessionId) {
+					throw new Error('Session ID is required');
+				}
+
+				// Get session
+				const session = sessionStore.getSession(sessionId);
+				if (!session) {
+					throw new Error('Session not found');
+				}
+
+				// Return saved scene data
+				socket.emit('sceneLoaded', {
+					success: true,
+					savedScene: session.savedScene,
+					sceneName: session.sceneName,
+					lastSaved: session.lastSaved
+				});
+
+				console.log(`Scene loaded for session ${sessionId}`);
+			} catch (error) {
+				console.error('Load scene error:', error.message);
 				socket.emit('error', { message: error.message });
 			}
 		});
