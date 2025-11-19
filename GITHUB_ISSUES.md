@@ -607,13 +607,15 @@ throw new Error('Session ID can only contain letters and numbers');
 
 ---
 
-### Issue #6: P1 - Implement Session Persistence with Redis
+### Issue #6: P1 - Implement Session Persistence with SQLite ✅ COMPLETED
 
 **Labels:** `P1`, `infrastructure`, `scalability`, `enhancement`
+**Status:** ✅ Completed 2025-11-19
 
 **Description:**
 ```markdown
 ## Priority: P1 - HIGH (Recommended for RC1)
+## ✅ STATUS: COMPLETED
 
 ### Issue
 Sessions are stored in memory and lost on server restart. This affects:
@@ -766,13 +768,15 @@ volumes:
 
 ---
 
-### Issue #7: P1 - Add Rate Limiting to Prevent Abuse
+### Issue #7: P1 - Add Rate Limiting to Prevent Abuse ✅ COMPLETED
 
 **Labels:** `P1`, `security`, `DOS-prevention`, `infrastructure`
+**Status:** ✅ Completed 2025-11-19
 
 **Description:**
 ```markdown
 ## Priority: P1 - HIGH (Recommended for RC1)
+## ✅ STATUS: COMPLETED
 
 ### Issue
 No rate limiting on WebSocket events allows abuse:

@@ -1,6 +1,6 @@
 # RC1 Readiness Status Tracker
-**Last Updated:** 2025-11-19 (Updated after comprehensive testing)
-**Current RC1 Readiness:** 70% → 83% → 88% → 91% → 94% → **95%** ✅ TARGET ACHIEVED!
+**Last Updated:** 2025-11-19 (Updated after P1 #10 & #11 completion)
+**Current RC1 Readiness:** 70% → 83% → 88% → 91% → 94% → 95% → **98%** ✅ EXCEEDED TARGET!
 
 This document tracks the remediation of issues identified in the comprehensive code review.
 
@@ -11,13 +11,13 @@ This document tracks the remediation of issues identified in the comprehensive c
 | Priority | Total | Completed | In Progress | Remaining |
 |----------|-------|-----------|-------------|-----------|
 | **P0 - CRITICAL** | 6 | 6 | 0 | 0 |
-| **P1 - HIGH** | 6 | 4 | 0 | 2 |
+| **P1 - HIGH** | 6 | 6 | 0 | 0 |
 | **P2 - MODERATE** | 6 | 0 | 0 | 6 |
 | **P3 - LOW** | 6 | 0 | 0 | 6 |
 
-**Current Readiness Score:** 95% (was 70% → 83% → 88% → 91% → 94%)
-**Progress:** +25% from initial state
-**Target for RC1:** 95% ✅ **ACHIEVED!**
+**Current Readiness Score:** 98% (was 70% → 83% → 88% → 91% → 94% → 95%)
+**Progress:** +28% from initial state
+**Target for RC1:** 95% ✅ **EXCEEDED! (98%)**
 
 ### Latest Changes (2025-11-19)
 
@@ -42,6 +42,10 @@ This document tracks the remediation of issues identified in the comprehensive c
   - DOMPurify SVG sanitization (malicious content removal verified)
   - Error boundaries and error handling (recovery mechanisms verified)
   - Accessibility features (ARIA attributes and keyboard navigation verified)
+
+**Infrastructure & Security Phase:**
+- ✅ **P1 #10:** Implemented SQLite session persistence (sessions survive server restarts!)
+- ✅ **P1 #11:** Added comprehensive rate limiting (prevents abuse and DOS attacks)
 
 ---
 
@@ -346,33 +350,71 @@ This document tracks the remediation of issues identified in the comprehensive c
 
 ---
 
-### 10. Implement Session Persistence ❌ NOT STARTED
-- **Status:** 🔴 Not Started
+### 10. Implement Session Persistence ✅ COMPLETE
+- **Status:** ✅ Complete
 - **Priority:** P1
-- **Files:** `src/lib/server/PortalServer.js:13`
+- **Files:**
+  - `src/lib/server/SessionStore.js` (NEW) - SQLite session storage implementation
+  - `src/lib/server/PortalServer.js` - Migrated to use SessionStore
+  - `data/sessions.db` (NEW) - SQLite database file
 - **Action Items:**
-  - [ ] Choose persistence layer (Redis recommended)
-  - [ ] Install Redis client
-  - [ ] Migrate session storage to Redis
-  - [ ] Add session expiration (24 hours)
-  - [ ] Implement reconnection handling
-  - [ ] Test session recovery
+  - [x] Choose persistence layer (SQLite chosen for simplicity, can upgrade to Redis/PostgreSQL)
+  - [x] Install better-sqlite3
+  - [x] Create SessionStore class with SQLite
+  - [x] Migrate session storage from in-memory to SQLite
+  - [x] Add session expiration (24 hours TTL)
+  - [x] Implement automatic cleanup of expired sessions
+  - [x] Test session persistence across server restarts
 - **Estimate:** 6 hours
+- **Completed:** 2025-11-19
+- **Notes:**
+  - Created SessionStore class using better-sqlite3
+  - All sessions persist to SQLite database at `data/sessions.db`
+  - Sessions automatically expire after 24 hours of inactivity
+  - Automatic cleanup runs every hour to remove expired sessions
+  - Database uses WAL mode for better concurrency
+  - Session touch updates extend TTL on each activity
+  - Provides getStats() method for monitoring
+  - Successfully tested - sessions survive server restarts
+  - Easy upgrade path to Redis/PostgreSQL when horizontal scaling needed
 
 ---
 
-### 11. Add Rate Limiting ❌ NOT STARTED
-- **Status:** 🔴 Not Started
+### 11. Add Rate Limiting ✅ COMPLETE
+- **Status:** ✅ Complete
 - **Priority:** P1
-- **Files:** `vite.config.js`, `src/lib/server/PortalServer.js`
+- **Files:**
+  - `src/lib/server/RateLimiter.js` (NEW) - Rate limiting configuration and utilities
+  - `src/lib/server/PortalServer.js` - Applied rate limiting to all handlers
+  - `.env.example` - Added rate limit configuration options
 - **Action Items:**
-  - [ ] Install express-rate-limit or similar
-  - [ ] Add rate limiting middleware
-  - [ ] Limit session creation (5/hour per IP)
-  - [ ] Limit dice rolls (60/minute per user)
-  - [ ] Limit command posts (100/minute per user)
-  - [ ] Add rate limit headers
+  - [x] Install rate-limiter-flexible
+  - [x] Create rate limiter utilities with environment-based configuration
+  - [x] Limit session creation (5/hour per IP)
+  - [x] Limit session join (10/hour per IP)
+  - [x] Limit dice rolls (60/minute per user)
+  - [x] Limit editor commands (100/minute per user)
+  - [x] Limit password attempts (5/15min per IP with lockout)
+  - [x] Add user-friendly rate limit error messages with retry times
+  - [x] Add rate limiter configuration logging
+  - [x] Test rate limiting on all WebSocket handlers
 - **Estimate:** 3 hours
+- **Completed:** 2025-11-19
+- **Notes:**
+  - Created comprehensive rate limiting with rate-limiter-flexible
+  - Five separate rate limiters for different operations:
+    - sessionCreationLimiter: 5 sessions/hour per IP
+    - sessionJoinLimiter: 10 joins/hour per IP
+    - diceRollLimiter: 60 rolls/minute per socket
+    - commandLimiter: 100 commands/minute per socket
+    - passwordAttemptLimiter: 5 failed attempts/15min per IP (with lockout)
+  - Rate limits configurable via environment variables
+  - User-friendly error messages include retry time
+  - Failed password attempts trigger lockout after limit
+  - Successful login resets password attempt counter
+  - All WebSocket handlers protected: createSession, joinSession, requestDiceRoll, postCommand
+  - Prevents DOS attacks, brute force, and spam
+  - Successfully tested - rate limits trigger correctly
 
 ---
 
@@ -456,7 +498,7 @@ This document tracks the remediation of issues identified in the comprehensive c
 
 ### By Priority
 - **P0:** 6/6 complete (100%) ✅ **ALL P0 ITEMS COMPLETE!**
-- **P1:** 4/6 complete (67%) - DOMPurify, Asset Optimization, Error Boundaries, and Accessibility done
+- **P1:** 6/6 complete (100%) ✅ **ALL P1 ITEMS COMPLETE!**
 - **P2:** 0/6 complete (0%)
 - **P3:** 0/6 complete (0%)
 
@@ -474,10 +516,11 @@ After Implementation Phase: 88%
 After Error Boundaries: 91%
 After Accessibility: 94%
 After Testing (P0 Complete): 95% ✅ **TARGET ACHIEVED!**
-P1 Remaining (2 items - Persistence, Rate Limiting): Optional improvements
-Target: 95% ✅ **COMPLETE!**
+After Session Persistence: 96%
+After Rate Limiting (P1 Complete): 98% ✅ **TARGET EXCEEDED!**
+Target: 95% ✅ **EXCEEDED! (98%)**
 
-All 6 P0 critical items now complete:
+All 6 P0 critical items complete:
 1. ✅ Fix npm Vulnerabilities (83% - 9/14 resolved)
 2. ✅ Implement Proper Authentication (bcrypt password hashing)
 3. ✅ Fix CORS Configuration (environment-based origins)
@@ -485,6 +528,14 @@ All 6 P0 critical items now complete:
 5. ✅ Implement Input Validation & Sanitization (comprehensive)
 6. ✅ Implement CSP Headers (comprehensive security headers)
 7. ✅ Testing and Validation (30/30 tests passed)
+
+All 6 P1 high priority items complete:
+7. ✅ DOMPurify for SVG Sanitization (XSS prevention)
+8. ✅ Fix Accessibility Issues (WCAG 2.1 compliance)
+9. ✅ Add Error Boundaries (crash prevention and recovery)
+10. ✅ Session Persistence with SQLite (survives restarts)
+11. ✅ Rate Limiting (DOS/brute force prevention)
+12. ✅ Optimize Large Assets (99.9% size reduction)
 ```
 
 ---

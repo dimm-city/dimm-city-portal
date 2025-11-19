@@ -10,8 +10,19 @@
 
 import { randomInt } from 'crypto';
 import bcrypt from 'bcrypt';
+import { SessionStore } from './SessionStore.js';
+import {
+	sessionCreationLimiter,
+	sessionJoinLimiter,
+	diceRollLimiter,
+	commandLimiter,
+	passwordAttemptLimiter,
+	handleRateLimitError,
+	logRateLimiterConfig
+} from './RateLimiter.js';
 
-const sessions = [];
+// Initialize session store with SQLite
+const sessionStore = new SessionStore();
 
 // Validation constants
 const MAX_SESSION_NAME_LENGTH = 100;
@@ -180,19 +191,26 @@ function rollDiceExpression(expression) {
 }
 
 function isHost(sessionId, socketId) {
-	const session = sessions[sessionId];
+	const session = sessionStore.getSession(sessionId);
 	return session?.host?.id == socketId;
 }
 
 const maxCommands = 9999;
 
 export function createPortalServer(io) {
+	// Log rate limiter configuration on server start
+	logRateLimiterConfig();
+
 	io.on('connection', (socket) => {
 		console.log('New client connected:', socket.id);
 
 		// Session Management Events
 		socket.on('createSession', async (data) => {
 			try {
+				// Rate limiting by IP address
+				const clientIP = socket.handshake.address;
+				await sessionCreationLimiter.consume(clientIP);
+
 				if (!data) {
 					throw new Error('No session data provided');
 				}
@@ -211,7 +229,7 @@ export function createPortalServer(io) {
 				host.name = validatePlayerName(host.name);
 
 				// Check if session already exists
-				if (sessions[sessionId]) {
+				if (sessionStore.getSession(sessionId)) {
 					throw new Error('Session ID already exists');
 				}
 
@@ -234,19 +252,31 @@ export function createPortalServer(io) {
 					createdAt: Date.now(),
 					lastActivity: Date.now()
 				};
-				sessions[sessionId] = state;
+
+				// Save to persistent storage
+				sessionStore.createSession(sessionId, state);
 
 				socket.join(sessionId);
 				socket.emit('sessionCreated', state);
 				console.log('Session created:', sessionId, 'by', host.name);
 			} catch (error) {
+				// Handle rate limit errors
+				if (handleRateLimitError(error, socket, 'sessionCreation')) {
+					return;
+				}
+
 				console.error('Create session error:', error.message);
 				socket.emit('error', { message: error.message });
 			}
 		});
 
 		socket.on('joinSession', async (data) => {
+			const clientIP = socket.handshake.address;
+
 			try {
+				// Rate limiting by IP address
+				await sessionJoinLimiter.consume(clientIP);
+
 				if (!data) {
 					throw new Error('No session data provided');
 				}
@@ -263,7 +293,7 @@ export function createPortalServer(io) {
 
 				player.name = validatePlayerName(player.name);
 
-				const session = sessions[sessionId];
+				const session = sessionStore.getSession(sessionId);
 
 				if (!session) {
 					throw new Error('Session not found');
@@ -273,8 +303,13 @@ export function createPortalServer(io) {
 				const isPasswordValid = await bcrypt.compare(password, session.passwordHash);
 
 				if (!isPasswordValid) {
+					// Track failed password attempts
+					await passwordAttemptLimiter.consume(clientIP);
 					throw new Error('Invalid password');
 				}
+
+				// Reset password attempt counter on success
+				await passwordAttemptLimiter.delete(clientIP);
 
 				player.id = socket.id;
 				player.token = { ...player.token, id: player.id, playerToken: true };
@@ -282,6 +317,9 @@ export function createPortalServer(io) {
 				session.players.push(player);
 				session.tokens.push(player.token);
 				session.lastActivity = Date.now();
+
+				// Update session in persistent storage
+				sessionStore.updateSession(sessionId, session);
 
 				socket.join(sessionId);
 				socket.emit('sessionJoined', session);
@@ -294,6 +332,12 @@ export function createPortalServer(io) {
 
 				console.log('Player joined:', player.name, 'to session', sessionId);
 			} catch (error) {
+				// Handle rate limit errors (check if it's a password attempt error or join error)
+				const action = error.message === 'Invalid password' ? 'passwordAttempt' : 'sessionJoin';
+				if (handleRateLimitError(error, socket, action)) {
+					return;
+				}
+
 				console.error('Join session error:', error.message);
 				socket.emit('error', { message: error.message });
 			}
@@ -302,12 +346,15 @@ export function createPortalServer(io) {
 		socket.on('leaveSession', (data) => {
 			console.log('Leave session', data);
 			const { sessionId } = data;
-			const session = sessions[sessionId];
+			const session = sessionStore.getSession(sessionId);
 
 			if (session) {
 				session.players = session?.players.filter((p) => p.id !== socket.id);
 				session.tokens = session?.tokens.filter((t) => t.id !== socket.id);
-				sessions[sessionId] = session;
+				session.lastActivity = Date.now();
+
+				// Update session in persistent storage
+				sessionStore.updateSession(sessionId, session);
 
 				io.to(sessionId).emit('playerLeft', {
 					sessionId,
@@ -327,13 +374,28 @@ export function createPortalServer(io) {
 			io.to(sessionId).emit('sessionEnded', {
 				sessionId
 			});
-			delete sessions[sessionId];
+
+			// Delete session from persistent storage
+			sessionStore.deleteSession(sessionId);
 		});
 
 		// Collaborative Editor Events
-		socket.on('postCommand', (data) => handlePostCommand(data, socket));
+		socket.on('postCommand', async (data) => {
+			try {
+				// Rate limiting by socket ID
+				await commandLimiter.consume(socket.id);
+				await handlePostCommand(data, socket);
+			} catch (error) {
+				// Handle rate limit errors
+				if (handleRateLimitError(error, socket, 'command')) {
+					return;
+				}
+				console.error('Post command error:', error.message);
+			}
+		});
+
 		socket.on('commandsSince', (sessionId, sinceId, callback) => {
-			const session = sessions[sessionId];
+			const session = sessionStore.getSession(sessionId);
 			if (!session) {
 				//console.warn("No session found for ", socket?.id);
 				callback(null, []);
@@ -342,8 +404,8 @@ export function createPortalServer(io) {
 			handleCommandsSince(session, sinceId, callback);
 		});
 
-		function handlePostCommand(data, socket) {
-			const session = sessions[data?.sessionId];
+		async function handlePostCommand(data, socket) {
+			const session = sessionStore.getSession(data?.sessionId);
 
 			if (!session) {
 				//console.warn(`No session found for socket ${socket?.id}`);
@@ -361,6 +423,11 @@ export function createPortalServer(io) {
 				session.commandData.shift();
 			}
 
+			session.lastActivity = Date.now();
+
+			// Update session in persistent storage
+			sessionStore.updateSession(data.sessionId, session);
+
 			// Broadcast the new command to all clients except the sender
 			socket.broadcast.emit('newCommand', command);
 		}
@@ -374,8 +441,11 @@ export function createPortalServer(io) {
 		}
 
 		// Dice Roll Event
-		socket.on('requestDiceRoll', (data) => {
+		socket.on('requestDiceRoll', async (data) => {
 			try {
+				// Rate limiting by socket ID
+				await diceRollLimiter.consume(socket.id);
+
 				if (!data) {
 					throw new Error('No dice roll data provided');
 				}
@@ -391,7 +461,7 @@ export function createPortalServer(io) {
 				}
 
 				// Get the session
-				const session = sessions[sessionId];
+				const session = sessionStore.getSession(sessionId);
 				if (!session) {
 					throw new Error('Session not found');
 				}
@@ -417,6 +487,9 @@ export function createPortalServer(io) {
 					timestamp: Date.now()
 				}];
 
+				// Update session in persistent storage
+				sessionStore.updateSession(sessionId, session);
+
 				// Broadcast the roll result along with the player's theme
 				io.to(sessionId).emit('diceRollResult', {
 					sessionId,
@@ -425,6 +498,11 @@ export function createPortalServer(io) {
 					diceTheme
 				});
 			} catch (error) {
+				// Handle rate limit errors
+				if (handleRateLimitError(error, socket, 'diceRoll')) {
+					return;
+				}
+
 				console.error('Dice roll error:', error.message);
 				socket.emit('error', { message: error.message });
 			}
