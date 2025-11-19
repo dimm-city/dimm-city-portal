@@ -197,6 +197,25 @@ function isHost(sessionId, socketId) {
 
 const maxCommands = 9999;
 
+/**
+ * Create a system message for chat
+ * @param {string} sessionId
+ * @param {string} message
+ * @param {string} type - 'system', 'dice', etc.
+ */
+function createSystemMessage(sessionId, message, type = 'system') {
+	return {
+		id: `msg-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+		sessionId,
+		playerId: 'system',
+		playerName: 'System',
+		message,
+		timestamp: Date.now(),
+		type,
+		color: '#888888'
+	};
+}
+
 export function createPortalServer(io) {
 	// Log rate limiter configuration on server start
 	logRateLimiterConfig();
@@ -260,7 +279,9 @@ export function createPortalServer(io) {
 					isPublic: isPublic !== false, // Default to public
 					gameSystem: gameSystem || 'Generic',
 					maxPlayers: maxPlayers || 6,
-					description: description || ''
+					description: description || '',
+					// Chat system
+					chatHistory: [] // Store last 100 messages
 				};
 
 				// Save to persistent storage
@@ -340,6 +361,17 @@ export function createPortalServer(io) {
 					tokens: session.tokens
 				});
 
+				// Send system message to chat
+				const joinMessage = createSystemMessage(
+					sessionId,
+					`${player.name} joined the session`
+				);
+				if (!session.chatHistory) session.chatHistory = [];
+				session.chatHistory.push(joinMessage);
+				if (session.chatHistory.length > 100) session.chatHistory.shift();
+				sessionStore.updateSession(sessionId, session);
+				io.to(sessionId).emit('newMessage', joinMessage);
+
 				console.log('Player joined:', player.name, 'to session', sessionId);
 			} catch (error) {
 				// Handle rate limit errors (check if it's a password attempt error or join error)
@@ -357,6 +389,26 @@ export function createPortalServer(io) {
 			console.log('Leave session', data);
 			const { sessionId } = data;
 			const session = sessionStore.getSession(sessionId);
+			
+			if (!session) return;
+			
+			// Find the player who is leaving
+			const leavingPlayer = session.host.id === socket.id
+				? session.host
+				: session.players.find(p => p.id === socket.id);
+			
+			if (leavingPlayer) {
+				// Send system message to chat
+				const leaveMessage = createSystemMessage(
+					sessionId,
+					`${leavingPlayer.name} left the session`
+				);
+				if (!session.chatHistory) session.chatHistory = [];
+				session.chatHistory.push(leaveMessage);
+				if (session.chatHistory.length > 100) session.chatHistory.shift();
+				sessionStore.updateSession(sessionId, session);
+				io.to(sessionId).emit('newMessage', leaveMessage);
+			}
 
 			if (session) {
 				session.players = session?.players.filter((p) => p.id !== socket.id);
@@ -507,6 +559,18 @@ export function createPortalServer(io) {
 					result,
 					diceTheme
 				});
+
+				// Send dice roll as chat message
+				const diceMessage = createSystemMessage(
+					sessionId,
+					`${playerName} rolled ${diceExpression}: ${result}`,
+					'dice'
+				);
+				if (!session.chatHistory) session.chatHistory = [];
+				session.chatHistory.push(diceMessage);
+				if (session.chatHistory.length > 100) session.chatHistory.shift();
+				sessionStore.updateSession(sessionId, session);
+				io.to(sessionId).emit('newMessage', diceMessage);
 			} catch (error) {
 				// Handle rate limit errors
 				if (handleRateLimitError(error, socket, 'diceRoll')) {
@@ -602,6 +666,79 @@ export function createPortalServer(io) {
 				console.log(`Scene loaded for session ${sessionId}`);
 			} catch (error) {
 				console.error('Load scene error:', error.message);
+				socket.emit('error', { message: error.message });
+			}
+		});
+
+
+		// Chat Message Handler
+		socket.on('sendMessage', async (data) => {
+			try {
+				const { sessionId, message, type = 'chat' } = data;
+
+				// Validate inputs
+				if (!sessionId || !message) {
+					throw new Error('Session ID and message are required');
+				}
+
+				// Validate message length (prevent spam/DOS)
+				if (message.length > 1000) {
+					throw new Error('Message too long (max 1000 characters)');
+				}
+
+				// Get session
+				const session = sessionStore.getSession(sessionId);
+				if (!session) {
+					throw new Error('Session not found');
+				}
+
+				// Verify player is in session
+				const isPlayerInSession = socket.id === session.host.id ||
+					session.players.some(p => p.id === socket.id);
+
+				if (!isPlayerInSession) {
+					throw new Error('Player not in session');
+				}
+
+				// Get player info
+				const player = socket.id === session.host.id
+					? session.host
+					: session.players.find(p => p.id === socket.id);
+
+				// Sanitize message
+				const sanitizedMessage = sanitizeString(message.trim(), 1000);
+
+				// Create message object
+				const messageObj = {
+					id: `msg-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+					sessionId,
+					playerId: socket.id,
+					playerName: player.name,
+					message: sanitizedMessage,
+					timestamp: Date.now(),
+					type,
+					color: player.color || '#FFFFFF'
+				};
+
+				// Store in session history (keep last 100 messages)
+				if (!session.chatHistory) {
+					session.chatHistory = [];
+				}
+				session.chatHistory.push(messageObj);
+				if (session.chatHistory.length > 100) {
+					session.chatHistory.shift();
+				}
+
+				// Update session
+				session.lastActivity = Date.now();
+				sessionStore.updateSession(sessionId, session);
+
+				// Broadcast to all players in session
+				io.to(sessionId).emit('newMessage', messageObj);
+
+				console.log(`Message in ${sessionId} from ${player.name}: ${sanitizedMessage}`);
+			} catch (error) {
+				console.error('Send message error:', error.message);
 				socket.emit('error', { message: error.message });
 			}
 		});
