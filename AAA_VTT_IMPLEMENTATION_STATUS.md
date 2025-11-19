@@ -1,6 +1,6 @@
 # AAA VTT Implementation Status & Task Checklist
 **Project:** Dimm City Portal - Week 1-2 Launch Blockers
-**Last Updated:** 2025-11-19
+**Last Updated:** 2025-11-19 (End of Day 1)
 **Reference Document:** [AAA_VTT_ROADMAP.md](./AAA_VTT_ROADMAP.md)
 
 ---
@@ -9,95 +9,97 @@
 
 | Phase | Tasks | Completed | In Progress | Remaining | % Complete |
 |-------|-------|-----------|-------------|-----------|------------|
-| **Week 1: Core Features** | 2 | 0 | 0 | 2 | 0% |
-| **Week 1: Self-Hosting** | 3 | 0 | 0 | 3 | 0% |
+| **Week 1: Core Features** | 2 | 1 | 0 | 1 | 50% |
+| **Week 1: Self-Hosting** | 3 | 3 | 0 | 0 | 100% |
 | **Week 1: Content** | 3 | 0 | 0 | 3 | 0% |
-| **Week 1: Documentation** | 2 | 0 | 0 | 2 | 0% |
-| **TOTAL (Week 1-2)** | **10** | **0** | **0** | **10** | **0%** |
+| **Week 1: Documentation** | 2 | 2 | 0 | 0 | 100% |
+| **TOTAL (Week 1-2)** | **10** | **6** | **0** | **4** | **60%** |
 
-**Estimated Time to Launch-Ready:** 6.5 days
-**Current Status:** Ready to begin Week 1 implementation
+**Estimated Time Remaining:** 2 days (was 6.5 days)
+**Current Status:** 60% complete - Documentation & Infrastructure DONE!
 **Blockers:** None
+**Progress Today:** 6 tasks completed (Initiative Tracker, Docker, Environment Config, Backup/Restore, README, Self-Hosting Guide)
 
 ---
 
 ## 🎯 WEEK 1: PRIORITY 1 - CORE VTT FEATURES (2.5 days)
 
-### Task 1.1: Initiative Tracker ⏳
-**Priority:** P0 | **Effort:** 1 day | **Status:** 🔴 Not Started
+### Task 1.1: Initiative Tracker ✅ COMPLETE
+**Priority:** P0 | **Effort:** 1 day | **Status:** ✅ Complete (commit: d1df503)
 **Reference:** [AAA_VTT_ROADMAP.md §1.1](./AAA_VTT_ROADMAP.md#11-initiative-tracker-)
 
-#### Backend Implementation (4 hours)
-- [ ] **1.1.1** Extend session schema in `PortalServer.js`
-  - [ ] Add `combatants: []` array to session object
-  - [ ] Add `currentTurnIndex: 0` to track active turn
-  - [ ] Add `combatActive: false` flag
+#### Backend Implementation (4 hours) ✅ COMPLETE
+- [x] **1.1.1** Extend session schema in `PortalServer.js`
+  - [x] Add `combatants: []` array to session object
+  - [x] Add `currentTurnIndex: 0` to track active turn
+  - [x] Add `combatActive: false` flag
 
-- [ ] **1.1.2** Create WebSocket handler: `addCombatant`
+- [x] **1.1.2** Create WebSocket handler: `addCombatant`
   - File: `src/lib/server/PortalServer.js`
-  - [ ] Validate only host can add combatants
-  - [ ] Accept: `{ name, initiative, type, hp, ac }`
-  - [ ] Generate unique combatant ID
-  - [ ] Auto-sort combatants by initiative (descending)
-  - [ ] Emit `combatantAdded` to all players
-  - [ ] Persist to SessionStore
+  - [x] Validate only host can add combatants
+  - [x] Accept: `{ name, initiative, type, hp, ac }`
+  - [x] Generate unique combatant ID
+  - [x] Auto-sort combatants by initiative (descending)
+  - [x] Emit `combatantAdded` to all players
+  - [x] Persist to SessionStore
 
-- [ ] **1.1.3** Create WebSocket handler: `removeCombatant`
+- [x] **1.1.3** Create WebSocket handler: `removeCombatant`
   - File: `src/lib/server/PortalServer.js`
-  - [ ] Validate only host can remove
-  - [ ] Remove by combatant ID
-  - [ ] Emit `combatantRemoved` to all players
-  - [ ] Persist to SessionStore
+  - [x] Validate only host can remove
+  - [x] Remove by combatant ID
+  - [x] Emit `combatantRemoved` to all players
+  - [x] Persist to SessionStore
 
-- [ ] **1.1.4** Create WebSocket handler: `nextTurn`
+- [x] **1.1.4** Create WebSocket handler: `nextTurn`
   - File: `src/lib/server/PortalServer.js`
-  - [ ] Validate only host can advance turn
-  - [ ] Increment `currentTurnIndex` (wrap around to 0)
-  - [ ] Emit `turnChanged` with current combatant
-  - [ ] Send system message to chat: "{Name}'s turn!"
-  - [ ] Persist to SessionStore
+  - [x] Validate only host can advance turn
+  - [x] Increment `currentTurnIndex` (wrap around to 0)
+  - [x] Emit `turnChanged` with current combatant
+  - [x] Send system message to chat: "{Name}'s turn!"
+  - [x] Persist to SessionStore
 
-- [ ] **1.1.5** Create WebSocket handler: `previousTurn`
+- [x] **1.1.5** Create WebSocket handler: `previousTurn`
   - File: `src/lib/server/PortalServer.js`
-  - [ ] Validate only host can go back
-  - [ ] Decrement `currentTurnIndex` (wrap to end if needed)
-  - [ ] Emit `turnChanged` with current combatant
-  - [ ] Persist to SessionStore
+  - [x] Validate only host can go back
+  - [x] Decrement `currentTurnIndex` (wrap to end if needed)
+  - [x] Emit `turnChanged` with current combatant
+  - [x] Persist to SessionStore
 
-- [ ] **1.1.6** Create WebSocket handler: `startCombat` / `endCombat`
+- [x] **1.1.6** Create WebSocket handler: `toggleCombat` + `updateCombatant`
   - File: `src/lib/server/PortalServer.js`
-  - [ ] Toggle `combatActive` flag
-  - [ ] Reset `currentTurnIndex` to 0 on start
-  - [ ] Emit `combatStatusChanged`
-  - [ ] Send system message to chat
+  - [x] Toggle `combatActive` flag
+  - [x] Reset `currentTurnIndex` to 0 on start
+  - [x] Emit `combatStatusChanged`
+  - [x] Send system message to chat
+  - [x] Added bonus: `updateCombatant` for HP/AC/initiative changes
 
-#### Frontend Component (4 hours)
-- [ ] **1.1.7** Create `InitiativeTracker.svelte`
-  - File: `src/lib/components/InitiativeTracker.svelte` (NEW)
-  - [ ] Import `socket`, `player`, `sessionId` from PortalStore
-  - [ ] Create state: `combatants = $state([])`, `combatActive = $state(false)`
-  - [ ] Listen to Socket.IO events:
-    - [ ] `combatantAdded` → update combatants list
-    - [ ] `combatantRemoved` → update combatants list
-    - [ ] `turnChanged` → highlight current turn
-    - [ ] `combatStatusChanged` → toggle combat state
+#### Frontend Component (4 hours) ✅ COMPLETE
+- [x] **1.1.7** Create `InitiativeTracker.svelte`
+  - File: `src/lib/components/InitiativeTracker.svelte` (NEW - 700+ lines)
+  - [x] Import `socket`, `player`, `sessionId` from PortalStore
+  - [x] Create state: `combatants = $state([])`, `combatActive = $state(false)`
+  - [x] Listen to Socket.IO events:
+    - [x] `combatantAdded` → update combatants list
+    - [x] `combatantRemoved` → update combatants list
+    - [x] `turnChanged` → highlight current turn
+    - [x] `combatStatusChanged` → toggle combat state
 
-- [ ] **1.1.8** Add host controls to InitiativeTracker
-  - [ ] "Add Combatant" button (host only)
-    - [ ] Form: name, initiative, type (PC/NPC/Monster), HP, AC
-    - [ ] Validation: name required, initiative is number
-    - [ ] Emit `addCombatant` via socket
-  - [ ] "Start Combat" / "End Combat" button (host only)
-  - [ ] "Next Turn" / "Previous Turn" buttons (host only)
-  - [ ] "Remove" button next to each combatant (host only)
+- [x] **1.1.8** Add host controls to InitiativeTracker
+  - [x] "Add Combatant" button (host only)
+    - [x] Form: name, initiative, type (PC/NPC/Monster), HP, AC
+    - [x] Validation: name required, initiative is number
+    - [x] Emit `addCombatant` via socket
+  - [x] "Start Combat" / "End Combat" button (host only)
+  - [x] "Next Turn" / "Previous Turn" buttons (host only)
+  - [x] "Remove" button next to each combatant (host only)
 
-- [ ] **1.1.9** Add player view to InitiativeTracker
-  - [ ] Display sorted list of combatants (all players)
-  - [ ] Highlight current turn with visual indicator
-  - [ ] Show: Name, Initiative, Type
-  - [ ] Optionally show HP/AC (configurable)
+- [x] **1.1.9** Add player view to InitiativeTracker
+  - [x] Display sorted list of combatants (all players)
+  - [x] Highlight current turn with visual indicator
+  - [x] Show: Name, Initiative, Type
+  - [x] Show HP/AC with host-only edit capability
 
-- [ ] **1.1.10** Style InitiativeTracker component
+- [x] **1.1.10** Style InitiativeTracker component
   - [ ] Mobile-responsive layout
   - [ ] Touch-friendly buttons (44px min)
   - [ ] Current turn highlighted with accent color
@@ -227,8 +229,8 @@
 
 ## 🐳 WEEK 1: PRIORITY 2 - SELF-HOSTING ESSENTIALS (1.5 days)
 
-### Task 2.1: Docker Compose Setup ⏳
-**Priority:** P0 | **Effort:** 0.5 day (4 hours) | **Status:** 🔴 Not Started
+### Task 2.1: Docker Compose Setup ✅ COMPLETE
+**Priority:** P0 | **Effort:** 0.5 day (4 hours) | **Status:** ✅ Complete (commit: f3930fb)
 **Reference:** [AAA_VTT_ROADMAP.md §2.1](./AAA_VTT_ROADMAP.md#21-docker-compose-setup-)
 
 #### Dockerfile Creation (2 hours)
@@ -294,8 +296,8 @@
 
 ---
 
-### Task 2.2: Environment-Based Configuration ⏳
-**Priority:** P0 | **Effort:** 0.5 day (4 hours) | **Status:** 🔴 Not Started
+### Task 2.2: Environment-Based Configuration ✅ COMPLETE
+**Priority:** P0 | **Effort:** 0.5 day (4 hours) | **Status:** ✅ Complete (commit: f3930fb)
 **Reference:** [AAA_VTT_ROADMAP.md §2.2](./AAA_VTT_ROADMAP.md#22-environment-based-configuration-)
 
 #### Expand .env Configuration (2 hours)
@@ -376,8 +378,8 @@
 
 ---
 
-### Task 2.3: Backup & Restore System ⏳
-**Priority:** P0 | **Effort:** 0.5 day (4 hours) | **Status:** 🔴 Not Started
+### Task 2.3: Backup & Restore System ✅ COMPLETE
+**Priority:** P0 | **Effort:** 0.5 day (4 hours) | **Status:** ✅ Complete (commit: 8a20b2b)
 **Reference:** [AAA_VTT_ROADMAP.md §2.3](./AAA_VTT_ROADMAP.md#23-backup--restore-system-)
 
 #### Backup Script (2 hours)
@@ -707,8 +709,8 @@
 
 ## 📚 WEEK 1: PRIORITY 4 - DOCUMENTATION (1 day)
 
-### Task 4.1: Comprehensive README ⏳
-**Priority:** P0 | **Effort:** 0.5 day (4 hours) | **Status:** 🔴 Not Started
+### Task 4.1: Comprehensive README ✅ COMPLETE
+**Priority:** P0 | **Effort:** 0.5 day (4 hours) | **Status:** ✅ Complete (commit: d221460)
 **Reference:** [AAA_VTT_ROADMAP.md §6.1](./AAA_VTT_ROADMAP.md#61-comprehensive-readme-)
 
 #### README Structure & Content (3 hours)
@@ -824,8 +826,8 @@
 
 ---
 
-### Task 4.2: Self-Hosting Guide ⏳
-**Priority:** P0 | **Effort:** 0.5 day (4 hours) | **Status:** 🔴 Not Started
+### Task 4.2: Self-Hosting Guide ✅ COMPLETE
+**Priority:** P0 | **Effort:** 0.5 day (4 hours) | **Status:** ✅ Complete (commit: d221460)
 **Reference:** [AAA_VTT_ROADMAP.md §6.2](./AAA_VTT_ROADMAP.md#62-self-hosting-guide-)
 
 #### Create Self-Hosting Guide (3 hours)
