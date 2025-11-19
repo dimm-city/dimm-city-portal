@@ -44,14 +44,20 @@
 	};
 
 	function initDiceBox() {
-		if (diceBox) return;
-		let diceSizeModifier = diceSize === 'large' ? 90 : diceSize === 'medium' ? 50 : 0;
-		let scale = diceSizeModifier + (window.innerWidth > 500 ? 100 : 90);
-		defaultDiceConfig.baseScale = scale;
-		console.log('Initializing dice box...', defaultDiceConfig);
-		diceBox = new DiceBox('#dice-container', defaultDiceConfig);
-		diceBox.initialize();
-		//}
+		try {
+			if (diceBox) return;
+			let diceSizeModifier = diceSize === 'large' ? 90 : diceSize === 'medium' ? 50 : 0;
+			let scale = diceSizeModifier + (window.innerWidth > 500 ? 100 : 90);
+			defaultDiceConfig.baseScale = scale;
+			console.log('Initializing dice box...', defaultDiceConfig);
+			diceBox = new DiceBox('#dice-container', defaultDiceConfig);
+			diceBox.initialize();
+			//}
+		} catch (error) {
+			console.error('Failed to initialize dice box:', error);
+			// Error will be caught by global error boundary
+			throw error;
+		}
 	}
 	// This function will be called from the main component to roll the dice
 	/**
@@ -60,36 +66,51 @@
 	 * @param {any} diceId
 	 */
 	export async function roll(result, diceTheme, diceId) {
-		rolling = true;
-		initDiceBox();
+		try {
+			rolling = true;
+			initDiceBox();
 
-		if (!diceTheme) diceTheme = defaultDiceConfig.theme_customColorset;
+			if (!diceTheme) diceTheme = defaultDiceConfig.theme_customColorset;
 
-		let diceSizeModifier =
-			diceSize === 'x-large' ? 130 : diceSize === 'large' ? 90 : diceSize === 'medium' ? 50 : 0;
-		let scale = diceSizeModifier + (window.innerWidth > 500 ? 100 : 90);
-		// Roll the dice associated with the specific player's result
-		console.log('Rolling', result, diceTheme, diceId);
+			let diceSizeModifier =
+				diceSize === 'x-large' ? 130 : diceSize === 'large' ? 90 : diceSize === 'medium' ? 50 : 0;
+			let scale = diceSizeModifier + (window.innerWidth > 500 ? 100 : 90);
+			// Roll the dice associated with the specific player's result
+			console.log('Rolling', result, diceTheme, diceId);
 
-		// Update the theme
-		diceTheme.name += new Date().getTime().toString();
-		//FIXME: figure out scaling dice properly
-		//diceTheme.scale = scale;
-		diceBox.theme_customColorset = diceTheme;
-		//diceBox.DiceFactory.updateConfig({baseScale: scale, scale: true});
-		await diceBox.loadTheme(diceTheme);
-		await diceBox.resizeWorld();
-		// Roll the dice
-		const output = await diceBox.roll(result);
-		rolling = false;
-		return output;
+			// Update the theme
+			diceTheme.name += new Date().getTime().toString();
+			//FIXME: figure out scaling dice properly
+			//diceTheme.scale = scale;
+			diceBox.theme_customColorset = diceTheme;
+			//diceBox.DiceFactory.updateConfig({baseScale: scale, scale: true});
+			await diceBox.loadTheme(diceTheme);
+			await diceBox.resizeWorld();
+			// Roll the dice
+			const output = await diceBox.roll(result);
+			rolling = false;
+			return output;
+		} catch (error) {
+			console.error('Failed to roll dice:', error);
+			rolling = false;
+			throw error;
+		}
 	}
 
 	export function clear() {
-		if (diceBox) diceBox.clearDice();
+		try {
+			if (diceBox) diceBox.clearDice();
+		} catch (error) {
+			console.error('Failed to clear dice:', error);
+		}
 	}
 	onMount(() => {
-		initDiceBox();
+		try {
+			initDiceBox();
+		} catch (error) {
+			console.error('Failed to mount dice roller:', error);
+			// Error will be caught by global error boundary
+		}
 	});
 </script>
 

@@ -75,31 +75,46 @@ export function getPlayerToken() {
  * @param {DC.PortalState} sessionData
  */
 export function handleCreateSession(sessionData) {
-	console.log('Emitting createSession', sessionData);
-	
-	lastUpdateIndex.set(0);
-	socket.emit('createSession', sessionData);
+	try {
+		console.log('Emitting createSession', sessionData);
+
+		lastUpdateIndex.set(0);
+		socket.emit('createSession', sessionData);
+	} catch (error) {
+		console.error('Failed to create session:', error);
+		toast.push('Failed to create session. Please try again.', { classes: ['error'] });
+	}
 }
 
 /**
  * @param {{ sessionId: string; password: string; player: any; }} sessionData
  */
 export function handleJoinSession(sessionData) {
-	lastUpdateIndex.set(0);
-	socket.emit('joinSession', sessionData);
+	try {
+		lastUpdateIndex.set(0);
+		socket.emit('joinSession', sessionData);
+	} catch (error) {
+		console.error('Failed to join session:', error);
+		toast.push('Failed to join session. Please try again.', { classes: ['error'] });
+	}
 }
 
 // Send a serialized command to the server
 export function postSerializedCommand(/** @type {Record<string | symbol, any>} */ data) {
-	const _player = get(player);
-	const _sessionId = get(sessionId);
+	try {
+		const _player = get(player);
+		const _sessionId = get(sessionId);
 
-	socket.emit('postCommand', {
-		clientId: _player.id,
-		sessionId: _sessionId,
-		data
-	});
-	console.log('Posted', JSON.stringify(data).length);
+		socket.emit('postCommand', {
+			clientId: _player.id,
+			sessionId: _sessionId,
+			data
+		});
+		console.log('Posted', JSON.stringify(data).length);
+	} catch (error) {
+		console.error('Failed to post command:', error);
+		// Don't show toast for every command failure - just log it
+	}
 }
 // Request commands since a specific ID
 export function fetchUpdates(/** @type {number} */ lastIndex) {
@@ -146,17 +161,30 @@ function handleNewCommand(/** @type {DC.PortalEditorCommand} */ command) {
 	}
 }
 export function leaveSession() {
-	console.log('Leaving session');
+	try {
+		console.log('Leaving session');
 
-	socket.emit('leaveSession', { sessionId: get(sessionId), player: get(player) });
-	players.set([]);
-	sessionId.set(null);
-	lastUpdateIndex.set(0);
+		socket.emit('leaveSession', { sessionId: get(sessionId), player: get(player) });
+		players.set([]);
+		sessionId.set(null);
+		lastUpdateIndex.set(0);
+	} catch (error) {
+		console.error('Failed to leave session:', error);
+		// Still reset state even if emit fails
+		players.set([]);
+		sessionId.set(null);
+		lastUpdateIndex.set(0);
+	}
 }
 
 export function endSession() {
-	lastUpdateIndex.set(0);
-	socket.emit('endSession', { sessionId });
+	try {
+		lastUpdateIndex.set(0);
+		socket.emit('endSession', { sessionId });
+	} catch (error) {
+		console.error('Failed to end session:', error);
+		toast.push('Failed to end session. Please try again.', { classes: ['error'] });
+	}
 }
 
 export function copySessionUrl() {
@@ -177,24 +205,37 @@ export function copySessionUrl() {
 }
 
 export function requestDiceRoll(expression = '1d20') {
-	const _player = get(player);
-	console.log('requestDiceRoll', expression, _player);
+	try {
+		const _player = get(player);
+		console.log('requestDiceRoll', expression, _player);
 
-	if (!_player) return;
-	socket.emit('requestDiceRoll', {
-		sessionId: get(sessionId),
-		diceExpression: expression,
-		playerName: _player.name,
-		diceTheme: get(selectedDiceTheme),
-		diceId: _player.diceId
-	});
+		if (!_player) {
+			console.warn('Cannot roll dice: no player found');
+			return;
+		}
+		socket.emit('requestDiceRoll', {
+			sessionId: get(sessionId),
+			diceExpression: expression,
+			playerName: _player.name,
+			diceTheme: get(selectedDiceTheme),
+			diceId: _player.diceId
+		});
+	} catch (error) {
+		console.error('Failed to request dice roll:', error);
+		toast.push('Failed to roll dice. Please try again.', { classes: ['error'] });
+	}
 }
 /**
  * @param {{ result: any; diceTheme: any; }} data
  */
 async function onDiceRollResult(data) {
-	const { result, diceTheme } = data;
-	await processDiceResult(result, diceTheme);
+	try {
+		const { result, diceTheme } = data;
+		await processDiceResult(result, diceTheme);
+	} catch (error) {
+		console.error('Failed to process dice roll result:', error);
+		toast.push('Failed to display dice roll result.', { classes: ['error'] });
+	}
 }
 
 socket.on('connect', () => {

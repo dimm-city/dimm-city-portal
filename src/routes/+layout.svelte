@@ -1,6 +1,7 @@
 <script>
 	import { page } from '$app/stores';
 	import { inSession } from '$lib/components/PortalStore';
+	import ErrorBoundary from '$lib/components/ErrorBoundary.svelte';
 
 	import '$lib/components/styles.css';
 	let { children } = $props();
@@ -18,40 +19,42 @@
 		href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
 	/>
 </svelte:head>
-<div class="layout-container">
-	<section class:in-session={$inSession}>
-		{@render children()}
-	</section>
-	{#if !$inSession}
-		<footer>
-			<a
-				title="GitHub Repository"
-				aria-label="GitHub Repository"
-				href="https://github.com/dimm-city/dimm-city-portal"
-				target="_blank"
-			>
-				<i class="bi bi-github"></i>
-			</a>
-			{#if $page.url.pathname === '/'}
-				<a aria-label="About Dimm City Portal" title="About Dimm City Portal" href="/about">
-					<i class="bi bi-patch-question"></i>
+<ErrorBoundary>
+	<div class="layout-container">
+		<section class:in-session={$inSession}>
+			{@render children()}
+		</section>
+		{#if !$inSession}
+			<footer>
+				<a
+					title="GitHub Repository"
+					aria-label="GitHub Repository"
+					href="https://github.com/dimm-city/dimm-city-portal"
+					target="_blank"
+				>
+					<i class="bi bi-github"></i>
 				</a>
-			{:else}
-				<a aria-label="Dimm City Portal" title="Dimm City Portal" href="/">
-					<i class="bi bi-brilliance"></i>
+				{#if $page.url.pathname === '/'}
+					<a aria-label="About Dimm City Portal" title="About Dimm City Portal" href="/about">
+						<i class="bi bi-patch-question"></i>
+					</a>
+				{:else}
+					<a aria-label="Dimm City Portal" title="Dimm City Portal" href="/">
+						<i class="bi bi-brilliance"></i>
+					</a>
+				{/if}
+				<a
+					title="Dimm City Subreddit"
+					aria-label="Dimm City Subreddit"
+					href="https://github.com/dimm-city/dimm-city-portal"
+					target="_blank"
+				>
+					<i class="bi bi-reddit"></i>
 				</a>
-			{/if}
-			<a
-				title="Dimm City Subreddit"
-				aria-label="Dimm City Subreddit"
-				href="https://github.com/dimm-city/dimm-city-portal"
-				target="_blank"
-			>
-				<i class="bi bi-reddit"></i>
-			</a>
-		</footer>
-	{/if}
-</div>
+			</footer>
+		{/if}
+	</div>
+</ErrorBoundary>
 
 <style>
 	.layout-container {

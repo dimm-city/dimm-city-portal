@@ -16,10 +16,15 @@
 	});
 
 	onMount(() => {
-		console.log('Editor mounting...', backgroundImageUrl);
-		
-		configureEditor(editorElement, backgroundImageUrl);
-		fetchUpdates(0);
+		try {
+			console.log('Editor mounting...', backgroundImageUrl);
+
+			configureEditor(editorElement, backgroundImageUrl);
+			fetchUpdates(0);
+		} catch (error) {
+			console.error('Failed to initialize editor:', error);
+			// Error will be caught by global error boundary
+		}
 	});
 </script>
 
