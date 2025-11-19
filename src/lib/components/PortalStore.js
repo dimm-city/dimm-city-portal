@@ -49,6 +49,7 @@ export const host = writable(null);
 export let showPlayerList = writable(false);
 export let showPlayerSettings = writable(false);
 export let showSceneSettings = writable(false);
+export let showMapBrowser = writable(false);
 
 export let inSession = derived([sessionId], ($sessionId) => {
 	return $sessionId != null && $sessionId.toString() > '';

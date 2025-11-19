@@ -21,6 +21,7 @@ import {
 	leaveSession,
 	showPlayerList,
 	showSessionDetails,
+	showMapBrowser,
 	postSerializedCommand,
 	editor,
 	player,
@@ -146,6 +147,23 @@ export function configureToolbar(isHost) {
 				} catch (error) {
 					console.error('Failed to load scene:', error);
 				}
+			}
+		);
+
+		// Map Browser button
+		toolbar.addActionButton(
+			{
+				label: 'Maps',
+				icon: _editor.icons.makeIconFromFactory((iconType) => {
+					// Use Bootstrap Icons map icon
+					const icon = document.createElement('i');
+					icon.className = 'bi bi-map';
+					icon.style.fontSize = '1.5em';
+					return icon;
+				})
+			},
+			() => {
+				showMapBrowser.set(true);
 			}
 		);
 
@@ -402,5 +420,36 @@ export async function configureEditor(editorElement, backgroundImageUrl = '') {
 				originalRemove();
 			};
 		}
+	}
+}
+
+/**
+ * Set background image dynamically
+ * @param {Editor} editor
+ * @param {string} imageUrl
+ */
+export async function setBackgroundImage(editor, imageUrl) {
+	if (!editor) {
+		console.error('Editor not initialized');
+		return;
+	}
+
+	try {
+		const image = new Image();
+		image.crossOrigin = 'anonymous';
+		image.src = imageUrl;
+
+		// Wait for image to load
+		await new Promise((resolve, reject) => {
+			image.onload = resolve;
+			image.onerror = reject;
+		});
+
+		const comp = await ImageComponent.fromImage(image, Mat33.identity);
+		editor.dispatch(editor.image.addElement(comp));
+
+		console.log('Background image loaded:', imageUrl);
+	} catch (error) {
+		console.error('Failed to load background image:', error);
 	}
 }
