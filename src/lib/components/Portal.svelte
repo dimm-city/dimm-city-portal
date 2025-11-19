@@ -1,6 +1,8 @@
 <script>
 	import Dialog from './Dialog.svelte';
 	import SessionManager from './SessionManager.svelte';
+	import InitiativeTracker from './InitiativeTracker.svelte';
+	import ChatPanel from './ChatPanel.svelte';
 
 	import {
 		host,
@@ -47,6 +49,8 @@
 			</div>
 		</Dialog>
 		<Editor backgroundImageUrl={config.backgroundImageUrl} />
+		<InitiativeTracker />
+		<ChatPanel />
 	{/if}
 </div>
 

@@ -281,7 +281,11 @@ export function createPortalServer(io) {
 					maxPlayers: maxPlayers || 6,
 					description: description || '',
 					// Chat system
-					chatHistory: [] // Store last 100 messages
+					chatHistory: [], // Store last 100 messages
+					// Combat/Initiative tracking
+					combatants: [], // Array of combatants in initiative order
+					currentTurnIndex: 0, // Index of current turn
+					combatActive: false // Whether combat is currently active
 				};
 
 				// Save to persistent storage
@@ -739,6 +743,324 @@ export function createPortalServer(io) {
 				console.log(`Message in ${sessionId} from ${player.name}: ${sanitizedMessage}`);
 			} catch (error) {
 				console.error('Send message error:', error.message);
+				socket.emit('error', { message: error.message });
+			}
+		});
+
+		// Combat/Initiative Tracker Events
+		socket.on('addCombatant', async (data) => {
+			try {
+				const { sessionId, combatant } = data;
+
+				if (!sessionId || !combatant) {
+					throw new Error('Session ID and combatant data are required');
+				}
+
+				// Validate session exists
+				const session = sessionStore.getSession(sessionId);
+				if (!session) {
+					throw new Error('Session not found');
+				}
+
+				// Only host can add combatants
+				if (!isHost(sessionId, socket.id)) {
+					throw new Error('Only the host can add combatants');
+				}
+
+				// Validate and sanitize combatant data
+				const newCombatant = {
+					id: `combatant-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+					name: validatePlayerName(combatant.name || 'Combatant'),
+					initiative: parseInt(combatant.initiative) || 0,
+					type: ['PC', 'NPC', 'Monster'].includes(combatant.type) ? combatant.type : 'NPC',
+					hp: parseInt(combatant.hp) || null,
+					maxHp: parseInt(combatant.maxHp) || null,
+					ac: parseInt(combatant.ac) || null,
+					conditions: combatant.conditions || []
+				};
+
+				// Add to combatants array
+				session.combatants.push(newCombatant);
+
+				// Sort by initiative (descending)
+				session.combatants.sort((a, b) => b.initiative - a.initiative);
+
+				// Update session
+				sessionStore.updateSession(sessionId, session);
+
+				// Broadcast to all players
+				io.to(sessionId).emit('combatantAdded', {
+					combatant: newCombatant,
+					combatants: session.combatants
+				});
+
+				console.log(`Combatant added to ${sessionId}: ${newCombatant.name} (Initiative: ${newCombatant.initiative})`);
+			} catch (error) {
+				console.error('Add combatant error:', error.message);
+				socket.emit('error', { message: error.message });
+			}
+		});
+
+		socket.on('removeCombatant', async (data) => {
+			try {
+				const { sessionId, combatantId } = data;
+
+				if (!sessionId || !combatantId) {
+					throw new Error('Session ID and combatant ID are required');
+				}
+
+				// Validate session exists
+				const session = sessionStore.getSession(sessionId);
+				if (!session) {
+					throw new Error('Session not found');
+				}
+
+				// Only host can remove combatants
+				if (!isHost(sessionId, socket.id)) {
+					throw new Error('Only the host can remove combatants');
+				}
+
+				// Find and remove combatant
+				const index = session.combatants.findIndex(c => c.id === combatantId);
+				if (index === -1) {
+					throw new Error('Combatant not found');
+				}
+
+				const removed = session.combatants.splice(index, 1)[0];
+
+				// Adjust current turn index if needed
+				if (session.currentTurnIndex >= session.combatants.length && session.combatants.length > 0) {
+					session.currentTurnIndex = session.combatants.length - 1;
+				}
+
+				// Update session
+				sessionStore.updateSession(sessionId, session);
+
+				// Broadcast to all players
+				io.to(sessionId).emit('combatantRemoved', {
+					combatantId,
+					combatants: session.combatants,
+					currentTurnIndex: session.currentTurnIndex
+				});
+
+				console.log(`Combatant removed from ${sessionId}: ${removed.name}`);
+			} catch (error) {
+				console.error('Remove combatant error:', error.message);
+				socket.emit('error', { message: error.message });
+			}
+		});
+
+		socket.on('nextTurn', async (data) => {
+			try {
+				const { sessionId } = data;
+
+				if (!sessionId) {
+					throw new Error('Session ID is required');
+				}
+
+				// Validate session exists
+				const session = sessionStore.getSession(sessionId);
+				if (!session) {
+					throw new Error('Session not found');
+				}
+
+				// Only host can advance turn
+				if (!isHost(sessionId, socket.id)) {
+					throw new Error('Only the host can advance turns');
+				}
+
+				if (!session.combatActive) {
+					throw new Error('Combat is not active');
+				}
+
+				if (session.combatants.length === 0) {
+					throw new Error('No combatants in initiative tracker');
+				}
+
+				// Advance to next turn (wrap around)
+				session.currentTurnIndex = (session.currentTurnIndex + 1) % session.combatants.length;
+
+				// Update session
+				sessionStore.updateSession(sessionId, session);
+
+				const currentCombatant = session.combatants[session.currentTurnIndex];
+
+				// Send system message to chat
+				const systemMessage = createSystemMessage(
+					sessionId,
+					`${currentCombatant.name}'s turn!`,
+					'system'
+				);
+				session.chatHistory.push(systemMessage);
+				if (session.chatHistory.length > 100) session.chatHistory.shift();
+				sessionStore.updateSession(sessionId, session);
+
+				// Broadcast to all players
+				io.to(sessionId).emit('turnChanged', {
+					currentTurnIndex: session.currentTurnIndex,
+					currentCombatant
+				});
+				io.to(sessionId).emit('newMessage', systemMessage);
+
+				console.log(`Turn advanced in ${sessionId}: ${currentCombatant.name}'s turn`);
+			} catch (error) {
+				console.error('Next turn error:', error.message);
+				socket.emit('error', { message: error.message });
+			}
+		});
+
+		socket.on('previousTurn', async (data) => {
+			try {
+				const { sessionId } = data;
+
+				if (!sessionId) {
+					throw new Error('Session ID is required');
+				}
+
+				// Validate session exists
+				const session = sessionStore.getSession(sessionId);
+				if (!session) {
+					throw new Error('Session not found');
+				}
+
+				// Only host can change turn
+				if (!isHost(sessionId, socket.id)) {
+					throw new Error('Only the host can change turns');
+				}
+
+				if (!session.combatActive) {
+					throw new Error('Combat is not active');
+				}
+
+				if (session.combatants.length === 0) {
+					throw new Error('No combatants in initiative tracker');
+				}
+
+				// Go to previous turn (wrap around)
+				session.currentTurnIndex = session.currentTurnIndex - 1;
+				if (session.currentTurnIndex < 0) {
+					session.currentTurnIndex = session.combatants.length - 1;
+				}
+
+				// Update session
+				sessionStore.updateSession(sessionId, session);
+
+				const currentCombatant = session.combatants[session.currentTurnIndex];
+
+				// Broadcast to all players
+				io.to(sessionId).emit('turnChanged', {
+					currentTurnIndex: session.currentTurnIndex,
+					currentCombatant
+				});
+
+				console.log(`Turn moved back in ${sessionId}: ${currentCombatant.name}'s turn`);
+			} catch (error) {
+				console.error('Previous turn error:', error.message);
+				socket.emit('error', { message: error.message });
+			}
+		});
+
+		socket.on('toggleCombat', async (data) => {
+			try {
+				const { sessionId } = data;
+
+				if (!sessionId) {
+					throw new Error('Session ID is required');
+				}
+
+				// Validate session exists
+				const session = sessionStore.getSession(sessionId);
+				if (!session) {
+					throw new Error('Session not found');
+				}
+
+				// Only host can toggle combat
+				if (!isHost(sessionId, socket.id)) {
+					throw new Error('Only the host can start/end combat');
+				}
+
+				// Toggle combat state
+				session.combatActive = !session.combatActive;
+
+				// Reset to first turn when starting combat
+				if (session.combatActive && session.combatants.length > 0) {
+					session.currentTurnIndex = 0;
+				}
+
+				// Update session
+				sessionStore.updateSession(sessionId, session);
+
+				// Send system message to chat
+				const statusMessage = session.combatActive ? 'Combat started!' : 'Combat ended.';
+				const systemMessage = createSystemMessage(sessionId, statusMessage, 'system');
+				session.chatHistory.push(systemMessage);
+				if (session.chatHistory.length > 100) session.chatHistory.shift();
+				sessionStore.updateSession(sessionId, session);
+
+				// Broadcast to all players
+				io.to(sessionId).emit('combatStatusChanged', {
+					combatActive: session.combatActive,
+					currentTurnIndex: session.currentTurnIndex,
+					currentCombatant: session.combatActive && session.combatants.length > 0
+						? session.combatants[session.currentTurnIndex]
+						: null
+				});
+				io.to(sessionId).emit('newMessage', systemMessage);
+
+				console.log(`Combat ${session.combatActive ? 'started' : 'ended'} in ${sessionId}`);
+			} catch (error) {
+				console.error('Toggle combat error:', error.message);
+				socket.emit('error', { message: error.message });
+			}
+		});
+
+		socket.on('updateCombatant', async (data) => {
+			try {
+				const { sessionId, combatantId, updates } = data;
+
+				if (!sessionId || !combatantId || !updates) {
+					throw new Error('Session ID, combatant ID, and updates are required');
+				}
+
+				// Validate session exists
+				const session = sessionStore.getSession(sessionId);
+				if (!session) {
+					throw new Error('Session not found');
+				}
+
+				// Only host can update combatants
+				if (!isHost(sessionId, socket.id)) {
+					throw new Error('Only the host can update combatants');
+				}
+
+				// Find combatant
+				const combatant = session.combatants.find(c => c.id === combatantId);
+				if (!combatant) {
+					throw new Error('Combatant not found');
+				}
+
+				// Update allowed fields
+				if (updates.hp !== undefined) combatant.hp = parseInt(updates.hp) || null;
+				if (updates.ac !== undefined) combatant.ac = parseInt(updates.ac) || null;
+				if (updates.initiative !== undefined) {
+					combatant.initiative = parseInt(updates.initiative) || 0;
+					// Re-sort if initiative changed
+					session.combatants.sort((a, b) => b.initiative - a.initiative);
+				}
+				if (updates.conditions !== undefined) combatant.conditions = updates.conditions;
+
+				// Update session
+				sessionStore.updateSession(sessionId, session);
+
+				// Broadcast to all players
+				io.to(sessionId).emit('combatantUpdated', {
+					combatant,
+					combatants: session.combatants
+				});
+
+				console.log(`Combatant updated in ${sessionId}: ${combatant.name}`);
+			} catch (error) {
+				console.error('Update combatant error:', error.message);
 				socket.emit('error', { message: error.message });
 			}
 		});
