@@ -215,7 +215,7 @@ export function createPortalServer(io) {
 					throw new Error('No session data provided');
 				}
 
-				let { sessionId, name, password, host } = data;
+				let { sessionId, name, password, host, isPublic, gameSystem, maxPlayers, description } = data;
 
 				// Validate and sanitize all inputs
 				sessionId = validateSessionId(sessionId);
@@ -255,6 +255,12 @@ export function createPortalServer(io) {
 					savedScene: null, // SVG data
 					sceneName: 'Untitled Scene',
 					lastSaved: null
+					,
+					// Session discovery metadata
+					isPublic: isPublic !== false, // Default to public
+					gameSystem: gameSystem || 'Generic',
+					maxPlayers: maxPlayers || 6,
+					description: description || ''
 				};
 
 				// Save to persistent storage

@@ -12,6 +12,12 @@
 	 */
 	let name = $state(dev ? 'test-portal' : '');
 
+	// Session discovery fields
+	let isPublic = $state(true);
+	let gameSystem = $state('Generic');
+	let maxPlayers = $state(6);
+	let description = $state('');
+
 	if (dev) {
 		// @ts-ignore
 		$player = { name: 'example', host: false };
@@ -56,7 +62,12 @@
 			host: $player,
 			players: [],
 			player: $player,
-			tokens: []
+			tokens: [],
+			// Session discovery metadata
+			isPublic,
+			gameSystem,
+			maxPlayers,
+			description
 		};
 		console.log('Session data: ', sessionData);
 
@@ -152,6 +163,54 @@
 						aria-invalid={!password || password.length < 1}
 					/>
 				</label>
+				{#if $sessionMode === 'create' || $sessionMode == null}
+					<label for="game-system">
+						Game System
+						<select
+							id="game-system"
+							name="game-system"
+							bind:value={gameSystem}
+						>
+							<option value="Generic">Generic/Other</option>
+							<option value="D&D 5e">D&D 5e</option>
+							<option value="Pathfinder 2e">Pathfinder 2e</option>
+							<option value="Call of Cthulhu">Call of Cthulhu</option>
+							<option value="Savage Worlds">Savage Worlds</option>
+							<option value="FATE">FATE</option>
+						</select>
+					</label>
+					<label for="max-players">
+						Max Players
+						<input
+							id="max-players"
+							name="max-players"
+							type="number"
+							bind:value={maxPlayers}
+							min="2"
+							max="20"
+							placeholder="Maximum number of players"
+						/>
+					</label>
+					<label for="description">
+						Description (Optional)
+						<textarea
+							id="description"
+							name="description"
+							bind:value={description}
+							placeholder="Describe your game session..."
+							rows="3"
+						></textarea>
+					</label>
+					<label for="is-public" class="checkbox-label">
+						<input
+							id="is-public"
+							name="is-public"
+							type="checkbox"
+							bind:checked={isPublic}
+						/>
+						Make session public (visible in session browser)
+					</label>
+				{/if}
 			</form>
 
 			<footer>
@@ -206,6 +265,36 @@
 	input {
 		width: 100%;
 		margin-bottom: 1rem;
+	}
+	select {
+		width: 100%;
+		margin-bottom: 1rem;
+		padding: 0.5rem;
+		border-radius: var(--border-radius);
+		border: 1px solid var(--color-primary-overlay);
+		background: var(--color-bg-primary);
+		color: var(--color-text-primary);
+	}
+	textarea {
+		width: 100%;
+		margin-bottom: 1rem;
+		padding: 0.5rem;
+		border-radius: var(--border-radius);
+		border: 1px solid var(--color-primary-overlay);
+		background: var(--color-bg-primary);
+		color: var(--color-text-primary);
+		resize: vertical;
+		font-family: inherit;
+	}
+	.checkbox-label {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		margin-bottom: 1rem;
+	}
+	.checkbox-label input[type="checkbox"] {
+		width: auto;
+		margin-bottom: 0;
 	}
 	.session-manager-container {
 		justify-items: center;
