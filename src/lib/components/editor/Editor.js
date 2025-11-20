@@ -31,7 +31,25 @@ import {
 	saveScene,
 	loadScene
 } from '../PortalStore.js';
-import { DiceIcon, GearIcon, LeaveIcon, PeopleIcon, PlayerIcon, SaveIcon, ShareIcon } from '../icons/DCIconProvider.js';
+import {
+	DiceIcon,
+	GearIcon,
+	LeaveIcon,
+	PeopleIcon,
+	PlayerIcon,
+	SaveIcon,
+	ShareIcon,
+	LoadIcon,
+	MapIcon,
+	TokenIcon,
+	HelpIcon,
+	FogPaintIcon,
+	FogEraseIcon,
+	FogExitIcon,
+	FogClearIcon,
+	FogToggleIcon,
+	FogUndoIcon
+} from '../icons/DCIconProvider.js';
 import { get } from 'svelte/store';
 import { GridComponent } from './GridComponent.js';
 import { SvelteWidget } from './SvelteWidget.js';
@@ -147,12 +165,7 @@ export function configureToolbar(isHost) {
 		toolbar.addActionButton(
 			{
 				label: 'Load Scene',
-				icon: _editor.icons.makeIconFromFactory(() => {
-				const icon = document.createElement('i');
-				icon.className = 'bi bi-folder-open';
-				icon.style.fontSize = '1.5em';
-				return icon;
-			})
+				icon: LoadIcon
 			},
 			async () => {
 				if (!_editor) return;
@@ -175,13 +188,7 @@ export function configureToolbar(isHost) {
 		toolbar.addActionButton(
 			{
 				label: 'Maps',
-				icon: _editor.icons.makeIconFromFactory((iconType) => {
-					// Use Bootstrap Icons map icon
-					const icon = document.createElement('i');
-					icon.className = 'bi bi-map';
-					icon.style.fontSize = '1.5em';
-					return icon;
-				})
+				icon: MapIcon
 			},
 			() => {
 				showMapBrowser.set(true);
@@ -192,13 +199,7 @@ export function configureToolbar(isHost) {
 		toolbar.addActionButton(
 			{
 				label: 'Tokens',
-				icon: _editor.icons.makeIconFromFactory((iconType) => {
-					// Use Bootstrap Icons token icon
-					const icon = document.createElement('i');
-					icon.className = 'bi bi-person-bounding-box';
-					icon.style.fontSize = '1.5em';
-					return icon;
-				})
+				icon: TokenIcon
 			},
 			() => {
 				showTokenLibrary.set(true);
@@ -209,12 +210,7 @@ export function configureToolbar(isHost) {
 		toolbar.addActionButton(
 			{
 				label: 'Help',
-				icon: _editor.icons.makeIconFromFactory((iconType) => {
-					const icon = document.createElement('i');
-					icon.className = 'bi bi-question-circle';
-					icon.style.fontSize = '1.5em';
-					return icon;
-				})
+				icon: HelpIcon
 			},
 			() => {
 				showUserGuide.set(true);
@@ -260,12 +256,7 @@ export function configureToolbar(isHost) {
 		toolbar.addActionButton(
 			{
 				label: 'Paint Fog',
-				icon: _editor.icons.makeIconFromFactory(() => {
-					const icon = document.createElement('i');
-					icon.className = 'bi bi-cloud-fill';
-					icon.style.fontSize = '1.5em';
-					return icon;
-				})
+				icon: FogPaintIcon
 			},
 			() => {
 				setFogMode('paint');
@@ -276,12 +267,7 @@ export function configureToolbar(isHost) {
 		toolbar.addActionButton(
 			{
 				label: 'Erase Fog',
-				icon: _editor.icons.makeIconFromFactory(() => {
-					const icon = document.createElement('i');
-					icon.className = 'bi bi-eraser-fill';
-					icon.style.fontSize = '1.5em';
-					return icon;
-				})
+				icon: FogEraseIcon
 			},
 			() => {
 				setFogMode('erase');
@@ -292,12 +278,7 @@ export function configureToolbar(isHost) {
 		toolbar.addActionButton(
 			{
 				label: 'Exit Fog Mode',
-				icon: _editor.icons.makeIconFromFactory(() => {
-					const icon = document.createElement('i');
-					icon.className = 'bi bi-x-circle';
-					icon.style.fontSize = '1.5em';
-					return icon;
-				})
+				icon: FogExitIcon
 			},
 			() => {
 				setFogMode(null);
@@ -308,12 +289,7 @@ export function configureToolbar(isHost) {
 		toolbar.addActionButton(
 			{
 				label: 'Clear All Fog',
-				icon: _editor.icons.makeIconFromFactory(() => {
-					const icon = document.createElement('i');
-					icon.className = 'bi bi-cloud-slash';
-					icon.style.fontSize = '1.5em';
-					return icon;
-				})
+				icon: FogClearIcon
 			},
 			() => {
 				if (window.confirm('Clear all fog of war? This cannot be undone.')) {
@@ -326,12 +302,7 @@ export function configureToolbar(isHost) {
 		toolbar.addActionButton(
 			{
 				label: 'Toggle Fog Visibility',
-				icon: _editor.icons.makeIconFromFactory(() => {
-					const icon = document.createElement('i');
-					icon.className = 'bi bi-eye-slash';
-					icon.style.fontSize = '1.5em';
-					return icon;
-				})
+				icon: FogToggleIcon
 			},
 			() => {
 				toggleFogVisibility();
@@ -342,12 +313,7 @@ export function configureToolbar(isHost) {
 		toolbar.addActionButton(
 			{
 				label: 'Undo Last Fog',
-				icon: _editor.icons.makeIconFromFactory(() => {
-					const icon = document.createElement('i');
-					icon.className = 'bi bi-arrow-counterclockwise';
-					icon.style.fontSize = '1.5em';
-					return icon;
-				})
+				icon: FogUndoIcon
 			},
 			() => {
 				undoLastFogPath();

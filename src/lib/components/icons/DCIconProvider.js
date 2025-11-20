@@ -27,3 +27,25 @@ export const ShareIcon = iconElement(`<i class="bi bi-send-plus"></i>`);
 export const SaveIcon = iconElement(`<i class="bi bi-floppy"></i>`);
 
 export const LeaveIcon = iconElement(`<i class="bi bi-escape"></i>`);
+
+// Additional toolbar icons
+export const LoadIcon = iconElement(`<i class="bi bi-folder-open" style="font-size: 1.5em;"></i>`);
+
+export const MapIcon = iconElement(`<i class="bi bi-map" style="font-size: 1.5em;"></i>`);
+
+export const TokenIcon = iconElement(`<i class="bi bi-person-bounding-box" style="font-size: 1.5em;"></i>`);
+
+export const HelpIcon = iconElement(`<i class="bi bi-question-circle" style="font-size: 1.5em;"></i>`);
+
+// Fog of War icons
+export const FogPaintIcon = iconElement(`<i class="bi bi-cloud-fill" style="font-size: 1.5em;"></i>`);
+
+export const FogEraseIcon = iconElement(`<i class="bi bi-eraser-fill" style="font-size: 1.5em;"></i>`);
+
+export const FogExitIcon = iconElement(`<i class="bi bi-x-circle" style="font-size: 1.5em;"></i>`);
+
+export const FogClearIcon = iconElement(`<i class="bi bi-cloud-slash" style="font-size: 1.5em;"></i>`);
+
+export const FogToggleIcon = iconElement(`<i class="bi bi-eye-slash" style="font-size: 1.5em;"></i>`);
+
+export const FogUndoIcon = iconElement(`<i class="bi bi-arrow-counterclockwise" style="font-size: 1.5em;"></i>`);
