@@ -147,7 +147,12 @@ export function configureToolbar(isHost) {
 		toolbar.addActionButton(
 			{
 				label: 'Load Scene',
-				icon: _editor.icons.makeOpenIcon()
+				icon: _editor.icons.makeIconFromFactory(() => {
+				const icon = document.createElement('i');
+				icon.className = 'bi bi-folder-open';
+				icon.style.fontSize = '1.5em';
+				return icon;
+			})
 			},
 			async () => {
 				if (!_editor) return;

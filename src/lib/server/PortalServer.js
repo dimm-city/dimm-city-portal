@@ -144,8 +144,8 @@ function validateSessionId(sessionId) {
 	if (!sanitized || sanitized.length < 1) {
 		throw new Error('Session ID is required');
 	}
-	// Only allow alphanumeric characters for session ID
-	if (!/^[a-zA-Z0-9]+$/.test(sanitized)) {
+	// Only allow alphanumeric characters, hyphens, and underscores for session ID
+	if (!/^[a-zA-Z0-9_-]+$/.test(sanitized)) {
 		throw new Error('Session ID contains invalid characters');
 	}
 	return sanitized;
