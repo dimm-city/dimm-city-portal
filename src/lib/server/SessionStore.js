@@ -5,9 +5,6 @@
 
 import Database from 'better-sqlite3';
 import path from 'path';
-import { fileURLToPath } from 'url';
-
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 // Session TTL: 24 hours in seconds
 const SESSION_TTL = 24 * 60 * 60;
@@ -15,7 +12,8 @@ const SESSION_TTL = 24 * 60 * 60;
 export class SessionStore {
 	constructor(dbPath = null) {
 		// Default to data/sessions.db in project root
-		const defaultPath = path.join(__dirname, '../../../data/sessions.db');
+		// Use process.cwd() instead of import.meta.url for better CJS/ESM compatibility
+		const defaultPath = path.join(process.cwd(), 'data/sessions.db');
 		this.dbPath = dbPath || defaultPath;
 
 		// Initialize database

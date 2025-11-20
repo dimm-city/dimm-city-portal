@@ -39,6 +39,7 @@ import TokenSelector from './TokenSelector.svelte';
 import DOMPurify from 'dompurify';
 import { keyboardShortcuts } from '$lib/stores/keyboardShortcuts.js';
 import {
+	fogMode,
 	setFogMode,
 	clearAllFog,
 	toggleFogVisibility,
@@ -722,19 +723,15 @@ export function registerKeyboardShortcuts() {
 	// Register fog of war keyboard shortcuts (DM only)
 	if (isHost) {
 		keyboardShortcuts.register('FOG_PAINT', () => {
-			import('$lib/stores/fogOfWarStore.js').then(({ fogMode, setFogMode }) => {
-				let current;
-				fogMode.subscribe(val => { current = val; })();
-				setFogMode(current === 'paint' ? null : 'paint');
-			});
+			let current;
+			fogMode.subscribe(val => { current = val; })();
+			setFogMode(current === 'paint' ? null : 'paint');
 		});
 
 		keyboardShortcuts.register('FOG_ERASE', () => {
-			import('$lib/stores/fogOfWarStore.js').then(({ fogMode, setFogMode }) => {
-				let current;
-				fogMode.subscribe(val => { current = val; })();
-				setFogMode(current === 'erase' ? null : 'erase');
-			});
+			let current;
+			fogMode.subscribe(val => { current = val; })();
+			setFogMode(current === 'erase' ? null : 'erase');
 		});
 
 		keyboardShortcuts.register('FOG_TOGGLE', () => {
