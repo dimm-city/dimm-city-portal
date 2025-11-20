@@ -190,9 +190,16 @@ export class SessionStore {
 	 */
 	startCleanupInterval() {
 		// Clean up every hour
+		// Use unref() to prevent this interval from keeping the process alive during build
 		this.cleanupInterval = setInterval(() => {
 			this.cleanupExpiredSessions();
 		}, 60 * 60 * 1000);
+
+		// Allow Node.js to exit even if this interval is still active
+		// This is especially important during build processes
+		if (this.cleanupInterval.unref) {
+			this.cleanupInterval.unref();
+		}
 	}
 
 	/**

@@ -1,13 +1,14 @@
 import { sveltekit } from '@sveltejs/kit/vite';
 import { defineConfig } from 'vite';
 
-import { Server } from 'socket.io';
-import { createPortalServer } from './src/lib/server/PortalServer.js';
-
 const webSocketServer = {
 	name: 'webSocketServer',
-	configureServer(server) {
+	async configureServer(server) {
 		if (!server.httpServer || process.env.NODE_ENV == 'production') return;
+
+		// Dynamic import - only load when actually needed
+		const { Server } = await import('socket.io');
+		const { createPortalServer } = await import('./src/lib/server/PortalServer.js');
 
 		// Get allowed origins from environment variable or use localhost defaults
 		const allowedOrigins = process.env.ALLOWED_ORIGINS
