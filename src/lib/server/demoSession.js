@@ -6,7 +6,7 @@
 import bcrypt from 'bcrypt';
 
 const DEMO_SESSION_ID = 'demo-goblin-ambush';
-const DEMO_PASSWORD = 'demo123';
+const DEMO_PASSWORD = 'demo1234';  // 8 characters to meet password requirements
 const BCRYPT_SALT_ROUNDS = 10;
 
 /**

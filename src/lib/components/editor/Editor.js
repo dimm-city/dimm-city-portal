@@ -48,7 +48,9 @@ import {
 	FogExitIcon,
 	FogClearIcon,
 	FogToggleIcon,
-	FogUndoIcon
+	FogUndoIcon,
+	DownloadIcon,
+	UndoIcon
 } from '../icons/DCIconProvider.js';
 import { get } from 'svelte/store';
 import { GridComponent } from './GridComponent.js';
@@ -221,7 +223,7 @@ export function configureToolbar(isHost) {
 		toolbar.addActionButton(
 			{
 				label: 'Export SVG',
-				icon: _editor.icons.makeDownloadIcon()
+				icon: DownloadIcon
 			},
 			async () => {
 				if (!_editor) return;
@@ -354,7 +356,7 @@ export function configureToolbar(isHost) {
 		toolbar.addActionButton(
 			{
 				label: getLocalizationTable().undo,
-				icon: _editor.icons.makeUndoIcon()
+				icon: UndoIcon
 			},
 			() => {
 				if (!_editor) return;

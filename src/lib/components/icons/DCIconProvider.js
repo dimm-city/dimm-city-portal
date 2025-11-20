@@ -49,3 +49,8 @@ export const FogClearIcon = iconElement(`<i class="bi bi-cloud-slash" style="fon
 export const FogToggleIcon = iconElement(`<i class="bi bi-eye-slash" style="font-size: 1.5em;"></i>`);
 
 export const FogUndoIcon = iconElement(`<i class="bi bi-arrow-counterclockwise" style="font-size: 1.5em;"></i>`);
+
+// Editor action icons
+export const DownloadIcon = iconElement(`<i class="bi bi-download"></i>`);
+
+export const UndoIcon = iconElement(`<i class="bi bi-arrow-counterclockwise"></i>`);
