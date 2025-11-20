@@ -5,7 +5,7 @@ import { SessionStore } from '$lib/server/SessionStore.js';
 let sessionStore;
 
 /**
- * GET /api/sessions
+ * GET /portal-api/sessions
  * Returns list of public active sessions
  *
  * Query parameters:

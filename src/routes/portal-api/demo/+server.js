@@ -5,7 +5,7 @@ import { createDemoSession, getDemoSessionInfo, DEMO_SESSION_CONFIG } from '$lib
 let sessionStore;
 
 /**
- * GET /api/demo - Get demo session info
+ * GET /portal-api/demo - Get demo session info
  */
 export async function GET() {
 	try {
@@ -27,7 +27,7 @@ export async function GET() {
 }
 
 /**
- * POST /api/demo - Create or reset demo session
+ * POST /portal-api/demo - Create or reset demo session
  */
 export async function POST({ request }) {
 	try {

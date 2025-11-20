@@ -20,7 +20,7 @@
         ...(filter.gameSystem && { gameSystem: filter.gameSystem })
       });
 
-      const response = await fetch(`/api/sessions?${params}`);
+      const response = await fetch(`/portal-api/sessions?${params}`);
       const data = await response.json();
       sessions = data.sessions || [];
     } catch (error) {

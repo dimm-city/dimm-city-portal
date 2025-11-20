@@ -9,7 +9,7 @@ const serverStartTime = Date.now();
 let sessionStore;
 
 /**
- * GET /api/health
+ * GET /portal-api/health
  * Health check endpoint for monitoring and uptime checks
  *
  * Returns:
@@ -140,7 +140,7 @@ export async function GET() {
 }
 
 /**
- * HEAD /api/health
+ * HEAD /portal-api/health
  * Lightweight health check (no body, just status code)
  * Useful for simple uptime monitoring
  */

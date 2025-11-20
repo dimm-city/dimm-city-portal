@@ -25,7 +25,7 @@
 	async function joinDemo() {
 		loadingDemo = true;
 		try {
-			const response = await fetch('/api/demo', { method: 'POST' });
+			const response = await fetch('/portal-api/demo', { method: 'POST' });
 			const result = await response.json();
 
 			if (result.success) {
