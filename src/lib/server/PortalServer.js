@@ -419,7 +419,13 @@ export function createPortalServer(io) {
 					// Combat/Initiative tracking
 					combatants: [], // Array of combatants in initiative order
 					currentTurnIndex: 0, // Index of current turn
-					combatActive: false // Whether combat is currently active
+					combatActive: false, // Whether combat is currently active
+					// Fog of War
+					fogData: {
+						paths: [], // Array of fog path objects
+						visibility: true, // Whether fog is visible
+						brushSize: 50 // Current brush size
+					}
 				};
 
 				// Save to persistent storage
@@ -1276,6 +1282,191 @@ export function createPortalServer(io) {
 				console.log(`Combatant updated in ${sessionId}: ${updatedCombatant.name}`);
 			} catch (error) {
 				console.error('Update combatant error:', error.message);
+				socket.emit('error', { message: error.message });
+			}
+		});
+
+		// Fog of War Handlers
+		socket.on('updateFog', async (data) => {
+			try {
+				const { sessionId, fogData } = data;
+
+				if (!sessionId || !fogData) {
+					throw new Error('Session ID and fog data are required');
+				}
+
+				// Validate session exists
+				const session = sessionStore.getSession(sessionId);
+				if (!session) {
+					throw new Error('Session not found');
+				}
+
+				// Only host can update fog
+				if (!isHost(sessionId, socket.id)) {
+					throw new Error('Only the host can update fog of war');
+				}
+
+				// Validate fog data structure
+				if (!Array.isArray(fogData.paths)) {
+					throw new Error('Invalid fog data: paths must be an array');
+				}
+
+				// Critical section: Protect fog updates with mutex lock
+				await withSessionLock(sessionId, async () => {
+					const currentSession = sessionStore.getSession(sessionId);
+					if (!currentSession) {
+						throw new Error('Session not found during update');
+					}
+
+					// Update fog data
+					currentSession.fogData = {
+						paths: fogData.paths,
+						visibility: fogData.visibility !== false,
+						brushSize: fogData.brushSize || 50
+					};
+
+					// Save to persistent storage
+					sessionStore.updateSession(sessionId, currentSession);
+
+					// Update session variable for broadcast
+					Object.assign(session, currentSession);
+				});
+
+				// Broadcast to all players
+				// DM gets full fog data, players get filtered fog
+				const dmSockets = [];
+				const playerSockets = [];
+
+				const socketsInRoom = await io.in(sessionId).fetchSockets();
+				for (const s of socketsInRoom) {
+					if (isHost(sessionId, s.id)) {
+						dmSockets.push(s);
+					} else {
+						playerSockets.push(s);
+					}
+				}
+
+				// Send full fog data to DM
+				dmSockets.forEach(s => {
+					s.emit('fogUpdated', {
+						fogData: session.fogData
+					});
+				});
+
+				// Send full fog data to players (they render it opaque client-side)
+				playerSockets.forEach(s => {
+					s.emit('fogUpdated', {
+						fogData: session.fogData
+					});
+				});
+
+				console.log(`Fog updated in ${sessionId}: ${session.fogData.paths.length} paths`);
+			} catch (error) {
+				console.error('Update fog error:', error.message);
+				socket.emit('error', { message: error.message });
+			}
+		});
+
+		socket.on('clearFog', async (data) => {
+			try {
+				const { sessionId } = data;
+
+				if (!sessionId) {
+					throw new Error('Session ID is required');
+				}
+
+				// Validate session exists
+				const session = sessionStore.getSession(sessionId);
+				if (!session) {
+					throw new Error('Session not found');
+				}
+
+				// Only host can clear fog
+				if (!isHost(sessionId, socket.id)) {
+					throw new Error('Only the host can clear fog of war');
+				}
+
+				// Critical section: Protect fog clear with mutex lock
+				await withSessionLock(sessionId, async () => {
+					const currentSession = sessionStore.getSession(sessionId);
+					if (!currentSession) {
+						throw new Error('Session not found during clear');
+					}
+
+					// Clear fog paths but keep other settings
+					currentSession.fogData = {
+						paths: [],
+						visibility: currentSession.fogData?.visibility !== false,
+						brushSize: currentSession.fogData?.brushSize || 50
+					};
+
+					// Save to persistent storage
+					sessionStore.updateSession(sessionId, currentSession);
+
+					// Update session variable for broadcast
+					Object.assign(session, currentSession);
+				});
+
+				// Broadcast to all players
+				io.to(sessionId).emit('fogUpdated', {
+					fogData: session.fogData
+				});
+
+				console.log(`Fog cleared in ${sessionId}`);
+			} catch (error) {
+				console.error('Clear fog error:', error.message);
+				socket.emit('error', { message: error.message });
+			}
+		});
+
+		socket.on('toggleFogVisibility', async (data) => {
+			try {
+				const { sessionId, visibility } = data;
+
+				if (!sessionId) {
+					throw new Error('Session ID is required');
+				}
+
+				// Validate session exists
+				const session = sessionStore.getSession(sessionId);
+				if (!session) {
+					throw new Error('Session not found');
+				}
+
+				// Only host can toggle fog visibility
+				if (!isHost(sessionId, socket.id)) {
+					throw new Error('Only the host can toggle fog visibility');
+				}
+
+				// Critical section: Protect fog visibility with mutex lock
+				await withSessionLock(sessionId, async () => {
+					const currentSession = sessionStore.getSession(sessionId);
+					if (!currentSession) {
+						throw new Error('Session not found during visibility toggle');
+					}
+
+					// Toggle or set visibility
+					if (typeof visibility === 'boolean') {
+						currentSession.fogData.visibility = visibility;
+					} else {
+						currentSession.fogData.visibility = !currentSession.fogData.visibility;
+					}
+
+					// Save to persistent storage
+					sessionStore.updateSession(sessionId, currentSession);
+
+					// Update session variable for broadcast
+					Object.assign(session, currentSession);
+				});
+
+				// Broadcast to all players
+				io.to(sessionId).emit('fogUpdated', {
+					fogData: session.fogData
+				});
+
+				console.log(`Fog visibility toggled in ${sessionId}: ${session.fogData.visibility}`);
+			} catch (error) {
+				console.error('Toggle fog visibility error:', error.message);
 				socket.emit('error', { message: error.message });
 			}
 		});

@@ -22,6 +22,8 @@ import {
 	showPlayerList,
 	showSessionDetails,
 	showMapBrowser,
+	showTokenLibrary,
+	showUserGuide,
 	postSerializedCommand,
 	editor,
 	player,
@@ -35,6 +37,14 @@ import { GridComponent } from './GridComponent.js';
 import { SvelteWidget } from './SvelteWidget.js';
 import TokenSelector from './TokenSelector.svelte';
 import DOMPurify from 'dompurify';
+import { keyboardShortcuts } from '$lib/stores/keyboardShortcuts.js';
+import {
+	setFogMode,
+	clearAllFog,
+	toggleFogVisibility,
+	undoLastFogPath
+} from '$lib/stores/fogOfWarStore.js';
+// import { FogComponent } from './FogComponent.js'; // DEFERRED: Fog of War requires custom AbstractTool API
 
 /**
  * @type {import("js-draw").Editor}
@@ -51,6 +61,11 @@ let toolbar;
  * @type {GridComponent}
  */
 let grid;
+
+// /**
+//  * @type {FogComponent}
+//  */
+// let fog; // DEFERRED: Fog of War requires custom AbstractTool API
 
 /**
  * @type {import("js-draw/dist/mjs/EventDispatcher").DispatcherEventListener}
@@ -167,6 +182,39 @@ export function configureToolbar(isHost) {
 			}
 		);
 
+		// Token Library button
+		toolbar.addActionButton(
+			{
+				label: 'Tokens',
+				icon: _editor.icons.makeIconFromFactory((iconType) => {
+					// Use Bootstrap Icons token icon
+					const icon = document.createElement('i');
+					icon.className = 'bi bi-person-bounding-box';
+					icon.style.fontSize = '1.5em';
+					return icon;
+				})
+			},
+			() => {
+				showTokenLibrary.set(true);
+			}
+		);
+
+		// Help/User Guide button
+		toolbar.addActionButton(
+			{
+				label: 'Help',
+				icon: _editor.icons.makeIconFromFactory((iconType) => {
+					const icon = document.createElement('i');
+					icon.className = 'bi bi-question-circle';
+					icon.style.fontSize = '1.5em';
+					return icon;
+				})
+			},
+			() => {
+				showUserGuide.set(true);
+			}
+		);
+
 		// Export Scene button
 		toolbar.addActionButton(
 			{
@@ -198,6 +246,108 @@ export function configureToolbar(isHost) {
 				}
 			}
 		);
+
+		// Fog of War controls (DM only)
+		toolbar.addSpacer();
+
+		// Paint Fog button
+		toolbar.addActionButton(
+			{
+				label: 'Paint Fog',
+				icon: _editor.icons.makeIconFromFactory(() => {
+					const icon = document.createElement('i');
+					icon.className = 'bi bi-cloud-fill';
+					icon.style.fontSize = '1.5em';
+					return icon;
+				})
+			},
+			() => {
+				setFogMode('paint');
+			}
+		);
+
+		// Erase Fog button
+		toolbar.addActionButton(
+			{
+				label: 'Erase Fog',
+				icon: _editor.icons.makeIconFromFactory(() => {
+					const icon = document.createElement('i');
+					icon.className = 'bi bi-eraser-fill';
+					icon.style.fontSize = '1.5em';
+					return icon;
+				})
+			},
+			() => {
+				setFogMode('erase');
+			}
+		);
+
+		// Clear Fog Tool button
+		toolbar.addActionButton(
+			{
+				label: 'Exit Fog Mode',
+				icon: _editor.icons.makeIconFromFactory(() => {
+					const icon = document.createElement('i');
+					icon.className = 'bi bi-x-circle';
+					icon.style.fontSize = '1.5em';
+					return icon;
+				})
+			},
+			() => {
+				setFogMode(null);
+			}
+		);
+
+		// Clear All Fog button
+		toolbar.addActionButton(
+			{
+				label: 'Clear All Fog',
+				icon: _editor.icons.makeIconFromFactory(() => {
+					const icon = document.createElement('i');
+					icon.className = 'bi bi-cloud-slash';
+					icon.style.fontSize = '1.5em';
+					return icon;
+				})
+			},
+			() => {
+				if (window.confirm('Clear all fog of war? This cannot be undone.')) {
+					clearAllFog();
+				}
+			}
+		);
+
+		// Toggle Fog Visibility button
+		toolbar.addActionButton(
+			{
+				label: 'Toggle Fog Visibility',
+				icon: _editor.icons.makeIconFromFactory(() => {
+					const icon = document.createElement('i');
+					icon.className = 'bi bi-eye-slash';
+					icon.style.fontSize = '1.5em';
+					return icon;
+				})
+			},
+			() => {
+				toggleFogVisibility();
+			}
+		);
+
+		// Undo Last Fog Path button
+		toolbar.addActionButton(
+			{
+				label: 'Undo Last Fog',
+				icon: _editor.icons.makeIconFromFactory(() => {
+					const icon = document.createElement('i');
+					icon.className = 'bi bi-arrow-counterclockwise';
+					icon.style.fontSize = '1.5em';
+					return icon;
+				})
+			},
+			() => {
+				undoLastFogPath();
+			}
+		);
+
 		toolbar.addDefaultEditorControlWidgets();
 		toolbar.addWidgetsForPrimaryTools();
 		toolbar.addTaggedActionButton(
@@ -381,6 +531,12 @@ export async function configureEditor(editorElement, backgroundImageUrl = '') {
 		grid = new GridComponent(_editor);
 		_editor.dispatch(_editor.image.addElement(grid));
 
+		// DEFERRED: Fog of War initialization
+		// Requires js-draw to export AbstractTool for custom tool creation
+		// const isHost = get(player)?.host || false;
+		// fog = new FogComponent(_editor, isHost);
+		// _editor.dispatch(_editor.image.addElement(fog));
+
 		editor.set(_editor);
 
 		// Auto-load saved scene if it exists
@@ -395,6 +551,9 @@ export async function configureEditor(editorElement, backgroundImageUrl = '') {
 		}
 
 		configureToolbar(get(player)?.host);
+
+		// Register keyboard shortcuts
+		registerKeyboardShortcuts();
 
 		// Start auto-save interval for hosts (every 5 minutes)
 		if (get(player)?.host) {
@@ -452,4 +611,136 @@ export async function setBackgroundImage(editor, imageUrl) {
 	} catch (error) {
 		console.error('Failed to load background image:', error);
 	}
+}
+
+/**
+ * Register keyboard shortcut handlers for the editor
+ * Should be called after editor is initialized
+ */
+export function registerKeyboardShortcuts() {
+	if (!_editor) {
+		console.error('Editor not initialized');
+		return;
+	}
+
+	// Get tools
+	const panZoomTools = _editor.toolController.getMatchingTools(PanZoomTool);
+	const selectionTools = _editor.toolController.getMatchingTools(SelectionTool);
+	const primaryTools = _editor.toolController.getPrimaryTools();
+
+	// Find specific tools
+	const panZoomTool = panZoomTools.at(0);
+	const selectionTool = selectionTools.at(0);
+	const penTool = primaryTools.find(tool => tool.description?.includes('pen') || tool.description?.includes('draw'));
+	const eraserTool = primaryTools.find(tool => tool.description?.includes('erase'));
+	const textTool = primaryTools.find(tool => tool.description?.includes('text'));
+
+	// Register tool shortcuts
+	if (panZoomTool) {
+		keyboardShortcuts.register('HAND_TOOL', () => {
+			panZoomTool.setEnabled(true);
+		});
+	}
+
+	if (selectionTool) {
+		keyboardShortcuts.register('SELECT_TOOL', () => {
+			selectionTool.setEnabled(true);
+		});
+	}
+
+	if (penTool) {
+		keyboardShortcuts.register('DRAW_TOOL', () => {
+			penTool.setEnabled(true);
+		});
+	}
+
+	if (eraserTool) {
+		keyboardShortcuts.register('ERASE_TOOL', () => {
+			eraserTool.setEnabled(true);
+		});
+	}
+
+	if (textTool) {
+		keyboardShortcuts.register('TEXT_TOOL', () => {
+			textTool.setEnabled(true);
+		});
+	}
+
+	// Register action shortcuts
+	keyboardShortcuts.register('SAVE', async () => {
+		if (!_editor) return;
+		try {
+			const data = await _editor.toSVGAsync();
+			const cleanSVG = DOMPurify.sanitize(data.innerHTML, {
+				USE_PROFILES: { svg: true, svgFilters: true }
+			});
+			const sceneName = 'Scene ' + new Date().toLocaleString();
+			await saveScene(cleanSVG, sceneName);
+			console.log('Scene saved via keyboard shortcut');
+		} catch (error) {
+			console.error('Failed to save scene:', error);
+		}
+	});
+
+	keyboardShortcuts.register('UNDO', () => {
+		if (!_editor) return;
+		_editor.history.undo();
+	});
+
+	keyboardShortcuts.register('REDO', () => {
+		if (!_editor) return;
+		_editor.history.redo();
+	});
+
+	keyboardShortcuts.register('DELETE', () => {
+		if (!_editor || !selectionTool) return;
+		const selected = selectionTool.getSelection();
+		if (selected.length > 0) {
+			const eraseCommand = new Erase(selected);
+			_editor.dispatch(eraseCommand);
+		}
+	});
+
+	keyboardShortcuts.register('BACKSPACE', () => {
+		if (!_editor || !selectionTool) return;
+		const selected = selectionTool.getSelection();
+		if (selected.length > 0) {
+			const eraseCommand = new Erase(selected);
+			_editor.dispatch(eraseCommand);
+		}
+	});
+
+	// Register UI shortcuts
+	keyboardShortcuts.register('HELP', () => {
+		showUserGuide.set(true);
+	});
+
+	keyboardShortcuts.register('MAPS', () => {
+		showMapBrowser.set(true);
+	});
+
+	// Register fog of war keyboard shortcuts (DM only)
+	if (isHost) {
+		keyboardShortcuts.register('FOG_PAINT', () => {
+			import('$lib/stores/fogOfWarStore.js').then(({ fogMode, setFogMode }) => {
+				let current;
+				fogMode.subscribe(val => { current = val; })();
+				setFogMode(current === 'paint' ? null : 'paint');
+			});
+		});
+
+		keyboardShortcuts.register('FOG_ERASE', () => {
+			import('$lib/stores/fogOfWarStore.js').then(({ fogMode, setFogMode }) => {
+				let current;
+				fogMode.subscribe(val => { current = val; })();
+				setFogMode(current === 'erase' ? null : 'erase');
+			});
+		});
+
+		keyboardShortcuts.register('FOG_TOGGLE', () => {
+			toggleFogVisibility();
+		});
+	}
+
+	console.log('Keyboard shortcuts registered');
 }

@@ -63,6 +63,9 @@ if (typeof window !== 'undefined') {
 }
 export let showSceneSettings = writable(false);
 export let showMapBrowser = writable(false);
+export let showTokenLibrary = writable(false);
+export let showOnboardingTour = writable(false);
+export let showUserGuide = writable(false);
 
 export let inSession = derived([sessionId], ($sessionId) => {
 	return $sessionId != null && $sessionId.toString() > '';

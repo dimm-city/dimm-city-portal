@@ -30,7 +30,7 @@
 			return;
 		}
 
-		$socket.emit('addCombatant', {
+		socket.emit('addCombatant', {
 			sessionId: $sessionId,
 			combatant: {
 				name: newCombatant.name,
@@ -57,7 +57,7 @@
 	// Remove combatant
 	function removeCombatant(combatantId) {
 		if (confirm('Remove this combatant from initiative?')) {
-			$socket.emit('removeCombatant', {
+			socket.emit('removeCombatant', {
 				sessionId: $sessionId,
 				combatantId
 			});
@@ -66,22 +66,22 @@
 
 	// Next turn
 	function nextTurn() {
-		$socket.emit('nextTurn', { sessionId: $sessionId });
+		socket.emit('nextTurn', { sessionId: $sessionId });
 	}
 
 	// Previous turn
 	function previousTurn() {
-		$socket.emit('previousTurn', { sessionId: $sessionId });
+		socket.emit('previousTurn', { sessionId: $sessionId });
 	}
 
 	// Toggle combat
 	function toggleCombat() {
-		$socket.emit('toggleCombat', { sessionId: $sessionId });
+		socket.emit('toggleCombat', { sessionId: $sessionId });
 	}
 
 	// Update combatant HP
 	function updateHP(combatantId, newHP) {
-		$socket.emit('updateCombatant', {
+		socket.emit('updateCombatant', {
 			sessionId: $sessionId,
 			combatantId,
 			updates: { hp: parseInt(newHP) }
@@ -91,7 +91,7 @@
 	// Socket event listeners
 	onMount(() => {
 		// Listen for session joined - initialize combat state
-		$socket.on('sessionJoined', (session) => {
+		socket.on('sessionJoined', (session) => {
 			if (session.combatants) {
 				combatants = session.combatants;
 			}
@@ -104,7 +104,7 @@
 		});
 
 		// Listen for session created - initialize combat state
-		$socket.on('sessionCreated', (session) => {
+		socket.on('sessionCreated', (session) => {
 			if (session.combatants) {
 				combatants = session.combatants;
 			}
@@ -117,41 +117,41 @@
 		});
 
 		// Listen for combatant added
-		$socket.on('combatantAdded', (data) => {
+		socket.on('combatantAdded', (data) => {
 			combatants = data.combatants;
 		});
 
 		// Listen for combatant removed
-		$socket.on('combatantRemoved', (data) => {
+		socket.on('combatantRemoved', (data) => {
 			combatants = data.combatants;
 			currentTurnIndex = data.currentTurnIndex;
 		});
 
 		// Listen for turn changes
-		$socket.on('turnChanged', (data) => {
+		socket.on('turnChanged', (data) => {
 			currentTurnIndex = data.currentTurnIndex;
 		});
 
 		// Listen for combat status changes
-		$socket.on('combatStatusChanged', (data) => {
+		socket.on('combatStatusChanged', (data) => {
 			combatActive = data.combatActive;
 			currentTurnIndex = data.currentTurnIndex;
 		});
 
 		// Listen for combatant updates
-		$socket.on('combatantUpdated', (data) => {
+		socket.on('combatantUpdated', (data) => {
 			combatants = data.combatants;
 		});
 
 		return () => {
 			// Cleanup listeners
-			$socket.off('sessionJoined');
-			$socket.off('sessionCreated');
-			$socket.off('combatantAdded');
-			$socket.off('combatantRemoved');
-			$socket.off('turnChanged');
-			$socket.off('combatStatusChanged');
-			$socket.off('combatantUpdated');
+			socket.off('sessionJoined');
+			socket.off('sessionCreated');
+			socket.off('combatantAdded');
+			socket.off('combatantRemoved');
+			socket.off('turnChanged');
+			socket.off('combatStatusChanged');
+			socket.off('combatantUpdated');
 		};
 	});
 

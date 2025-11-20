@@ -173,7 +173,45 @@ export async function createDemoSession() {
 			}
 		],
 		currentTurnIndex: 0,
-		combatActive: true // Combat is already active for demo
+		combatActive: true, // Combat is already active for demo
+
+		// Fog of War with example paths (showing some revealed/hidden areas)
+		fogData: {
+			paths: [
+				{
+					points: [
+						{ x: 50, y: 50 },
+						{ x: 150, y: 50 },
+						{ x: 200, y: 100 },
+						{ x: 200, y: 200 },
+						{ x: 150, y: 250 },
+						{ x: 50, y: 250 },
+						{ x: 0, y: 200 },
+						{ x: 0, y: 100 },
+						{ x: 50, y: 50 }
+					],
+					operation: 'add',
+					timestamp: Date.now() - 120000 // 2 minutes ago
+				},
+				{
+					points: [
+						{ x: 500, y: 300 },
+						{ x: 600, y: 300 },
+						{ x: 650, y: 350 },
+						{ x: 650, y: 450 },
+						{ x: 600, y: 500 },
+						{ x: 500, y: 500 },
+						{ x: 450, y: 450 },
+						{ x: 450, y: 350 },
+						{ x: 500, y: 300 }
+					],
+					operation: 'add',
+					timestamp: Date.now() - 90000 // 1.5 minutes ago
+				}
+			],
+			visibility: true,
+			brushSize: 50
+		}
 	};
 
 	return demoSession;
@@ -194,6 +232,7 @@ export function getDemoSessionInfo() {
 			'Active initiative tracker',
 			'Example chat messages',
 			'Forest clearing scene',
+			'Fog of war demonstration',
 			'Public session (discoverable)'
 		]
 	};

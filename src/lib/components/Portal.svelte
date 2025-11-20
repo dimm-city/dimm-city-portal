@@ -5,6 +5,9 @@
 	import ChatPanel from './ChatPanel.svelte';
 	import DemoWelcome from './DemoWelcome.svelte';
 	import DiceAnimation from './DiceAnimation.svelte';
+	import OnboardingTour from './OnboardingTour.svelte';
+	import UserGuide from './UserGuide.svelte';
+	import { browser } from '$app/environment';
 
 	import {
 		host,
@@ -15,7 +18,9 @@
 		sessionName,
 		showSessionDetails,
 		sessionPassword,
-		currentDiceAnimation
+		currentDiceAnimation,
+		showOnboardingTour,
+		showUserGuide
 	} from './PortalStore';
 	import Editor from './editor/Editor.svelte';
 	import { isHost } from './PortalStore.js';
@@ -34,6 +39,19 @@
 	$effect(() => {
 		if (isDemoSession && $inSession) {
 			showDemoWelcome = true;
+		}
+	});
+
+	// Check if user has seen the onboarding tour
+	$effect(() => {
+		if (browser) {
+			const hasSeenTour = localStorage.getItem('hasSeenTour');
+			if (!hasSeenTour) {
+				// Show tour after a short delay for better UX
+				setTimeout(() => {
+					showOnboardingTour.set(true);
+				}, 800);
+			}
 		}
 	});
 </script>
@@ -83,6 +101,18 @@
 			onComplete={handleAnimationComplete}
 		/>
 	{/if}
+
+	<!-- Onboarding tour (shown to first-time users) -->
+	<OnboardingTour
+		bind:show={$showOnboardingTour}
+		onClose={() => showOnboardingTour.set(false)}
+	/>
+
+	<!-- User Guide (help documentation) -->
+	<UserGuide
+		bind:show={$showUserGuide}
+		onClose={() => showUserGuide.set(false)}
+	/>
 </div>
 
 <style>
