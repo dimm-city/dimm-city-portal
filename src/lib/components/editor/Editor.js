@@ -475,7 +475,7 @@ export async function configureEditor(editorElement, backgroundImageUrl = '') {
 				// @ts-ignore
 				evt.command.applied
 			) {
-				playerTokenAdded = false;
+				// playerTokenAdded is managed by TokenSelector.svelte
 				playerToken = null;
 			}
 		});
@@ -524,13 +524,14 @@ export async function configureEditor(editorElement, backgroundImageUrl = '') {
 			console.log('No saved scene to auto-load or error loading:', error.message);
 		}
 
-		configureToolbar(get(player)?.host);
+		const isHost = get(player)?.host;
+		configureToolbar(isHost);
 
 		// Register keyboard shortcuts
-		registerKeyboardShortcuts();
+		registerKeyboardShortcuts(isHost);
 
 		// Start auto-save interval for hosts (every 5 minutes)
-		if (get(player)?.host) {
+		if (isHost) {
 			const autoSaveInterval = setInterval(async () => {
 				try {
 					if (!_editor) return;
@@ -590,8 +591,9 @@ export async function setBackgroundImage(editor, imageUrl) {
 /**
  * Register keyboard shortcut handlers for the editor
  * Should be called after editor is initialized
+ * @param {boolean} isHost - Whether the current player is the host
  */
-export function registerKeyboardShortcuts() {
+export function registerKeyboardShortcuts(isHost = false) {
 	if (!_editor) {
 		console.error('Editor not initialized');
 		return;

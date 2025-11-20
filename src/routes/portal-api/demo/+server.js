@@ -36,32 +36,20 @@ export async function POST({ request }) {
 			sessionStore = new SessionStore();
 		}
 
-		// Check if demo session already exists
+		// Always recreate the demo session to ensure fresh password hash
+		// Delete existing demo session if it exists
 		const existingDemo = sessionStore.getSession(DEMO_SESSION_CONFIG.sessionId);
-
-		// If it exists and was created less than 1 hour ago, return existing
-		if (existingDemo && Date.now() - existingDemo.createdAt < 3600000) {
-			console.log('Demo session already exists, returning existing session');
-			return json({
-				success: true,
-				sessionId: DEMO_SESSION_CONFIG.sessionId,
-				password: DEMO_SESSION_CONFIG.password,
-				message: 'Demo session already exists',
-				existing: true
-			});
+		if (existingDemo) {
+			sessionStore.deleteSession(DEMO_SESSION_CONFIG.sessionId);
+			console.log('Deleted existing demo session');
 		}
 
-		// Create new demo session
+		// Create new demo session with current password
 		const demoSession = await createDemoSession();
 
-		// Save to session store (will overwrite if exists)
-		if (existingDemo) {
-			sessionStore.updateSession(DEMO_SESSION_CONFIG.sessionId, demoSession);
-			console.log('Demo session reset');
-		} else {
-			sessionStore.createSession(DEMO_SESSION_CONFIG.sessionId, demoSession);
-			console.log('Demo session created');
-		}
+		// Save to session store
+		sessionStore.createSession(DEMO_SESSION_CONFIG.sessionId, demoSession);
+		console.log('Demo session created with fresh password hash');
 
 		return json({
 			success: true,
