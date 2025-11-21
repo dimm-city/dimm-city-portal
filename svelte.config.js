@@ -3,7 +3,7 @@ import azure from 'svelte-adapter-azure-swa';
 
 let buildAdapter = adapter;
 
-if (process.env.GITHUB_ACTIONS == 'true') {
+//if (process.env.GITHUB_ACTIONS == 'true') {
   buildAdapter = azure({
     customStaticWebAppConfig: {
       platform: {
@@ -11,9 +11,9 @@ if (process.env.GITHUB_ACTIONS == 'true') {
       }
     }
   });
-} else {
-  buildAdapter = adapter();
-}
+// } else {
+//   buildAdapter = adapter();
+// }
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
