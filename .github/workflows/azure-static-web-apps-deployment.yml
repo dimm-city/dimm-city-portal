@@ -43,9 +43,9 @@ jobs:
           action: "upload"
           ###### Repository/Build Configurations - These values can be configured to match your app requirements. ######
           # For more information regarding Static Web App workflow configurations, please visit: https://aka.ms/swaworkflowconfig
-          app_location: "/" # Project root
+          app_location: "build/static" # Project root
           api_location: "build/server" # Api source code path - optional
-          output_location: "build/static" # Pre-built static files
+          output_location: "" # Pre-built static files
           skip_app_build: true # Skip Azure's build, we already built with our adapter
           ###### End of Repository/Build Configurations ######
           # Note: PRs automatically deploy to preview/staging environments in Azure SWA
