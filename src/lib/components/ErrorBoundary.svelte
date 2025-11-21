@@ -6,9 +6,22 @@
 	let errorStack = $state(null);
 
 	function handleError(event) {
+		// Ignore harmless ResizeObserver notifications
+		if (event.message?.includes('ResizeObserver loop')) {
+			return;
+		}
+
 		error = event.error || event.reason;
 		errorInfo = event.message || error?.message || 'Unknown error occurred';
 		errorStack = error?.stack;
+
+		// Log with more context if error is undefined
+		if (error === undefined) {
+			console.warn('Error caught by boundary: undefined (possibly from:', event.filename, 'line:', event.lineno, ')');
+			// Don't prevent default or set error state for undefined errors
+			return;
+		}
+
 		console.error('Error caught by boundary:', error);
 
 		// Prevent default error handling

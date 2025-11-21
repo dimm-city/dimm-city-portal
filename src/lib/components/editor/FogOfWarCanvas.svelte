@@ -1,5 +1,6 @@
 <script>
-	import { onMount, onDestroy } from 'svelte';
+	import { onMount } from 'svelte';
+	import { get } from 'svelte/store';
 	import { FogOfWarEngine } from './FogOfWarEngine.js';
 	import {
 		fogData,
@@ -24,40 +25,51 @@
 	let fogEngine = $state(null);
 	let isDM = $derived($player?.host || false);
 	let containerElement = $state();
-	let resizeObserver = $state(null);
+	let resizeObserver = null;
+	let viewportListener = null;
 
 	/**
-	 * Lifecycle - Initialize fog engine
+	 * Initialize fog engine on mount
 	 */
 	onMount(() => {
-		if (!fogCanvas || !editor) return;
+		// Wait for canvas and editor to be ready
+		const initInterval = setInterval(() => {
+			if (!fogCanvas || !editor) return;
 
-		// Create fog engine
-		fogEngine = new FogOfWarEngine(fogCanvas, isDM);
+			// Verify editor has required methods
+			if (!editor.notifier || !editor.viewport) {
+				console.error('Invalid editor passed to FogOfWarCanvas:', editor);
+				clearInterval(initInterval);
+				return;
+			}
 
-		// Set initial brush size
-		fogEngine.setBrushSize($fogBrushSize);
+			clearInterval(initInterval);
 
-		// Load initial fog data
-		fogEngine.loadFogPaths($fogData.paths);
-		fogEngine.setVisibility($fogVisibility);
+			// Create fog engine
+			const engine = new FogOfWarEngine(fogCanvas, isDM);
+			fogEngine = engine;
 
-		// Sync viewport transform
-		syncTransform();
+			// Set initial values using get() to avoid reactivity
+			engine.setBrushSize(get(fogBrushSize));
+			engine.loadFogPaths(get(fogData).paths);
+			engine.setVisibility(get(fogVisibility));
 
-		// Listen to editor viewport changes (pan/zoom)
-		editor.addEventListener(EditorEventType.ViewportChanged, handleViewportChange);
+			// Listen to editor viewport changes
+			viewportListener = editor.notifier.on(EditorEventType.ViewportChanged, handleViewportChange);
 
-		// Set up resize observer
-		setupResizeObserver();
+			// Set up resize observer
+			setupResizeObserver();
 
-		// Set initial canvas size
-		resizeCanvas();
+			// Set initial canvas size and sync transform
+			resizeCanvas();
+			syncTransform();
+		}, 10);
 
-		// Return cleanup function
+		// Cleanup function
 		return () => {
-			if (editor) {
-				editor.removeEventListener(EditorEventType.ViewportChanged, handleViewportChange);
+			clearInterval(initInterval);
+			if (viewportListener) {
+				viewportListener.remove();
 			}
 			if (resizeObserver) {
 				resizeObserver.disconnect();
@@ -127,6 +139,22 @@
 	 */
 	function handleMouseDown(event) {
 		if (!isDM || !$fogMode || !fogEngine) return;
+
+		// Temporarily disable pointer events to check what's underneath
+		fogCanvas.style.pointerEvents = 'none';
+		const elementBelow = document.elementFromPoint(event.clientX, event.clientY);
+		fogCanvas.style.pointerEvents = 'auto';
+
+		// If there's a toolbar element below, let it handle the click
+		if (elementBelow && (
+			elementBelow.closest('.toolbar-edge-toolbar') ||
+			elementBelow.closest('.toolbar-element') ||
+			elementBelow.closest('.toolbar-button')
+		)) {
+			// Click the element below and don't draw fog
+			elementBelow.click();
+			return;
+		}
 
 		const rect = fogCanvas.getBoundingClientRect();
 		const point = {
@@ -201,7 +229,7 @@
 	}
 
 	/**
-	 * Reactive statements - sync store changes with engine
+	 * Effect: Sync fog mode changes
 	 */
 	$effect(() => {
 		if (fogEngine && $fogMode) {
@@ -209,30 +237,30 @@
 		}
 	});
 
+	/**
+	 * Effect: Sync brush size changes
+	 */
 	$effect(() => {
 		if (fogEngine) {
 			fogEngine.setBrushSize($fogBrushSize);
 		}
 	});
 
+	/**
+	 * Effect: Sync visibility changes
+	 */
 	$effect(() => {
 		if (fogEngine) {
 			fogEngine.setVisibility($fogVisibility);
 		}
 	});
 
+	/**
+	 * Effect: Sync fog data changes
+	 */
 	$effect(() => {
 		if (fogEngine && $fogData.paths) {
 			fogEngine.loadFogPaths($fogData.paths);
-		}
-	});
-
-	/**
-	 * Cleanup
-	 */
-	onDestroy(() => {
-		if (resizeObserver) {
-			resizeObserver.disconnect();
 		}
 	});
 </script>
@@ -255,7 +283,7 @@
 		ontouchmove={handleTouchMove}
 		ontouchend={handleTouchEnd}
 		ontouchcancel={handleTouchEnd}
-	/>
+	></canvas>
 </div>
 
 <style>
@@ -266,7 +294,7 @@
 		width: 100%;
 		height: 100%;
 		pointer-events: none;
-		z-index: 100;
+		z-index: 1;
 	}
 
 	.fog-canvas {

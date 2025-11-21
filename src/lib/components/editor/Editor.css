@@ -22,14 +22,17 @@
 .editor-container .toolbar-edge-toolbar {
     padding-inline: 1rem;
     border-bottom: 1px solid var(--primary-action-foreground-color);
+    position: relative;
+    z-index: 10;
 }
 
 .editor-container .toolbar-root,
 .editor-container .toolbar-edge-toolbar>div.toolbar-element.toolbar-action-row {
-
     background-color: var(--background-color-2);
     color: var(--foreground-color-2);
     --icon-color: var(--foreground-color-2);
+    position: relative;
+    z-index: 10;
 }
 
 .toolbar-edgemenu-container .toolbar-edgemenu button {
