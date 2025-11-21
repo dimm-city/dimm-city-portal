@@ -21,16 +21,51 @@ import {
 	leaveSession,
 	showPlayerList,
 	showSessionDetails,
+	showMapBrowser,
+	showTokenLibrary,
+	showUserGuide,
 	postSerializedCommand,
 	editor,
 	player,
-	requestDiceRoll
+	requestDiceRoll,
+	saveScene,
+	loadScene
 } from '../PortalStore.js';
-import { DiceIcon, GearIcon, LeaveIcon, PeopleIcon, PlayerIcon, SaveIcon, ShareIcon } from '../icons/DCIconProvider.js';
+import {
+	DiceIcon,
+	GearIcon,
+	LeaveIcon,
+	PeopleIcon,
+	PlayerIcon,
+	SaveIcon,
+	ShareIcon,
+	LoadIcon,
+	MapIcon,
+	TokenIcon,
+	HelpIcon,
+	FogPaintIcon,
+	FogEraseIcon,
+	FogExitIcon,
+	FogClearIcon,
+	FogToggleIcon,
+	FogUndoIcon,
+	DownloadIcon,
+	UndoIcon
+} from '../icons/DCIconProvider.js';
 import { get } from 'svelte/store';
 import { GridComponent } from './GridComponent.js';
 import { SvelteWidget } from './SvelteWidget.js';
 import TokenSelector from './TokenSelector.svelte';
+import DOMPurify from 'dompurify';
+import { keyboardShortcuts } from '$lib/stores/keyboardShortcuts.js';
+import {
+	fogMode,
+	setFogMode,
+	clearAllFog,
+	toggleFogVisibility,
+	undoLastFogPath
+} from '$lib/stores/fogOfWarStore.js';
+// import { FogComponent } from './FogComponent.js'; // DEFERRED: Fog of War requires custom AbstractTool API
 
 /**
  * @type {import("js-draw").Editor}
@@ -47,6 +82,11 @@ let toolbar;
  * @type {GridComponent}
  */
 let grid;
+
+// /**
+//  * @type {FogComponent}
+//  */
+// let fog; // DEFERRED: Fog of War requires custom AbstractTool API
 
 /**
  * @type {import("js-draw/dist/mjs/EventDispatcher").DispatcherEventListener}
@@ -95,17 +135,193 @@ export function configureToolbar(isHost) {
 		// @ts-ignore
 		if (selectListener?.remove) selectListener?.remove();
 
+		// Save Scene button
 		toolbar.addActionButton(
 			{
-				label: getLocalizationTable().save,
+				label: 'Save Scene',
 				icon: SaveIcon
 			},
 			async () => {
 				if (!_editor) return;
-				const data = await _editor.toSVGAsync();
-				localStorage.setItem('scene', data.innerHTML);
+				try {
+					const data = await _editor.toSVGAsync();
+
+					// Sanitize SVG content before saving to prevent XSS
+					const cleanSVG = DOMPurify.sanitize(data.innerHTML, {
+						USE_PROFILES: { svg: true, svgFilters: true }
+					});
+
+					// Get scene name (you can add a UI input for this later)
+					const sceneName = 'Scene ' + new Date().toLocaleString();
+
+					// Save to server using the new saveScene function
+					await saveScene(cleanSVG, sceneName);
+					console.log('Scene saved to server');
+				} catch (error) {
+					console.error('Failed to save scene:', error);
+				}
 			}
 		);
+
+		// Load Scene button
+		toolbar.addActionButton(
+			{
+				label: 'Load Scene',
+				icon: LoadIcon
+			},
+			async () => {
+				if (!_editor) return;
+				try {
+					const sceneData = await loadScene();
+					if (sceneData.savedScene) {
+						// Load the SVG into the editor
+						await _editor.loadFrom(sceneData.savedScene);
+						console.log('Scene loaded from server');
+					} else {
+						console.log('No saved scene found');
+					}
+				} catch (error) {
+					console.error('Failed to load scene:', error);
+				}
+			}
+		);
+
+		// Map Browser button
+		toolbar.addActionButton(
+			{
+				label: 'Maps',
+				icon: MapIcon
+			},
+			() => {
+				showMapBrowser.set(true);
+			}
+		);
+
+		// Token Library button
+		toolbar.addActionButton(
+			{
+				label: 'Tokens',
+				icon: TokenIcon
+			},
+			() => {
+				showTokenLibrary.set(true);
+			}
+		);
+
+		// Help/User Guide button
+		toolbar.addActionButton(
+			{
+				label: 'Help',
+				icon: HelpIcon
+			},
+			() => {
+				showUserGuide.set(true);
+			}
+		);
+
+		// Export Scene button
+		toolbar.addActionButton(
+			{
+				label: 'Export SVG',
+				icon: DownloadIcon
+			},
+			async () => {
+				if (!_editor) return;
+				try {
+					const data = await _editor.toSVGAsync();
+
+					// Sanitize SVG before export
+					const cleanSVG = DOMPurify.sanitize(data.innerHTML, {
+						USE_PROFILES: { svg: true, svgFilters: true }
+					});
+
+					// Create download link
+					const blob = new Blob([cleanSVG], { type: 'image/svg+xml' });
+					const url = URL.createObjectURL(blob);
+					const a = document.createElement('a');
+					a.href = url;
+					a.download = 'scene-' + new Date().toISOString().split('T')[0] + '.svg';
+					a.click();
+					URL.revokeObjectURL(url);
+
+					console.log('Scene exported as SVG');
+				} catch (error) {
+					console.error('Failed to export scene:', error);
+				}
+			}
+		);
+
+		// Fog of War controls (DM only)
+		toolbar.addSpacer();
+
+		// Paint Fog button
+		toolbar.addActionButton(
+			{
+				label: 'Paint Fog',
+				icon: FogPaintIcon
+			},
+			() => {
+				setFogMode('paint');
+			}
+		);
+
+		// Erase Fog button
+		toolbar.addActionButton(
+			{
+				label: 'Erase Fog',
+				icon: FogEraseIcon
+			},
+			() => {
+				setFogMode('erase');
+			}
+		);
+
+		// Clear Fog Tool button
+		toolbar.addActionButton(
+			{
+				label: 'Exit Fog Mode',
+				icon: FogExitIcon
+			},
+			() => {
+				setFogMode(null);
+			}
+		);
+
+		// Clear All Fog button
+		toolbar.addActionButton(
+			{
+				label: 'Clear All Fog',
+				icon: FogClearIcon
+			},
+			() => {
+				if (window.confirm('Clear all fog of war? This cannot be undone.')) {
+					clearAllFog();
+				}
+			}
+		);
+
+		// Toggle Fog Visibility button
+		toolbar.addActionButton(
+			{
+				label: 'Toggle Fog Visibility',
+				icon: FogToggleIcon
+			},
+			() => {
+				toggleFogVisibility();
+			}
+		);
+
+		// Undo Last Fog Path button
+		toolbar.addActionButton(
+			{
+				label: 'Undo Last Fog',
+				icon: FogUndoIcon
+			},
+			() => {
+				undoLastFogPath();
+			}
+		);
+
 		toolbar.addDefaultEditorControlWidgets();
 		toolbar.addWidgetsForPrimaryTools();
 		toolbar.addTaggedActionButton(
@@ -140,7 +356,7 @@ export function configureToolbar(isHost) {
 		toolbar.addActionButton(
 			{
 				label: getLocalizationTable().undo,
-				icon: _editor.icons.makeUndoIcon()
+				icon: UndoIcon
 			},
 			() => {
 				if (!_editor) return;
@@ -259,7 +475,7 @@ export async function configureEditor(editorElement, backgroundImageUrl = '') {
 				// @ts-ignore
 				evt.command.applied
 			) {
-				playerTokenAdded = false;
+				// playerTokenAdded is managed by TokenSelector.svelte
 				playerToken = null;
 			}
 		});
@@ -289,7 +505,214 @@ export async function configureEditor(editorElement, backgroundImageUrl = '') {
 		grid = new GridComponent(_editor);
 		_editor.dispatch(_editor.image.addElement(grid));
 
+		// DEFERRED: Fog of War initialization
+		// Requires js-draw to export AbstractTool for custom tool creation
+		// const isHost = get(player)?.host || false;
+		// fog = new FogComponent(_editor, isHost);
+		// _editor.dispatch(_editor.image.addElement(fog));
+
 		editor.set(_editor);
-		configureToolbar(get(player)?.host);
+
+		// Auto-load saved scene if it exists
+		try {
+			const sceneData = await loadScene();
+			if (sceneData.savedScene) {
+				await _editor.loadFrom(sceneData.savedScene);
+				console.log('Auto-loaded saved scene:', sceneData.sceneName);
+			}
+		} catch (error) {
+			console.log('No saved scene to auto-load or error loading:', error.message);
+		}
+
+		const isHost = get(player)?.host;
+		configureToolbar(isHost);
+
+		// Register keyboard shortcuts
+		registerKeyboardShortcuts(isHost);
+
+		// Start auto-save interval for hosts (every 5 minutes)
+		if (isHost) {
+			const autoSaveInterval = setInterval(async () => {
+				try {
+					if (!_editor) return;
+					const data = await _editor.toSVGAsync();
+					const cleanSVG = DOMPurify.sanitize(data.innerHTML, {
+						USE_PROFILES: { svg: true, svgFilters: true }
+					});
+					const sceneName = 'Auto-save ' + new Date().toLocaleString();
+					await saveScene(cleanSVG, sceneName);
+					console.log('Auto-saved scene at', new Date().toLocaleTimeString());
+				} catch (error) {
+					console.error('Auto-save failed:', error);
+				}
+			}, 5 * 60 * 1000); // 5 minutes
+
+			// Clean up interval when editor is removed
+			const originalRemove = _editor.remove.bind(_editor);
+			_editor.remove = () => {
+				clearInterval(autoSaveInterval);
+				originalRemove();
+			};
+		}
 	}
+}
+
+/**
+ * Set background image dynamically
+ * @param {Editor} editor
+ * @param {string} imageUrl
+ */
+export async function setBackgroundImage(editor, imageUrl) {
+	if (!editor) {
+		console.error('Editor not initialized');
+		return;
+	}
+
+	try {
+		const image = new Image();
+		image.crossOrigin = 'anonymous';
+		image.src = imageUrl;
+
+		// Wait for image to load
+		await new Promise((resolve, reject) => {
+			image.onload = resolve;
+			image.onerror = reject;
+		});
+
+		const comp = await ImageComponent.fromImage(image, Mat33.identity);
+		editor.dispatch(editor.image.addElement(comp));
+
+		console.log('Background image loaded:', imageUrl);
+	} catch (error) {
+		console.error('Failed to load background image:', error);
+	}
+}
+
+/**
+ * Register keyboard shortcut handlers for the editor
+ * Should be called after editor is initialized
+ * @param {boolean} isHost - Whether the current player is the host
+ */
+export function registerKeyboardShortcuts(isHost = false) {
+	if (!_editor) {
+		console.error('Editor not initialized');
+		return;
+	}
+
+	// Get tools
+	const panZoomTools = _editor.toolController.getMatchingTools(PanZoomTool);
+	const selectionTools = _editor.toolController.getMatchingTools(SelectionTool);
+	const primaryTools = _editor.toolController.getPrimaryTools();
+
+	// Find specific tools
+	const panZoomTool = panZoomTools.at(0);
+	const selectionTool = selectionTools.at(0);
+	const penTool = primaryTools.find(tool => tool.description?.includes('pen') || tool.description?.includes('draw'));
+	const eraserTool = primaryTools.find(tool => tool.description?.includes('erase'));
+	const textTool = primaryTools.find(tool => tool.description?.includes('text'));
+
+	// Register tool shortcuts
+	if (panZoomTool) {
+		keyboardShortcuts.register('HAND_TOOL', () => {
+			panZoomTool.setEnabled(true);
+		});
+	}
+
+	if (selectionTool) {
+		keyboardShortcuts.register('SELECT_TOOL', () => {
+			selectionTool.setEnabled(true);
+		});
+	}
+
+	if (penTool) {
+		keyboardShortcuts.register('DRAW_TOOL', () => {
+			penTool.setEnabled(true);
+		});
+	}
+
+	if (eraserTool) {
+		keyboardShortcuts.register('ERASE_TOOL', () => {
+			eraserTool.setEnabled(true);
+		});
+	}
+
+	if (textTool) {
+		keyboardShortcuts.register('TEXT_TOOL', () => {
+			textTool.setEnabled(true);
+		});
+	}
+
+	// Register action shortcuts
+	keyboardShortcuts.register('SAVE', async () => {
+		if (!_editor) return;
+		try {
+			const data = await _editor.toSVGAsync();
+			const cleanSVG = DOMPurify.sanitize(data.innerHTML, {
+				USE_PROFILES: { svg: true, svgFilters: true }
+			});
+			const sceneName = 'Scene ' + new Date().toLocaleString();
+			await saveScene(cleanSVG, sceneName);
+			console.log('Scene saved via keyboard shortcut');
+		} catch (error) {
+			console.error('Failed to save scene:', error);
+		}
+	});
+
+	keyboardShortcuts.register('UNDO', () => {
+		if (!_editor) return;
+		_editor.history.undo();
+	});
+
+	keyboardShortcuts.register('REDO', () => {
+		if (!_editor) return;
+		_editor.history.redo();
+	});
+
+	keyboardShortcuts.register('DELETE', () => {
+		if (!_editor || !selectionTool) return;
+		const selected = selectionTool.getSelection();
+		if (selected.length > 0) {
+			const eraseCommand = new Erase(selected);
+			_editor.dispatch(eraseCommand);
+		}
+	});
+
+	keyboardShortcuts.register('BACKSPACE', () => {
+		if (!_editor || !selectionTool) return;
+		const selected = selectionTool.getSelection();
+		if (selected.length > 0) {
+			const eraseCommand = new Erase(selected);
+			_editor.dispatch(eraseCommand);
+		}
+	});
+
+	// Register UI shortcuts
+	keyboardShortcuts.register('HELP', () => {
+		showUserGuide.set(true);
+	});
+
+	keyboardShortcuts.register('MAPS', () => {
+		showMapBrowser.set(true);
+	});
+
+	// Register fog of war keyboard shortcuts (DM only)
+	if (isHost) {
+		keyboardShortcuts.register('FOG_PAINT', () => {
+			let current;
+			fogMode.subscribe(val => { current = val; })();
+			setFogMode(current === 'paint' ? null : 'paint');
+		});
+
+		keyboardShortcuts.register('FOG_ERASE', () => {
+			let current;
+			fogMode.subscribe(val => { current = val; })();
+			setFogMode(current === 'erase' ? null : 'erase');
+		});
+
+		keyboardShortcuts.register('FOG_TOGGLE', () => {
+			toggleFogVisibility();
+		});
+	}
+
+	console.log('Keyboard shortcuts registered');
 }

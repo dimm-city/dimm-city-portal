@@ -48,7 +48,24 @@ export const host = writable(null);
 
 export let showPlayerList = writable(false);
 export let showPlayerSettings = writable(false);
+
+// Dice animation state (for simple CSS animations)
+export let diceAnimationEnabled = writable(
+	typeof localStorage !== 'undefined' ? localStorage.getItem('diceAnimationEnabled') !== 'false' : true
+);
+export let currentDiceAnimation = writable(null);
+
+// Update localStorage when animation setting changes
+if (typeof window !== 'undefined') {
+	diceAnimationEnabled.subscribe(value => {
+		localStorage.setItem('diceAnimationEnabled', value.toString());
+	});
+}
 export let showSceneSettings = writable(false);
+export let showMapBrowser = writable(false);
+export let showTokenLibrary = writable(false);
+export let showOnboardingTour = writable(false);
+export let showUserGuide = writable(false);
 
 export let inSession = derived([sessionId], ($sessionId) => {
 	return $sessionId != null && $sessionId.toString() > '';
@@ -75,31 +92,46 @@ export function getPlayerToken() {
  * @param {DC.PortalState} sessionData
  */
 export function handleCreateSession(sessionData) {
-	console.log('Emitting createSession', sessionData);
-	
-	lastUpdateIndex.set(0);
-	socket.emit('createSession', sessionData);
+	try {
+		console.log('Emitting createSession', sessionData);
+
+		lastUpdateIndex.set(0);
+		socket.emit('createSession', sessionData);
+	} catch (error) {
+		console.error('Failed to create session:', error);
+		toast.push('Failed to create session. Please try again.', { classes: ['error'] });
+	}
 }
 
 /**
  * @param {{ sessionId: string; password: string; player: any; }} sessionData
  */
 export function handleJoinSession(sessionData) {
-	lastUpdateIndex.set(0);
-	socket.emit('joinSession', sessionData);
+	try {
+		lastUpdateIndex.set(0);
+		socket.emit('joinSession', sessionData);
+	} catch (error) {
+		console.error('Failed to join session:', error);
+		toast.push('Failed to join session. Please try again.', { classes: ['error'] });
+	}
 }
 
 // Send a serialized command to the server
 export function postSerializedCommand(/** @type {Record<string | symbol, any>} */ data) {
-	const _player = get(player);
-	const _sessionId = get(sessionId);
+	try {
+		const _player = get(player);
+		const _sessionId = get(sessionId);
 
-	socket.emit('postCommand', {
-		clientId: _player.id,
-		sessionId: _sessionId,
-		data
-	});
-	console.log('Posted', JSON.stringify(data).length);
+		socket.emit('postCommand', {
+			clientId: _player.id,
+			sessionId: _sessionId,
+			data
+		});
+		console.log('Posted', JSON.stringify(data).length);
+	} catch (error) {
+		console.error('Failed to post command:', error);
+		// Don't show toast for every command failure - just log it
+	}
 }
 // Request commands since a specific ID
 export function fetchUpdates(/** @type {number} */ lastIndex) {
@@ -146,17 +178,30 @@ function handleNewCommand(/** @type {DC.PortalEditorCommand} */ command) {
 	}
 }
 export function leaveSession() {
-	console.log('Leaving session');
+	try {
+		console.log('Leaving session');
 
-	socket.emit('leaveSession', { sessionId: get(sessionId), player: get(player) });
-	players.set([]);
-	sessionId.set(null);
-	lastUpdateIndex.set(0);
+		socket.emit('leaveSession', { sessionId: get(sessionId), player: get(player) });
+		players.set([]);
+		sessionId.set(null);
+		lastUpdateIndex.set(0);
+	} catch (error) {
+		console.error('Failed to leave session:', error);
+		// Still reset state even if emit fails
+		players.set([]);
+		sessionId.set(null);
+		lastUpdateIndex.set(0);
+	}
 }
 
 export function endSession() {
-	lastUpdateIndex.set(0);
-	socket.emit('endSession', { sessionId });
+	try {
+		lastUpdateIndex.set(0);
+		socket.emit('endSession', { sessionId });
+	} catch (error) {
+		console.error('Failed to end session:', error);
+		toast.push('Failed to end session. Please try again.', { classes: ['error'] });
+	}
 }
 
 export function copySessionUrl() {
@@ -177,24 +222,159 @@ export function copySessionUrl() {
 }
 
 export function requestDiceRoll(expression = '1d20') {
-	const _player = get(player);
-	console.log('requestDiceRoll', expression, _player);
+	try {
+		const _player = get(player);
+		console.log('requestDiceRoll', expression, _player);
 
-	if (!_player) return;
-	socket.emit('requestDiceRoll', {
-		sessionId: get(sessionId),
-		diceExpression: expression,
-		playerName: _player.name,
-		diceTheme: get(selectedDiceTheme),
-		diceId: _player.diceId
+		if (!_player) {
+			console.warn('Cannot roll dice: no player found');
+			return;
+		}
+		socket.emit('requestDiceRoll', {
+			sessionId: get(sessionId),
+			diceExpression: expression,
+			playerName: _player.name,
+			diceTheme: get(selectedDiceTheme),
+			diceId: _player.diceId
+		});
+	} catch (error) {
+		console.error('Failed to request dice roll:', error);
+		toast.push('Failed to roll dice. Please try again.', { classes: ['error'] });
+	}
+}
+
+/**
+ * Save current scene to the server
+ * @param {string} sceneData - Sanitized SVG data
+ * @param {string} sceneName - Name of the scene
+ * @returns {Promise<void>}
+ */
+export function saveScene(sceneData, sceneName = 'Untitled Scene') {
+	return new Promise((resolve, reject) => {
+		try {
+			const _sessionId = get(sessionId);
+			if (!_sessionId) {
+				throw new Error('No active session');
+			}
+
+			socket.emit('saveScene', {
+				sessionId: _sessionId,
+				sceneData,
+				sceneName
+			});
+
+			// Listen for save confirmation
+			socket.once('sceneSaved', (data) => {
+				if (data.success) {
+					console.log('Scene saved successfully:', data);
+					toast.push(`Scene "${sceneName}" saved successfully!`, { classes: ['success'] });
+					resolve();
+				} else {
+					reject(new Error('Failed to save scene'));
+				}
+			});
+
+			// Handle errors
+			const errorHandler = (error) => {
+				if (error.message.includes('scene')) {
+					reject(new Error(error.message));
+					socket.off('error', errorHandler);
+				}
+			};
+			socket.on('error', errorHandler);
+
+			// Timeout after 10 seconds
+			setTimeout(() => {
+				reject(new Error('Save scene timeout'));
+			}, 10000);
+		} catch (error) {
+			console.error('Failed to save scene:', error);
+			toast.push('Failed to save scene. Please try again.', { classes: ['error'] });
+			reject(error);
+		}
+	});
+}
+
+/**
+ * Load saved scene from the server
+ * @returns {Promise<{savedScene: string, sceneName: string, lastSaved: number}>}
+ */
+export function loadScene() {
+	return new Promise((resolve, reject) => {
+		try {
+			const _sessionId = get(sessionId);
+			if (!_sessionId) {
+				throw new Error('No active session');
+			}
+
+			socket.emit('loadScene', {
+				sessionId: _sessionId
+			});
+
+			// Listen for load response
+			socket.once('sceneLoaded', (data) => {
+				if (data.success) {
+					console.log('Scene loaded successfully:', data);
+					if (data.savedScene) {
+						toast.push(`Scene "${data.sceneName}" loaded!`, { classes: ['success'] });
+					}
+					resolve(data);
+				} else {
+					reject(new Error('Failed to load scene'));
+				}
+			});
+
+			// Handle errors
+			const errorHandler = (error) => {
+				if (error.message.includes('scene') || error.message.includes('Session')) {
+					reject(new Error(error.message));
+					socket.off('error', errorHandler);
+				}
+			};
+			socket.on('error', errorHandler);
+
+			// Timeout after 10 seconds
+			setTimeout(() => {
+				reject(new Error('Load scene timeout'));
+			}, 10000);
+		} catch (error) {
+			console.error('Failed to load scene:', error);
+			toast.push('Failed to load scene. Please try again.', { classes: ['error'] });
+			reject(error);
+		}
 	});
 }
 /**
- * @param {{ result: any; diceTheme: any; }} data
+ * @param {{ result: any; diceTheme: any; playerName: string; }} data
  */
 async function onDiceRollResult(data) {
-	const { result, diceTheme } = data;
-	await processDiceResult(result, diceTheme);
+	try {
+		const { result, diceTheme, playerName } = data;
+
+		// Trigger simple CSS animation if enabled
+		if (get(diceAnimationEnabled)) {
+			// Parse dice result string (format: "1d20@15" or "2d6@3,4")
+			const match = result.match(/(\d+)d(\d+)@(.+)/);
+			if (match) {
+				const [, numDice, diceType, valuesStr] = match;
+				const values = valuesStr.split(',').map(v => parseInt(v.trim()));
+				const totalValue = values.reduce((sum, v) => sum + v, 0);
+
+				// Set animation data
+				currentDiceAnimation.set({
+					diceType: `d${diceType}`,
+					result: totalValue,
+					playerName: playerName || 'Player'
+				});
+			}
+		}
+
+		// Process with existing 3D dice system
+		await processDiceResult(result, diceTheme);
+	} catch (error) {
+		console.error('Failed to process dice roll result:', error);
+		toast.push('Failed to display dice roll result.', { classes: ['error'] });
+	}
 }
 
 socket.on('connect', () => {

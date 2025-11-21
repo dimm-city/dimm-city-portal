@@ -1,0 +1,368 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "version": "1.0.0",
+  "metadata": {
+    "description": "Battle maps collection for Dimm City Portal VTT",
+    "totalMaps": 15,
+    "lastUpdated": "2024-11-19",
+    "license": "CC0 / Public Domain",
+    "attribution": "See individual map entries for attribution"
+  },
+  "categories": [
+    {
+      "id": "dungeon",
+      "name": "Dungeons & Caverns",
+      "description": "Underground locations, dungeons, and cave systems",
+      "icon": "🏰"
+    },
+    {
+      "id": "wilderness",
+      "name": "Wilderness & Forests",
+      "description": "Outdoor forest, clearings, and natural terrain",
+      "icon": "🌲"
+    },
+    {
+      "id": "urban",
+      "name": "Urban & Buildings",
+      "description": "City streets, taverns, shops, and buildings",
+      "icon": "🏛️"
+    },
+    {
+      "id": "special",
+      "name": "Special Locations",
+      "description": "Unique or supernatural locations",
+      "icon": "✨"
+    }
+  ],
+  "maps": [
+    {
+      "id": "forest-clearing-01",
+      "name": "Forest Clearing",
+      "category": "wilderness",
+      "filename": "forest-clearing-01.jpg",
+      "thumbnail": "forest-clearing-01-thumb.jpg",
+      "gridSize": 30,
+      "gridUnits": "5ft",
+      "resolution": {
+        "width": 2100,
+        "height": 1500
+      },
+      "tags": ["forest", "clearing", "daytime", "outdoor"],
+      "description": "A natural forest clearing with scattered rocks and fallen logs. Perfect for ambushes or encounters.",
+      "author": "Placeholder",
+      "license": "CC0",
+      "attribution": null,
+      "sourceUrl": null,
+      "isPlaceholder": true
+    },
+    {
+      "id": "dungeon-room-01",
+      "name": "Dungeon Chamber",
+      "category": "dungeon",
+      "filename": "dungeon-room-01.jpg",
+      "thumbnail": "dungeon-room-01-thumb.jpg",
+      "gridSize": 25,
+      "gridUnits": "5ft",
+      "resolution": {
+        "width": 1750,
+        "height": 1750
+      },
+      "tags": ["dungeon", "underground", "chamber", "stone"],
+      "description": "A square dungeon chamber with stone pillars and torch sconces.",
+      "author": "Placeholder",
+      "license": "CC0",
+      "attribution": null,
+      "sourceUrl": null,
+      "isPlaceholder": true
+    },
+    {
+      "id": "tavern-interior-01",
+      "name": "Tavern Interior",
+      "category": "urban",
+      "filename": "tavern-interior-01.jpg",
+      "thumbnail": "tavern-interior-01-thumb.jpg",
+      "gridSize": 20,
+      "gridUnits": "5ft",
+      "resolution": {
+        "width": 1400,
+        "height": 2100
+      },
+      "tags": ["tavern", "interior", "urban", "social"],
+      "description": "A cozy tavern interior with bar, tables, and a fireplace.",
+      "author": "Placeholder",
+      "license": "CC0",
+      "attribution": null,
+      "sourceUrl": null,
+      "isPlaceholder": true
+    },
+    {
+      "id": "cave-entrance-01",
+      "name": "Cave Entrance",
+      "category": "wilderness",
+      "filename": "cave-entrance-01.jpg",
+      "thumbnail": "cave-entrance-01-thumb.jpg",
+      "gridSize": 25,
+      "gridUnits": "5ft",
+      "resolution": {
+        "width": 1750,
+        "height": 1400
+      },
+      "tags": ["cave", "entrance", "wilderness", "transition"],
+      "description": "A rocky cave entrance surrounded by forest terrain.",
+      "author": "Placeholder",
+      "license": "CC0",
+      "attribution": null,
+      "sourceUrl": null,
+      "isPlaceholder": true
+    },
+    {
+      "id": "city-street-01",
+      "name": "City Street",
+      "category": "urban",
+      "filename": "city-street-01.jpg",
+      "thumbnail": "city-street-01-thumb.jpg",
+      "gridSize": 30,
+      "gridUnits": "5ft",
+      "resolution": {
+        "width": 2100,
+        "height": 1400
+      },
+      "tags": ["city", "street", "urban", "daytime"],
+      "description": "A medieval city street with shops and market stalls.",
+      "author": "Placeholder",
+      "license": "CC0",
+      "attribution": null,
+      "sourceUrl": null,
+      "isPlaceholder": true
+    },
+    {
+      "id": "crypt-01",
+      "name": "Ancient Crypt",
+      "category": "dungeon",
+      "filename": "crypt-01.jpg",
+      "thumbnail": "crypt-01-thumb.jpg",
+      "gridSize": 22,
+      "gridUnits": "5ft",
+      "resolution": {
+        "width": 1540,
+        "height": 1540
+      },
+      "tags": ["crypt", "undead", "dungeon", "tomb"],
+      "description": "A dusty crypt with sarcophagi and ancient stonework.",
+      "author": "Placeholder",
+      "license": "CC0",
+      "attribution": null,
+      "sourceUrl": null,
+      "isPlaceholder": true
+    },
+    {
+      "id": "river-crossing-01",
+      "name": "River Crossing",
+      "category": "wilderness",
+      "filename": "river-crossing-01.jpg",
+      "thumbnail": "river-crossing-01-thumb.jpg",
+      "gridSize": 30,
+      "gridUnits": "5ft",
+      "resolution": {
+        "width": 2100,
+        "height": 1500
+      },
+      "tags": ["river", "bridge", "wilderness", "water"],
+      "description": "A shallow river with a wooden bridge crossing.",
+      "author": "Placeholder",
+      "license": "CC0",
+      "attribution": null,
+      "sourceUrl": null,
+      "isPlaceholder": true
+    },
+    {
+      "id": "throne-room-01",
+      "name": "Throne Room",
+      "category": "urban",
+      "filename": "throne-room-01.jpg",
+      "thumbnail": "throne-room-01-thumb.jpg",
+      "gridSize": 35,
+      "gridUnits": "5ft",
+      "resolution": {
+        "width": 2450,
+        "height": 1750
+      },
+      "tags": ["throne", "castle", "urban", "royal"],
+      "description": "A grand throne room with columns and red carpet.",
+      "author": "Placeholder",
+      "license": "CC0",
+      "attribution": null,
+      "sourceUrl": null,
+      "isPlaceholder": true
+    },
+    {
+      "id": "wizard-tower-01",
+      "name": "Wizard's Study",
+      "category": "special",
+      "filename": "wizard-tower-01.jpg",
+      "thumbnail": "wizard-tower-01-thumb.jpg",
+      "gridSize": 20,
+      "gridUnits": "5ft",
+      "resolution": {
+        "width": 1400,
+        "height": 1400
+      },
+      "tags": ["wizard", "magic", "tower", "study"],
+      "description": "A circular wizard's study filled with books and magical artifacts.",
+      "author": "Placeholder",
+      "license": "CC0",
+      "attribution": null,
+      "sourceUrl": null,
+      "isPlaceholder": true
+    },
+    {
+      "id": "mountain-pass-01",
+      "name": "Mountain Pass",
+      "category": "wilderness",
+      "filename": "mountain-pass-01.jpg",
+      "thumbnail": "mountain-pass-01-thumb.jpg",
+      "gridSize": 30,
+      "gridUnits": "5ft",
+      "resolution": {
+        "width": 2100,
+        "height": 1500
+      },
+      "tags": ["mountain", "pass", "wilderness", "rocky"],
+      "description": "A narrow mountain pass with rocky terrain and cliffs.",
+      "author": "Placeholder",
+      "license": "CC0",
+      "attribution": null,
+      "sourceUrl": null,
+      "isPlaceholder": true
+    },
+    {
+      "id": "temple-interior-01",
+      "name": "Temple Interior",
+      "category": "special",
+      "filename": "temple-interior-01.jpg",
+      "thumbnail": "temple-interior-01-thumb.jpg",
+      "gridSize": 30,
+      "gridUnits": "5ft",
+      "resolution": {
+        "width": 2100,
+        "height": 2100
+      },
+      "tags": ["temple", "religious", "interior", "holy"],
+      "description": "A sacred temple interior with altar and pews.",
+      "author": "Placeholder",
+      "license": "CC0",
+      "attribution": null,
+      "sourceUrl": null,
+      "isPlaceholder": true
+    },
+    {
+      "id": "abandoned-farmhouse-01",
+      "name": "Abandoned Farmhouse",
+      "category": "urban",
+      "filename": "abandoned-farmhouse-01.jpg",
+      "thumbnail": "abandoned-farmhouse-01-thumb.jpg",
+      "gridSize": 25,
+      "gridUnits": "5ft",
+      "resolution": {
+        "width": 1750,
+        "height": 1750
+      },
+      "tags": ["farmhouse", "rural", "abandoned", "building"],
+      "description": "A dilapidated farmhouse with overgrown fields.",
+      "author": "Placeholder",
+      "license": "CC0",
+      "attribution": null,
+      "sourceUrl": null,
+      "isPlaceholder": true
+    },
+    {
+      "id": "underground-lake-01",
+      "name": "Underground Lake",
+      "category": "dungeon",
+      "filename": "underground-lake-01.jpg",
+      "thumbnail": "underground-lake-01-thumb.jpg",
+      "gridSize": 35,
+      "gridUnits": "5ft",
+      "resolution": {
+        "width": 2450,
+        "height": 1750
+      },
+      "tags": ["underground", "lake", "water", "cave"],
+      "description": "A mysterious underground lake with rocky shores.",
+      "author": "Placeholder",
+      "license": "CC0",
+      "attribution": null,
+      "sourceUrl": null,
+      "isPlaceholder": true
+    },
+    {
+      "id": "portal-chamber-01",
+      "name": "Portal Chamber",
+      "category": "special",
+      "filename": "portal-chamber-01.jpg",
+      "thumbnail": "portal-chamber-01-thumb.jpg",
+      "gridSize": 25,
+      "gridUnits": "5ft",
+      "resolution": {
+        "width": 1750,
+        "height": 1750
+      },
+      "tags": ["portal", "magic", "dimensional", "special"],
+      "description": "A mystical chamber with a glowing portal at its center.",
+      "author": "Placeholder",
+      "license": "CC0",
+      "attribution": null,
+      "sourceUrl": null,
+      "isPlaceholder": true
+    },
+    {
+      "id": "ship-deck-01",
+      "name": "Ship Deck",
+      "category": "special",
+      "filename": "ship-deck-01.jpg",
+      "thumbnail": "ship-deck-01-thumb.jpg",
+      "gridSize": 30,
+      "gridUnits": "5ft",
+      "resolution": {
+        "width": 2100,
+        "height": 1400
+      },
+      "tags": ["ship", "deck", "nautical", "pirate"],
+      "description": "The main deck of a sailing ship with rigging and cannons.",
+      "author": "Placeholder",
+      "license": "CC0",
+      "attribution": null,
+      "sourceUrl": null,
+      "isPlaceholder": true
+    }
+  ],
+  "_instructions": {
+    "title": "How to Add Real Battle Maps",
+    "steps": [
+      "1. Find CC0/Public Domain battle maps from sources like:",
+      "   - reddit.com/r/battlemaps (filter for free/CC0)",
+      "   - 2minutetabletop.com (some free maps)",
+      "   - dungeondraft.net community",
+      "   - inkarnate.com (free tier)",
+      "",
+      "2. Place map images in: static/assets/maps/",
+      "   - Use web-optimized formats (JPG for photos, PNG for transparency)",
+      "   - Recommended resolution: 1400-2400px for the longest side",
+      "   - Name format: category-description-number.jpg",
+      "",
+      "3. Create thumbnails (optional but recommended):",
+      "   - 300x300px or similar small size",
+      "   - Name format: [mapname]-thumb.jpg",
+      "",
+      "4. Update this maps.json file:",
+      "   - Copy an existing map entry",
+      "   - Update all fields (id, name, filename, etc.)",
+      "   - Set isPlaceholder to false",
+      "   - Add proper attribution if required",
+      "",
+      "5. The MapBrowser component will automatically load your maps!",
+      "",
+      "Note: Placeholder maps show a message in the browser to add real images."
+    ]
+  }
+}

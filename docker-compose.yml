@@ -1,0 +1,75 @@
+version: '3.8'
+
+services:
+  dimm-city-portal:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: dimm-city-portal:latest
+    container_name: dimm-city-portal
+    restart: unless-stopped
+
+    ports:
+      - "3000:3000"
+
+    volumes:
+      # Persist SQLite database and session data
+      - ./data:/app/data
+      # Optional: Mount custom .env file
+      # - ./.env:/app/.env:ro
+
+    environment:
+      # Server configuration
+      - NODE_ENV=production
+      - PORT=3000
+      - HOST=0.0.0.0
+
+      # CORS origins (comma-separated)
+      - ALLOWED_ORIGINS=http://localhost:3000,https://yourdomain.com
+
+      # Session configuration
+      - SESSION_TTL=86400
+      - MAX_SESSIONS=100
+      - MAX_PLAYERS_PER_SESSION=10
+      - ENABLE_SESSION_BROWSER=true
+
+      # Database
+      - SQLITE_DB_PATH=/app/data/sessions.db
+      - CLEANUP_INTERVAL=3600000
+
+      # Rate limiting
+      - RATE_LIMIT_SESSION_CREATION_POINTS=5
+      - RATE_LIMIT_SESSION_CREATION_DURATION=3600
+      - RATE_LIMIT_SESSION_JOIN_POINTS=10
+      - RATE_LIMIT_SESSION_JOIN_DURATION=3600
+      - RATE_LIMIT_DICE_ROLL_POINTS=60
+      - RATE_LIMIT_DICE_ROLL_DURATION=60
+      - RATE_LIMIT_COMMAND_POINTS=100
+      - RATE_LIMIT_COMMAND_DURATION=60
+      - RATE_LIMIT_PASSWORD_ATTEMPTS_POINTS=5
+      - RATE_LIMIT_PASSWORD_ATTEMPTS_DURATION=900
+
+      # Logging
+      - LOG_LEVEL=info
+
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000/', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
+
+    # Optional: Uncomment to add resource limits
+    # deploy:
+    #   resources:
+    #     limits:
+    #       cpus: '1'
+    #       memory: 512M
+    #     reservations:
+    #       cpus: '0.5'
+    #       memory: 256M
+
+# Volumes for data persistence
+volumes:
+  data:
+    driver: local

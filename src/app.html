@@ -4,7 +4,31 @@
 <head>
 	<meta charset="utf-8" />
 	<link rel="icon" href="%sveltekit.assets%/favicon.png" />
-	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, user-scalable=yes" />
+
+	<!-- PWA -->
+	<link rel="manifest" href="/manifest.json" />
+	<meta name="theme-color" content="#6366f1" />
+	<meta name="apple-mobile-web-app-capable" content="yes" />
+	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+	<meta name="apple-mobile-web-app-title" content="Dimm City" />
+	<link rel="apple-touch-icon" href="/assets/icon-192.png" />
+
+	<!-- Content Security Policy -->
+	<meta http-equiv="Content-Security-Policy"
+		content="
+			default-src 'self';
+			script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net;
+			style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net;
+			font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net data:;
+			img-src 'self' data: https: blob:;
+			connect-src 'self' ws: wss: http://localhost:* http://127.0.0.1:* https:;
+			worker-src 'self' blob:;
+			frame-ancestors 'none';
+			base-uri 'self';
+			form-action 'self';
+		">
+
 	%sveltekit.head%
 </head>
 
